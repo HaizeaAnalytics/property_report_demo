@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Property - Rural Property Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2c5f3f;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .step-number.active {
+            background: white;
+            color: #2c5f3f;
+        }
+        
+        .step-arrow {
+            opacity: 0.5;
+        }
+        
+        .main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+        
+        .sidebar {
+            width: 400px;
+            background: white;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .search-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .search-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        
+        .tab-button.active {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #2c5f3f;
+        }
+        
+        .search-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2c5f3f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: background 0.2s;
+        }
+        
+        .search-button:hover {
+            background: #3d7a52;
+        }
+        
+        .selection-summary {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .summary-stats {
+            background: white;
+            border: 2px solid #2c5f3f;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .selected-parcels-list {
+            margin-top: 1rem;
+        }
+        
+        .selected-parcels-list h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: #333;
+        }
+        
+        .parcel-item {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .parcel-info {
+            flex: 1;
+        }
+        
+        .parcel-id {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        
+        .parcel-details {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        
+        .remove-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .remove-button:hover {
+            background: #c82333;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+        
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+        
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-primary {
+            background: #2c5f3f;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3d7a52;
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: #e8f0e8;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+        
+        .map-control-btn {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+        
+        .map-control-btn:hover {
+            background: #f8f9fa;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 2px;
+        }
+        
+        #mapCanvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: #f0f7ff;
+            border-left: 3px solid #2c5f3f;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🌾 Rural Property Report</div>
+        <div class="progress-indicator">
+            <div class="step">
+                <div class="step-number">✓</div>
+                <span>Introduction</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number active">2</div>
+                <span>Select Property</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number">3</div>
+                <span>Choose Report</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number">4</div>
+                <span>Payment</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Select Property</h2>
+                <p>Search for and select one or more cadastral parcels</p>
+            </div>
+
+            <div class="search-section">
+                <div class="search-tabs">
+                    <button class="tab-button active" onclick="switchTab('address')">Address</button>
+                    <button class="tab-button" onclick="switchTab('lot')">Lot/DP</button>
+                    <button class="tab-button" onclick="switchTab('coords')">Coordinates</button>
+                </div>
+
+                <div id="addressSearch">
+                    <input type="text" class="search-input" placeholder="e.g., 456 Smith Road, Mudgee NSW" id="addressInput">
+                </div>
+
+                <div id="lotSearch" style="display: none;">
+                    <input type="text" class="search-input" placeholder="e.g., Lot 123 DP 456789" id="lotInput">
+                </div>
+
+                <div id="coordsSearch" style="display: none;">
+                    <input type="text" class="search-input" placeholder="e.g., -32.5986, 149.5773" id="coordsInput">
+                </div>
+
+                <button class="search-button" onclick="performSearch()">Search & Zoom</button>
+                
+                <div class="help-text">
+                    💡 Tip: Click parcels on the map to select them. Click again to deselect.
+                </div>
+            </div>
+
+            <div class="selection-summary">
+                <div class="summary-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">Parcels selected:</span>
+                        <span class="stat-value" id="parcelCount">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Total area:</span>
+                        <span class="stat-value" id="totalArea">0 ha</span>
+                    </div>
+                </div>
+
+                <div class="selected-parcels-list">
+                    <h3>Selected Parcels</h3>
+                    <div id="parcelsList">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            <p>No parcels selected yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goBack()">← Previous</button>
+                    <button class="btn btn-primary" id="nextButton" disabled onclick="goNext()">Next →</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="map-container">
+            <div class="map-controls">
+                <button class="map-control-btn" onclick="zoomIn()" title="Zoom In">+</button>
+                <button class="map-control-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+                <button class="map-control-btn" onclick="resetView()" title="Reset View">⟲</button>
+            </div>
+
+            <div class="map-legend">
+                <div class="legend-title">Legend</div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(44, 95, 63, 0.3); border: 2px solid #2c5f3f;"></div>
+                    <span>Selected parcel</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(255, 255, 255, 0.7); border: 1px solid #666;"></div>
+                    <span>Available parcel</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(44, 95, 63, 0.5); border: 2px solid #ff6b35; border-style: dashed;"></div>
+                    <span>Hover state</span>
+                </div>
+            </div>
+
+            <canvas id="mapCanvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Map state
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+        let scale = 1;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let hoveredParcel = null;
+
+        // Sample parcels data
+        const parcels = [
+            { id: 'LOT123-DP456789', lot: 123, dp: 456789, x: 150, y: 150, width: 180, height: 120, area: 87.5, address: '456 Smith Rd, Mudgee', lga: 'Mid-Western Regional' },
+            { id: 'LOT124-DP456789', lot: 124, dp: 456789, x: 330, y: 150, width: 150, height: 120, area: 72.3, address: '458 Smith Rd, Mudgee', lga: 'Mid-Western Regional' },
+            { id: 'LOT125-DP456789', lot: 125, dp: 456789, x: 150, y: 270, width: 180, height: 160, area: 115.8, address: '460 Smith Rd, Mudgee', lga: 'Mid-Western Regional' },
+            { id: 'LOT126-DP456789', lot: 126, dp: 456789, x: 330, y: 270, width: 150, height: 160, area: 96.4, address: '462 Smith Rd, Mudgee', lga: 'Mid-Western Regional' },
+            { id: 'LOT201-DP567890', lot: 201, dp: 567890, x: 500, y: 150, width: 200, height: 200, area: 162.0, address: 'Rural Rd, Mudgee', lga: 'Mid-Western Regional' },
+            { id: 'LOT202-DP567890', lot: 202, dp: 567890, x: 500, y: 350, width: 200, height: 140, area: 113.2, address: 'Rural Rd, Mudgee', lga: 'Mid-Western Regional' },
+        ];
+
+        const selectedParcels = new Set();
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            drawMap();
+        }
+
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+            ctx.scale(scale, scale);
+
+            // Draw topographic background
+            ctx.strokeStyle = 'rgba(44, 95, 63, 0.15)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * 40);
+                for (let x = 0; x <= canvas.width; x += 20) {
+                    const y = i * 40 + Math.sin(x / 50) * 10;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            // Draw roads
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(130, 0);
+            ctx.lineTo(130, canvas.height);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 130);
+            ctx.lineTo(canvas.width, 130);
+            ctx.stroke();
+
+            // Draw parcels
+            parcels.forEach(parcel => {
+                const isSelected = selectedParcels.has(parcel.id);
+                const isHovered = hoveredParcel === parcel.id;
+
+                // Fill
+                if (isSelected) {
+                    ctx.fillStyle = 'rgba(44, 95, 63, 0.3)';
+                } else if (isHovered) {
+                    ctx.fillStyle = 'rgba(44, 95, 63, 0.15)';
+                } else {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                }
+                ctx.fillRect(parcel.x, parcel.y, parcel.width, parcel.height);
+
+                // Border
+                if (isSelected) {
+                    ctx.strokeStyle = '#2c5f3f';
+                    ctx.lineWidth = 3;
+                } else if (isHovered) {
+                    ctx.strokeStyle = '#ff6b35';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                } else {
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 1;
+                }
+                ctx.strokeRect(parcel.x, parcel.y, parcel.width, parcel.height);
+                ctx.setLineDash([]);
+
+                // Label
+                ctx.fillStyle = '#333';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Lot ${parcel.lot}`, parcel.x + parcel.width / 2, parcel.y + parcel.height / 2 - 10);
+                ctx.fillText(`DP ${parcel.dp}`, parcel.x + parcel.width / 2, parcel.y + parcel.height / 2 + 5);
+                ctx.font = '10px sans-serif';
+                ctx.fillStyle = '#666';
+                ctx.fillText(`${parcel.area} ha`, parcel.x + parcel.width / 2, parcel.y + parcel.height / 2 + 20);
+            });
+
+            ctx.restore();
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX - rect.left - offsetX) / scale,
+                y: (e.clientY - rect.top - offsetY) / scale
+            };
+        }
+
+        function getParcelAtPoint(x, y) {
+            return parcels.find(p => 
+                x >= p.x && x <= p.x + p.width &&
+                y >= p.y && y <= p.y + p.height
+            );
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const pos = getMousePos(e);
+            const parcel = getParcelAtPoint(pos.x, pos.y);
+            
+            if (parcel) {
+                if (selectedParcels.has(parcel.id)) {
+                    selectedParcels.delete(parcel.id);
+                } else {
+                    selectedParcels.add(parcel.id);
+                }
+                updateSelectionUI();
+                drawMap();
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                offsetX = e.clientX - dragStartX;
+                offsetY = e.clientY - dragStartY;
+                drawMap();
+                return;
+            }
+
+            const pos = getMousePos(e);
+            const parcel = getParcelAtPoint(pos.x, pos.y);
+            
+            if (parcel && parcel.id !== hoveredParcel) {
+                hoveredParcel = parcel.id;
+                canvas.style.cursor = 'pointer';
+                drawMap();
+            } else if (!parcel && hoveredParcel) {
+                hoveredParcel = null;
+                canvas.style.cursor = 'crosshair';
+                drawMap();
+            }
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.shiftKey) {
+                isDragging = true;
+                dragStartX = e.clientX - offsetX;
+                dragStartY = e.clientY - offsetY;
+                canvas.style.cursor = 'grabbing';
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            canvas.style.cursor = 'crosshair';
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+            hoveredParcel = null;
+            canvas.style.cursor = 'crosshair';
+            drawMap();
+        });
+
+        function updateSelectionUI() {
+            const count = selectedParcels.size;
+            const totalArea = Array.from(selectedParcels)
+                .map(id => parcels.find(p => p.id === id).area)
+                .reduce((a, b) => a + b, 0);
+
+            document.getElementById('parcelCount').textContent = count;
+            document.getElementById('totalArea').textContent = totalArea.toFixed(1) + ' ha';
+            document.getElementById('nextButton').disabled = count === 0;
+
+            const listEl = document.getElementById('parcelsList');
+            if (count === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <p>No parcels selected yet</p>
+                    </div>
+                `;
+            } else {
+                listEl.innerHTML = Array.from(selectedParcels)
+                    .map(id => {
+                        const p = parcels.find(parcel => parcel.id === id);
+                        return `
+                            <div class="parcel-item">
+                                <div class="parcel-info">
+                                    <div class="parcel-id">Lot ${p.lot} DP ${p.dp}</div>
+                                    <div class="parcel-details">${p.area} ha • ${p.lga}</div>
+                                </div>
+                                <button class="remove-button" onclick="removeParcel('${id}')">Remove</button>
+                            </div>
+                        `;
+                    })
+                    .join('');
+            }
+        }
+
+        function removeParcel(id) {
+            selectedParcels.delete(id);
+            updateSelectionUI();
+            drawMap();
+        }
+
+        function zoomIn() {
+            scale *= 1.2;
+            drawMap();
+        }
+
+        function zoomOut() {
+            scale /= 1.2;
+            drawMap();
+        }
+
+        function resetView() {
+            scale = 1;
+            offsetX = 0;
+            offsetY = 0;
+            drawMap();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('addressSearch').style.display = tab === 'address' ? 'block' : 'none';
+            document.getElementById('lotSearch').style.display = tab === 'lot' ? 'block' : 'none';
+            document.getElementById('coordsSearch').style.display = tab === 'coords' ? 'block' : 'none';
+        }
+
+        function performSearch() {
+            // Simulate zoom to first parcel
+            const firstParcel = parcels[0];
+            offsetX = canvas.width / 2 - (firstParcel.x + firstParcel.width / 2) * scale;
+            offsetY = canvas.height / 2 - (firstParcel.y + firstParcel.height / 2) * scale;
+            scale = 1.5;
+            drawMap();
+        }
+
+        function goBack() {
+            alert('Going back to landing page');
+        }
+
+        function goNext() {
+            if (selectedParcels.size === 0) {
+                alert('Please select at least one parcel');
+                return;
+            }
+            window.location.href = 'step3_choose_report_updated.html';
+        }
+
+        // Initialize
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+</body>
+</html>

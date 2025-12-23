@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Report Dashboard - Vegetation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7f9;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .property-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .property-title h1 {
+            font-size: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .property-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-header {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-header:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary:hover {
+            background: #3d7a52;
+        }
+        
+        /* Main layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+        
+        /* Sidebar navigation */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            padding: 1rem 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c5f3f;
+        }
+        
+        .nav-item.active {
+            background: #f0f7f0;
+            color: #2c5f3f;
+            font-weight: 600;
+            border-left: 3px solid #2c5f3f;
+            padding-left: calc(1.5rem - 3px);
+        }
+        
+        .nav-item.locked {
+            opacity: 0.5;
+            position: relative;
+        }
+        
+        .nav-item.locked::after {
+            content: '🔒';
+            margin-left: auto;
+            font-size: 0.8rem;
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .section-header {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: #666;
+            font-size: 1.05rem;
+        }
+        
+        /* Grid layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Card container */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-card {
+            padding: 0.25rem 0.6rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-card:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        /* Map container */
+        .map-container {
+            width: 100%;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 0.85rem;
+            max-width: 200px;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c5f3f;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2c5f3f;
+        }
+        
+        .stat-context {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+        
+        /* Alert boxes */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+            color: #155724;
+        }
+        
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        .data-table thead {
+            background: #f8f9fa;
+        }
+        
+        .data-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Dual chart */
+        .dual-chart {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 280px;
+            position: relative;
+        }
+        
+        .chart-container.tall {
+            height: 350px;
+        }
+        
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Health indicator */
+        .health-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .health-indicator.excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .health-indicator.good {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .health-indicator.fair {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .health-indicator.poor {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .health-icon {
+            font-size: 1.2rem;
+        }
+        
+        /* Trend indicator */
+        .trend-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .trend-badge.improving {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .trend-badge.stable {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .trend-badge.declining {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Summary box */
+        .summary-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .summary-box strong {
+            color: #2c5f3f;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dual-chart {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="property-title">
+            <h1>Smith Farm Property Report</h1>
+            <div class="property-meta">
+                <div>📍 Mudgee, NSW</div>
+                <div>📏 275.6 hectares</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header">🔗 Share</button>
+            <button class="btn-header">📊 Export Data</button>
+            <button class="btn-header primary">📄 Download PDF</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Report Sections</div>
+                <a class="nav-item" href="dashboard_overview.html" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    Overview
+                </a>
+                <a class="nav-item" href="dashboard_terrain_soil.html" class="nav-link">
+                    <span class="nav-icon">⛰️</span>
+                    Terrain & Soil
+                </a>
+                <a class="nav-item" href="dashboard_climate.html" class="nav-link">
+                    <span class="nav-icon">🌦️</span>
+                    Climate
+                </a>
+                <a class="nav-item" href="dashboard_water.html" class="nav-link">
+                    <span class="nav-icon">💧</span>
+                    Water
+                </a>
+                <a class="nav-item active">
+                    <span class="nav-icon">🌿</span>
+                    Vegetation
+                </a>
+                <a class="nav-item" href="dashboard_hazards.html" class="nav-link">
+                    <span class="nav-icon">⚠️</span>
+                    Natural Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Premium Sections</div>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌾</span>
+                    Primary Production
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">☀️</span>
+                    Solar Energy
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌱</span>
+                    Carbon Potential
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🦘</span>
+                    Nature & Biodiversity
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="section-header">
+                <h2>Vegetation</h2>
+                <p>Vegetation types, condition and changes over time (2000-2024)</p>
+            </div>
+
+            <!-- Current Vegetation Cover -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Current Vegetation Cover</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('cover')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="map-container">
+                    <canvas id="coverMap"></canvas>
+                    <div class="map-legend">
+                        <div class="legend-title">Land Cover Types</div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #1b5e20;"></div>
+                            <span>Native Forest</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #558b2f;"></div>
+                            <span>Native Woodland</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #8bc34a;"></div>
+                            <span>Improved Pasture</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #c5e1a5;"></div>
+                            <span>Native Grassland</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #e8f5e9;"></div>
+                            <span>Cropping</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ff9800; border: 2px solid #f57c00;"></div>
+                            <span>Native Remnant*</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Forest Cover</div>
+                        <div class="stat-value">42%</div>
+                        <div class="stat-context">115.8 hectares</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Improved Pasture</div>
+                        <div class="stat-value">38%</div>
+                        <div class="stat-context">104.7 hectares</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Native Grassland</div>
+                        <div class="stat-value">18%</div>
+                        <div class="stat-context">49.6 hectares</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Other</div>
+                        <div class="stat-value">2%</div>
+                        <div class="stat-context">5.5 hectares</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>Native Vegetation Remnants:</strong> 68.4 hectares (25% of property) identified as native remnant vegetation, 
+                    classified as <strong>Box-Gum Grassy Woodland</strong> (critically endangered ecological community under EPBC Act). 
+                    Development restrictions apply - clearing requires approval. High conservation value.
+                </div>
+            </div>
+
+            <!-- Forest Change Analysis -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Forest Change Analysis (2000-2024)</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('change')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="map-container">
+                    <canvas id="changeMap"></canvas>
+                    <div class="map-legend">
+                        <div class="legend-title">Forest Change</div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #2e7d32;"></div>
+                            <span>Stable Forest</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #66bb6a;"></div>
+                            <span>Forest Gain</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ff5252;"></div>
+                            <span>Forest Loss</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f0f0f0;"></div>
+                            <span>Non-forest</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Forest Loss (ha)</th>
+                            <th>Forest Gain (ha)</th>
+                            <th>Net Change (ha)</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2000-2010</td>
+                            <td>8.2</td>
+                            <td>3.5</td>
+                            <td>-4.7</td>
+                            <td>Western boundary clearing (2004-2006)</td>
+                        </tr>
+                        <tr>
+                            <td>2010-2017</td>
+                            <td>2.1</td>
+                            <td>5.8</td>
+                            <td>+3.7</td>
+                            <td>Natural regrowth in gullies</td>
+                        </tr>
+                        <tr style="background: #fff3cd;">
+                            <td><strong>2017-2024</strong></td>
+                            <td><strong>0.8</strong></td>
+                            <td><strong>4.2</strong></td>
+                            <td><strong>+3.4</strong></td>
+                            <td><strong>Minimal recent clearing, good regrowth</strong></td>
+                        </tr>
+                        <tr style="font-weight: 600; background: #f8f9fa;">
+                            <td>Total (2000-2024)</td>
+                            <td>11.1</td>
+                            <td>13.5</td>
+                            <td>+2.4</td>
+                            <td>Net gain overall</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="alert alert-success">
+                    <strong>Clearing Status:</strong> No significant recent clearing detected. Only 0.8 ha lost 2017-2024, well below notification thresholds. 
+                    Forest gain (4.2 ha) exceeds loss. Net forest cover has increased by 2.4 ha since 2000. Property shows good vegetation stewardship.
+                </div>
+            </div>
+
+            <!-- Forest Detail & Vegetation Condition -->
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Forest Structure</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('forest')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container" style="height: 240px;">
+                        <canvas id="forestStructureChart"></canvas>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Crown Cover:</strong> Mean 48% (range 20-85%). Predominantly open woodland structure. 
+                        <strong>Tree Height:</strong> Mean 12.5m (range 4-22m). Mature eucalypt overstorey with mixed-age understory. 
+                        Dense canopy areas (>70% cover) comprise 18% of forested area, important wildlife habitat.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Current Vegetation Condition</h3>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 2rem 0;">
+                        <div class="health-indicator good">
+                            <span class="health-icon">✓</span>
+                            <span>Good Condition</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        <div class="stat-box">
+                            <div class="stat-label">Live Vegetation</div>
+                            <div class="stat-value">68%</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Litter</div>
+                            <div class="stat-value">24%</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Bare Soil</div>
+                            <div class="stat-value">8%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Assessment:</strong> Fractional cover indicates good vegetation health. 
+                        Live vegetation 68% is above LGA average (62%) for similar pasture land use. 
+                        Low bare soil exposure (8%) indicates good ground cover protection against erosion.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vegetation Health Trends -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Vegetation Condition Trends (2000-2024)</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('trends')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="dual-chart">
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="vegTrendChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="vegSeasonalChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <div style="flex: 1;">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Long-term Trend</div>
+                        <div class="trend-badge stable">→ Stable (+2% over 25 years)</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">vs Regional Average</div>
+                        <div class="trend-badge improving">↑ Above Average (+6%)</div>
+                    </div>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Trend analysis:</strong> Live vegetation cover has remained stable at 65-70% throughout 2000-2024. 
+                    Property consistently performs above LGA average for similar land use (+6% higher). 
+                    Strong seasonal pattern with peak cover in spring (Sep-Nov, 75-80%) and minimum in late summer (Feb-Mar, 55-60%). 
+                    Drought impacts visible in 2006 and 2019 but vegetation recovered well. No evidence of degradation.
+                </div>
+            </div>
+
+            <!-- Regional Comparison -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Regional Comparison - Vegetation Health</h3>
+                </div>
+                
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="regionalComparisonChart"></canvas>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Comparative performance:</strong> Property vegetation condition ranks in <strong>72nd percentile</strong> for Mid-Western Regional LGA pasture lands. 
+                    Live vegetation cover 6% above regional average. Bare soil exposure 3% below regional average (better). 
+                    Performance particularly strong in drier years, suggesting good land management practices. 
+                    Similar properties in region average 62% live cover vs 68% on this property.
+                </div>
+            </div>
+
+            <!-- Summary & Implications -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Summary & Implications</h3>
+                </div>
+                
+                <div style="display: grid; gap: 1rem;">
+                    <div class="alert alert-info">
+                        <strong>🌳 Native Vegetation Constraints:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>68.4 ha (25%) mapped as Box-Gum Grassy Woodland (CEEC)</li>
+                            <li>Clearing restrictions apply - requires approval under NSW Land Management Code</li>
+                            <li>High conservation value - potential for Biodiversity Stewardship Agreement</li>
+                            <li>Development constraints in native vegetation areas</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <strong>✓ Clearing Compliance:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>No evidence of unauthorized clearing in recent period (2017-2024)</li>
+                            <li>Only 0.8 ha forest loss detected, well below notification thresholds</li>
+                            <li>Net forest gain of 2.4 ha since 2000 indicates good stewardship</li>
+                            <li>Natural regrowth occurring in gullies and drainage lines</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <strong>✓ Vegetation Health:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>Good condition: 68% live vegetation cover, above regional average</li>
+                            <li>Stable long-term trends - no evidence of degradation</li>
+                            <li>Low bare soil exposure (8%) - good erosion protection</li>
+                            <li>Property in top 30% for vegetation health in LGA</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>💡 Opportunities:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>Native vegetation suitable for carbon sequestration projects</li>
+                            <li>Potential for biodiversity stewardship agreements (income stream)</li>
+                            <li>Regrowth areas could be enhanced with strategic revegetation</li>
+                            <li>High vegetation productivity supports grazing operations</li>
+                        </ul>
+                        <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 4px;">
+                            <strong>🔒 Unlock detailed biodiversity analysis in the Nature & Biodiversity premium section</strong> - 
+                            threatened species records, habitat assessment, carbon potential, and conservation opportunities.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data sources footer -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666;">
+                <strong>Data Sources:</strong> National Vegetation Information System (NVIS), TERN AusEnv fractional cover (2000-2024), 
+                Geoscience Australia VMAP forest monitoring, NSW Vegetation Mapping (BioNet), Land use mapping (ABARES). 
+                Native vegetation classification from NSW BioNet Vegetation Classification. Forest definition uses Australian standard (≥20% crown cover, ≥2m height).
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize charts
+        function initChart(id) {
+            const canvas = document.getElementById(id);
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            return canvas.getContext('2d');
+        }
+
+        // Cover Map
+        const coverCtx = initChart('coverMap');
+        function drawCoverMap() {
+            const width = coverCtx.canvas.width;
+            const height = coverCtx.canvas.height;
+            
+            coverCtx.clearRect(0, 0, width, height);
+            
+            // Simulate different vegetation types
+            const coverTypes = [
+                { color: '#1b5e20', prob: 0.25 },  // Native forest
+                { color: '#558b2f', prob: 0.42 },  // Native woodland
+                { color: '#8bc34a', prob: 0.80 },  // Improved pasture
+                { color: '#c5e1a5', prob: 0.98 },  // Native grassland
+                { color: '#e8f5e9', prob: 1.0 }    // Cropping
+            ];
+            
+            const gridSize = 15;
+            for (let y = 0; y < height; y += gridSize) {
+                for (let x = 0; x < width; x += gridSize) {
+                    const rand = Math.random();
+                    let color = coverTypes[0].color;
+                    
+                    // More forest on left, more pasture on right
+                    const forestBias = 1 - (x / width);
+                    const adjustedRand = rand * (0.5 + forestBias * 0.5);
+                    
+                    for (let i = 0; i < coverTypes.length; i++) {
+                        if (adjustedRand <= coverTypes[i].prob) {
+                            color = coverTypes[i].color;
+                            break;
+                        }
+                    }
+                    
+                    coverCtx.fillStyle = color;
+                    coverCtx.fillRect(x, y, gridSize, gridSize);
+                    
+                    // Native remnants (highlighted patches)
+                    if (x < width * 0.4 && y > height * 0.3 && y < height * 0.7 && Math.random() < 0.3) {
+                        coverCtx.strokeStyle = '#ff9800';
+                        coverCtx.lineWidth = 2;
+                        coverCtx.strokeRect(x, y, gridSize, gridSize);
+                    }
+                }
+            }
+            
+            // Property boundary
+            coverCtx.strokeStyle = '#333';
+            coverCtx.lineWidth = 3;
+            coverCtx.strokeRect(20, 20, width - 40, height - 40);
+        }
+
+        // Change Map
+        const changeCtx = initChart('changeMap');
+        function drawChangeMap() {
+            const width = changeCtx.canvas.width;
+            const height = changeCtx.canvas.height;
+            
+            changeCtx.clearRect(0, 0, width, height);
+            
+            const gridSize = 15;
+            for (let y = 0; y < height; y += gridSize) {
+                for (let x = 0; x < width; x += gridSize) {
+                    let color = '#f0f0f0'; // Non-forest default
+                    
+                    const forestProb = 1 - (x / width) * 0.8;
+                    
+                    if (Math.random() < forestProb) {
+                        // Stable forest (most common)
+                        color = '#2e7d32';
+                        
+                        // Some loss areas (western boundary)
+                        if (x > width * 0.7 && y > height * 0.4 && y < height * 0.6 && Math.random() < 0.15) {
+                            color = '#ff5252';
+                        }
+                        // Some gain areas (gullies)
+                        else if (Math.random() < 0.08) {
+                            color = '#66bb6a';
+                        }
+                    }
+                    
+                    changeCtx.fillStyle = color;
+                    changeCtx.fillRect(x, y, gridSize, gridSize);
+                }
+            }
+            
+            // Property boundary
+            changeCtx.strokeStyle = '#333';
+            changeCtx.lineWidth = 3;
+            changeCtx.strokeRect(20, 20, width - 40, height - 40);
+        }
+
+        // Forest Structure Chart (Crown cover distribution)
+        const forestCtx = initChart('forestStructureChart');
+        function drawForestStructure() {
+            const bins = [
+                { range: '20-30%', count: 12, height: 8 },
+                { range: '30-50%', count: 38, height: 12 },
+                { range: '50-70%', count: 32, height: 14 },
+                { range: '70-85%', count: 18, height: 18 }
+            ];
+            
+            const width = forestCtx.canvas.width;
+            const height = forestCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barWidth = chartWidth / bins.length * 0.7;
+            
+            forestCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            forestCtx.fillStyle = '#fafafa';
+            forestCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            forestCtx.strokeStyle = '#e0e0e0';
+            forestCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                forestCtx.beginPath();
+                forestCtx.moveTo(padding, y);
+                forestCtx.lineTo(width - padding, y);
+                forestCtx.stroke();
+            }
+            
+            // Bars
+            for (let i = 0; i < bins.length; i++) {
+                const x = padding + (i / bins.length) * chartWidth + (chartWidth / bins.length - barWidth) / 2;
+                const barHeight = (bins[i].count / 40) * chartHeight;
+                
+                forestCtx.fillStyle = '#2c5f3f';
+                forestCtx.fillRect(x, padding + chartHeight - barHeight, barWidth, barHeight);
+                
+                // Count label
+                forestCtx.fillStyle = '#333';
+                forestCtx.font = 'bold 11px sans-serif';
+                forestCtx.textAlign = 'center';
+                forestCtx.fillText(bins[i].count + '%', x + barWidth / 2, padding + chartHeight - barHeight - 5);
+                
+                // X-axis label
+                forestCtx.font = '10px sans-serif';
+                forestCtx.fillText(bins[i].range, x + barWidth / 2, height - padding + 20);
+            }
+            
+            // Labels
+            forestCtx.fillStyle = '#666';
+            forestCtx.font = '11px sans-serif';
+            forestCtx.textAlign = 'center';
+            forestCtx.fillText('Crown Cover Distribution', width / 2, padding - 10);
+        }
+
+        // Vegetation Trend Chart
+        const vegTrendCtx = initChart('vegTrendChart');
+        function drawVegTrend() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const liveVeg = years.map((y, i) => 65 + Math.sin(i/3) * 5 + (Math.random() - 0.5) * 3);
+            const lgaAvg = years.map(() => 62 + (Math.random() - 0.5) * 2);
+            
+            const width = vegTrendCtx.canvas.width;
+            const height = vegTrendCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            vegTrendCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            vegTrendCtx.fillStyle = '#fafafa';
+            vegTrendCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            vegTrendCtx.strokeStyle = '#e0e0e0';
+            vegTrendCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                vegTrendCtx.beginPath();
+                vegTrendCtx.moveTo(padding, y);
+                vegTrendCtx.lineTo(width - padding, y);
+                vegTrendCtx.stroke();
+                
+                const value = 80 - (i * 10);
+                vegTrendCtx.fillStyle = '#666';
+                vegTrendCtx.font = '10px sans-serif';
+                vegTrendCtx.textAlign = 'right';
+                vegTrendCtx.fillText(value + '%', padding - 5, y + 3);
+            }
+            
+            // Lines
+            function drawLine(data, color, width, label) {
+                vegTrendCtx.strokeStyle = color;
+                vegTrendCtx.lineWidth = width;
+                vegTrendCtx.beginPath();
+                for (let i = 0; i < years.length; i++) {
+                    const x = padding + (i / (years.length - 1)) * chartWidth;
+                    const y = padding + chartHeight - ((data[i] - 30) / 50) * chartHeight;
+                    if (i === 0) vegTrendCtx.moveTo(x, y);
+                    else vegTrendCtx.lineTo(x, y);
+                }
+                vegTrendCtx.stroke();
+            }
+            
+            drawLine(lgaAvg, '#999', 2);
+            drawLine(liveVeg, '#2c5f3f', 3);
+            
+            // X-axis labels
+            vegTrendCtx.fillStyle = '#666';
+            vegTrendCtx.textAlign = 'center';
+            for (let i = 0; i < years.length; i += 5) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                vegTrendCtx.fillText(years[i], x, height - padding + 20);
+            }
+            
+            // Legend
+            vegTrendCtx.textAlign = 'left';
+            vegTrendCtx.strokeStyle = '#2c5f3f';
+            vegTrendCtx.lineWidth = 3;
+            vegTrendCtx.beginPath();
+            vegTrendCtx.moveTo(padding + 10, padding + 20);
+            vegTrendCtx.lineTo(padding + 40, padding + 20);
+            vegTrendCtx.stroke();
+            vegTrendCtx.fillText('Property', padding + 45, padding + 24);
+            
+            vegTrendCtx.strokeStyle = '#999';
+            vegTrendCtx.lineWidth = 2;
+            vegTrendCtx.beginPath();
+            vegTrendCtx.moveTo(padding + 10, padding + 40);
+            vegTrendCtx.lineTo(padding + 40, padding + 40);
+            vegTrendCtx.stroke();
+            vegTrendCtx.fillText('LGA Average', padding + 45, padding + 44);
+            
+            vegTrendCtx.font = '11px sans-serif';
+            vegTrendCtx.textAlign = 'center';
+            vegTrendCtx.fillText('Time Series', width / 2, padding - 10);
+        }
+
+        // Seasonal Pattern
+        const seasonalCtx = initChart('vegSeasonalChart');
+        function drawSeasonal() {
+            const months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+            const medians = [62, 57, 56, 60, 65, 68, 70, 72, 75, 78, 76, 68];
+            
+            const width = seasonalCtx.canvas.width;
+            const height = seasonalCtx.canvas.height;
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            seasonalCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            seasonalCtx.fillStyle = '#fafafa';
+            seasonalCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            seasonalCtx.strokeStyle = '#e0e0e0';
+            seasonalCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                seasonalCtx.beginPath();
+                seasonalCtx.moveTo(padding, y);
+                seasonalCtx.lineTo(width - padding, y);
+                seasonalCtx.stroke();
+            }
+            
+            // Area fill
+            seasonalCtx.fillStyle = 'rgba(44, 95, 63, 0.2)';
+            seasonalCtx.beginPath();
+            seasonalCtx.moveTo(padding, padding + chartHeight);
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                const y = padding + chartHeight - ((medians[i] - 40) / 40) * chartHeight;
+                seasonalCtx.lineTo(x, y);
+            }
+            seasonalCtx.lineTo(width - padding, padding + chartHeight);
+            seasonalCtx.closePath();
+            seasonalCtx.fill();
+            
+            // Line
+            seasonalCtx.strokeStyle = '#2c5f3f';
+            seasonalCtx.lineWidth = 2;
+            seasonalCtx.beginPath();
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                const y = padding + chartHeight - ((medians[i] - 40) / 40) * chartHeight;
+                if (i === 0) seasonalCtx.moveTo(x, y);
+                else seasonalCtx.lineTo(x, y);
+            }
+            seasonalCtx.stroke();
+            
+            // X-axis labels
+            seasonalCtx.fillStyle = '#666';
+            seasonalCtx.font = '10px sans-serif';
+            seasonalCtx.textAlign = 'center';
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                seasonalCtx.fillText(months[i], x, height - padding + 18);
+            }
+            
+            seasonalCtx.font = '11px sans-serif';
+            seasonalCtx.fillText('Seasonal Pattern', width / 2, padding - 10);
+        }
+
+        // Regional Comparison
+        const regionalCtx = initChart('regionalComparisonChart');
+        function drawRegionalComparison() {
+            const metrics = [
+                { label: 'Live Vegetation', property: 68, lga: 62, color: '#2c5f3f' },
+                { label: 'Litter Cover', property: 24, lga: 26, color: '#8b6f47' },
+                { label: 'Bare Soil', property: 8, lga: 11, color: '#dc3545' }
+            ];
+            
+            const width = regionalCtx.canvas.width;
+            const height = regionalCtx.canvas.height;
+            const padding = 60;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barHeight = chartHeight / (metrics.length * 2.5);
+            
+            regionalCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            regionalCtx.fillStyle = '#fafafa';
+            regionalCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Bars
+            for (let i = 0; i < metrics.length; i++) {
+                const y = padding + (i * 2.5) * barHeight + barHeight * 0.5;
+                
+                // LGA bar (lighter)
+                const lgaWidth = (metrics[i].lga / 80) * chartWidth;
+                regionalCtx.fillStyle = metrics[i].color + '60';
+                regionalCtx.fillRect(padding, y, lgaWidth, barHeight * 0.7);
+                regionalCtx.fillStyle = '#666';
+                regionalCtx.font = '10px sans-serif';
+                regionalCtx.textAlign = 'left';
+                regionalCtx.fillText(metrics[i].lga + '%', padding + lgaWidth + 5, y + barHeight * 0.5);
+                
+                // Property bar (darker)
+                const propWidth = (metrics[i].property / 80) * chartWidth;
+                regionalCtx.fillStyle = metrics[i].color;
+                regionalCtx.fillRect(padding, y + barHeight, propWidth, barHeight * 0.7);
+                regionalCtx.fillStyle = '#333';
+                regionalCtx.font = 'bold 10px sans-serif';
+                regionalCtx.fillText(metrics[i].property + '%', padding + propWidth + 5, y + barHeight * 1.5);
+                
+                // Label
+                regionalCtx.fillStyle = '#333';
+                regionalCtx.font = '11px sans-serif';
+                regionalCtx.textAlign = 'right';
+                regionalCtx.fillText(metrics[i].label, padding - 10, y + barHeight);
+            }
+            
+            // Legend
+            regionalCtx.fillStyle = '#999';
+            regionalCtx.fillRect(width - padding - 100, padding + 10, 15, 10);
+            regionalCtx.fillStyle = '#666';
+            regionalCtx.font = '10px sans-serif';
+            regionalCtx.textAlign = 'left';
+            regionalCtx.fillText('LGA Average', width - padding - 80, padding + 18);
+            
+            regionalCtx.fillStyle = '#2c5f3f';
+            regionalCtx.fillRect(width - padding - 100, padding + 30, 15, 10);
+            regionalCtx.fillStyle = '#666';
+            regionalCtx.fillText('This Property', width - padding - 80, padding + 38);
+        }
+
+        // Draw all
+        drawCoverMap();
+        drawChangeMap();
+        drawForestStructure();
+        drawVegTrend();
+        drawSeasonal();
+        drawRegionalComparison();
+
+        // Utilities
+        function downloadData(type) {
+            alert(`Downloading ${type} data...\n\nWould include:\n• Spatial data (GeoTIFF)\n• Time series (CSV)\n• Summary statistics`);
+        }
+
+
+        function showUpgrade() {
+            alert('Upgrade to Professional package for detailed biodiversity analysis, carbon sequestration potential, and conservation opportunities.');
+        }
+
+        window.addEventListener('resize', () => {
+            drawCoverMap();
+            drawChangeMap();
+            drawForestStructure();
+            drawVegTrend();
+            drawSeasonal();
+            drawRegionalComparison();
+        });
+    </script>
+</body>
+</html>

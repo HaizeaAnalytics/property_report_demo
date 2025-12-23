@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Report Dashboard - Carbon Potential</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7f9;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .property-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .property-title h1 {
+            font-size: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .property-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-header {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-header:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary:hover {
+            background: #3d7a52;
+        }
+        
+        /* Main layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+        
+        /* Sidebar navigation */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            padding: 1rem 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c5f3f;
+        }
+        
+        .nav-item.active {
+            background: #f0f7f0;
+            color: #2c5f3f;
+            font-weight: 600;
+            border-left: 3px solid #2c5f3f;
+            padding-left: calc(1.5rem - 3px);
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .section-header {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: #666;
+            font-size: 1.05rem;
+        }
+        
+        .premium-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Grid layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Card container */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-card {
+            padding: 0.25rem 0.6rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-card:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        /* Carbon status banner */
+        .carbon-status {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 2px solid #4caf50;
+        }
+        
+        .status-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-label {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: #2c5f3f;
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2c5f3f;
+        }
+        
+        .stat-value.negative {
+            color: #dc3545;
+        }
+        
+        .stat-value.positive {
+            color: #28a745;
+        }
+        
+        .stat-context {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+        
+        /* Map container */
+        .map-container {
+            width: 100%;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 0.85rem;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c5f3f;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        /* Chart container */
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+        
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Scenario cards */
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .scenario-card {
+            padding: 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .scenario-card h4 {
+            color: #2c5f3f;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .scenario-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .scenario-metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #2c5f3f;
+            font-size: 1rem;
+        }
+        
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        .data-table thead {
+            background: #f8f9fa;
+        }
+        
+        .data-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Alert boxes */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+            color: #155724;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-left: 3px solid #dc3545;
+            color: #721c24;
+        }
+        
+        /* Summary box */
+        .summary-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .summary-box strong {
+            color: #2c5f3f;
+        }
+        
+        /* Disclaimer box */
+        .disclaimer-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .disclaimer-box h4 {
+            color: #856404;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .disclaimer-box ul {
+            margin: 0.5rem 0 0 1.5rem;
+            line-height: 1.8;
+            color: #856404;
+        }
+        
+        /* Context box */
+        .context-box {
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .scenario-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="property-title">
+            <h1>Smith Farm Property Report</h1>
+            <div class="property-meta">
+                <div>📍 Mudgee, NSW</div>
+                <div>📏 275.6 hectares</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header">🔗 Share</button>
+            <button class="btn-header">📊 Export Data</button>
+            <button class="btn-header primary">📄 Download PDF</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Report Sections</div>
+                <a class="nav-item" href="dashboard_overview.html" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    Overview
+                </a>
+                <a class="nav-item" href="dashboard_terrain_soil.html" class="nav-link">
+                    <span class="nav-icon">⛰️</span>
+                    Terrain & Soil
+                </a>
+                <a class="nav-item" href="dashboard_climate.html" class="nav-link">
+                    <span class="nav-icon">🌦️</span>
+                    Climate
+                </a>
+                <a class="nav-item" href="dashboard_water.html" class="nav-link">
+                    <span class="nav-icon">💧</span>
+                    Water
+                </a>
+                <a class="nav-item" href="dashboard_vegetation.html" class="nav-link">
+                    <span class="nav-icon">🌿</span>
+                    Vegetation
+                </a>
+                <a class="nav-item" href="dashboard_hazards.html" class="nav-link">
+                    <span class="nav-icon">⚠️</span>
+                    Natural Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Premium Sections</div>
+                <a class="nav-item" href="dashboard_production.html" class="nav-link">
+                    <span class="nav-icon">🌾</span>
+                    Primary Production
+                </a>
+                <a class="nav-item active">
+                    <span class="nav-icon">🌱</span>
+                    Carbon Potential
+                </a>
+                <a class="nav-item" href="dashboard_nature.html" class="nav-link">
+                    <span class="nav-icon">🦘</span>
+                    Nature & Biodiversity
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="section-header">
+                <h2>Carbon Potential <span class="premium-badge">Premium</span></h2>
+                <p>Carbon sequestration assessment and project feasibility</p>
+            </div>
+
+            <!-- Current Carbon Balance -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Current Carbon Balance</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('carbon-balance')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="carbon-status">
+                    <div class="status-icon">🌳</div>
+                    <div class="status-value">+420 t CO₂-e/year</div>
+                    <div class="status-label">Net Annual Sequestration</div>
+                    <div class="status-badge">CARBON SINK</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Forest (116 ha)</div>
+                        <div class="stat-value positive">+650</div>
+                        <div class="stat-context">t CO₂-e/year</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Woodland (70 ha)</div>
+                        <div class="stat-value positive">+180</div>
+                        <div class="stat-context">t CO₂-e/year</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Pasture (104 ha)</div>
+                        <div class="stat-value negative">-310</div>
+                        <div class="stat-context">t CO₂-e/year</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Grassland (50 ha)</div>
+                        <div class="stat-value negative">-100</div>
+                        <div class="stat-context">t CO₂-e/year</div>
+                    </div>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Current status:</strong> Property is currently a modest net carbon sink, sequestering approximately 420 tonnes CO₂-e annually. 
+                    Existing forest and woodland areas are actively sequestering carbon, while cleared pasture and grassland areas are net emitters 
+                    (typical for agricultural land due to grazing, soil disturbance, and decomposition).
+                </div>
+                
+                <div class="context-box">
+                    <strong>Regional comparison:</strong> Property forest areas sequester at 5.6 t CO₂-e/ha/year, which is 17% above 
+                    regional forest average (4.8 t CO₂-e/ha/year). This indicates healthy, actively growing forest with good carbon uptake rates.
+                </div>
+            </div>
+
+            <!-- Land Availability -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Land Availability for Carbon Projects</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('land-availability')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="map-container">
+                    <canvas id="carbonLandMap"></canvas>
+                    <div class="map-legend">
+                        <div class="legend-title">Land Classification</div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #a5d6a7;"></div>
+                            <span>Available for planting</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #fff176;"></div>
+                            <span>Potential HIR</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #1b5e20;"></div>
+                            <span>Existing forest</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #81c784;"></div>
+                            <span>Keep for production</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #9e9e9e;"></div>
+                            <span>Unsuitable</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Land Classification</th>
+                            <th>Area (ha)</th>
+                            <th>% of Property</th>
+                            <th>Carbon Project Suitability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Available for Environmental Plantings</strong></td>
+                            <td>85</td>
+                            <td>31%</td>
+                            <td>Suitable - low productivity areas, margins, gullies</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Potential for HIR</strong></td>
+                            <td>25</td>
+                            <td>9%</td>
+                            <td>Potentially suitable - sparse woodland, currently grazed</td>
+                        </tr>
+                        <tr>
+                            <td>Existing Forest</td>
+                            <td>116</td>
+                            <td>42%</td>
+                            <td>Not eligible - already forested</td>
+                        </tr>
+                        <tr>
+                            <td>Keep for Production</td>
+                            <td>44</td>
+                            <td>16%</td>
+                            <td>Not recommended - high productivity pasture</td>
+                        </tr>
+                        <tr>
+                            <td>Unsuitable</td>
+                            <td>6</td>
+                            <td>2%</td>
+                            <td>Too steep, rocky, or other constraints</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="alert alert-info">
+                    <strong>Land availability summary:</strong> Property has approximately 85 hectares suitable for environmental plantings 
+                    with minimal impact on grazing operations. Additional 25 hectares may be suitable for Human Induced Regeneration (HIR) 
+                    if vegetation spelling/protection is implemented. High-productivity improved pasture areas (44 ha) should be retained for agricultural production.
+                </div>
+            </div>
+
+            <!-- Sequestration Scenarios -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Carbon Sequestration Scenarios</h3>
+                </div>
+                
+                <div class="scenario-grid">
+                    <div class="scenario-card" style="border-color: #4caf50;">
+                        <h4>Scenario A: Environmental Plantings</h4>
+                        <div class="scenario-metric">
+                            <span class="metric-label">Area</span>
+                            <span class="metric-value">85 hectares</span>
+                        </div>
+                        <div class="scenario-metric">
+                            <span class="metric-label">Annual sequestration (once established)</span>
+                            <span class="metric-value">3-8 t CO₂-e/ha/year</span>
+                        </div>
+                        <div class="scenario-metric">
+                            <span class="metric-label">25-year total potential</span>
+                            <span class="metric-value">~12,000 t CO₂-e</span>
+                        </div>
+                        <div class="scenario-metric">
+                            <span class="metric-label">Peak sequestration period</span>
+                            <span class="metric-value">Years 10-20</span>
+                        </div>
+                        <div class="scenario-metric">
+                            <span class="metric-label">Typical establishment cost</span>
+                            <span class="metric-value">$3,500-5,000/ha</span>
+                        </div>
+                    </div>
+
+                    <div class="scenario-card" style="border-color: #ffc107;">
+                        <h4>Scenario B: Human Induced Regeneration</h4>
+                        <div class="scenario-metric">
+                            <span class="metric-label">Area</span>
+                            <span class="metric-value">25 hectares</span>
+                        </div>
+                        <div class="scenario-metric">
+                            <span class="metric-label">Annual sequestration (once established)</span>
+                            <span class="metric-value">2-4 t CO₂-e/ha/year</span>
+                        </div>
+                        <div class="scenario-metric">
+                            <span class="metric-label">25-year total potential</span>
+                            <span class="metric-value">~2,000 t CO₂-e</span>
+                        </div>
+                        <div class="scenario-metric">
+                            <span class="metric-label">Peak sequestration period</span>
+                            <span class="metric-value">Years 15-25</span>
+                        </div>
+                        <div class="scenario-metric">
+                            <span class="metric-label">Typical establishment cost</span>
+                            <span class="metric-value">$500-1,500/ha</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scenario-card" style="border-color: #17a2b8; margin-top: 1.5rem;">
+                    <h4>Scenario C: Mixed Approach (Recommended)</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <div class="scenario-metric">
+                                <span class="metric-label">Plantings</span>
+                                <span class="metric-value">40 hectares</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-label">HIR</span>
+                                <span class="metric-value">25 hectares</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-label">Maintain grazing</span>
+                                <span class="metric-value">129 hectares</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="scenario-metric">
+                                <span class="metric-label">Combined 25-year potential</span>
+                                <span class="metric-value">~7,500 t CO₂-e</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-label">Est. establishment cost</span>
+                                <span class="metric-value">$155,000-$215,000</span>
+                            </div>
+                            <div class="scenario-metric">
+                                <span class="metric-label">Benefit</span>
+                                <span class="metric-value">Balanced approach</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-box">
+                    <strong>Scenario comparison:</strong> Environmental plantings offer highest sequestration rates but require greater upfront investment. 
+                    HIR has lower sequestration but minimal establishment costs (primarily fencing). Mixed approach balances carbon potential with 
+                    maintaining productive agricultural land. All scenarios assume 25-year project duration (minimum ERF permanence requirement).
+                </div>
+            </div>
+
+            <!-- Growth Projections -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Sequestration Projections (FullCAM Model)</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('projections')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="sequestrationChart"></canvas>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Growth trajectory:</strong> Environmental plantings show establishment phase (Years 1-5) with low sequestration as seedlings establish. 
+                    Rapid growth phase (Years 6-18) with peak sequestration rates of 7-9 t CO₂-e/ha/year as canopy closes. 
+                    Mature phase (Years 19+) with declining sequestration as growth slows. HIR follows similar pattern but with lower rates and delayed onset. 
+                    Projections based on FullCAM modeling for local soil and climate conditions.
+                </div>
+            </div>
+
+            <!-- Market Context -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Carbon Market Context (Educational)</h3>
+                </div>
+                
+                <div class="content-grid">
+                    <div>
+                        <h4 style="color: #2c5f3f; margin-bottom: 1rem; font-size: 1rem;">Current ACCU Prices</h4>
+                        <div class="chart-container" style="height: 200px;">
+                            <canvas id="accuPriceChart"></canvas>
+                        </div>
+                        <div class="context-box">
+                            <strong>Price context:</strong> Australian Carbon Credit Units (ACCUs) currently trade around $30-40 per tonne CO₂-e. 
+                            Prices are volatile and influenced by government policy, market demand, and international carbon prices. 
+                            Historical range: $15-55/tonne over past 5 years.
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="color: #2c5f3f; margin-bottom: 1rem; font-size: 1rem;">Typical Project Costs</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Cost Component</th>
+                                    <th>Typical Range</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Seedlings & planting</td>
+                                    <td>$2,500-3,500/ha</td>
+                                </tr>
+                                <tr>
+                                    <td>Fencing</td>
+                                    <td>$8,000-15,000/km</td>
+                                </tr>
+                                <tr>
+                                    <td>Site preparation</td>
+                                    <td>$500-1,000/ha</td>
+                                </tr>
+                                <tr>
+                                    <td>Weed control (first 3yr)</td>
+                                    <td>$300-600/ha/year</td>
+                                </tr>
+                                <tr>
+                                    <td>Project registration</td>
+                                    <td>$5,000-15,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Annual monitoring/reporting</td>
+                                    <td>$2,000-5,000/year</td>
+                                </tr>
+                                <tr>
+                                    <td>Project management (optional)</td>
+                                    <td>10-30% of ACCUs</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="context-box">
+                            <strong>Cost notes:</strong> Costs vary significantly based on site conditions, scale, and project management approach. 
+                            Aggregators can reduce per-project costs by pooling multiple landholders.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 1.5rem;">
+                    <strong>Carbon credit timing:</strong> First ACCUs typically available 5-7 years after project start (requires measurable biomass growth). 
+                    Credits issued retrospectively based on actual sequestration measured through FullCAM modeling at each reporting period (typically 5-yearly). 
+                    Early-stage funding may be available through carbon buyers willing to purchase future credits.
+                </div>
+            </div>
+
+            <!-- Project Eligibility -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">ERF Eligibility Assessment</h3>
+                </div>
+                
+                <div style="display: grid; gap: 1rem;">
+                    <div class="alert alert-success">
+                        <strong>✓ Environmental Plantings - Likely Eligible</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>85 hectares of cleared land identified</li>
+                            <li>Land has not been forested in recent history (check satellite records)</li>
+                            <li>Suitable for native tree establishment based on soil and climate</li>
+                            <li>Method: "Plantation Forestry" or "Environmental Plantings" under ERF</li>
+                            <li><strong>Requires:</strong> Confirmation land was cleared before 1990 (or meets other eligibility criteria)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>⚠ Human Induced Regeneration - Assessment Required</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>25 hectares of sparse woodland identified as potential HIR area</li>
+                            <li>Method: "HIR" under ERF requires proof regeneration is "human-induced" (e.g., grazing exclusion)</li>
+                            <li>Must demonstrate vegetation would not regenerate under business-as-usual management</li>
+                            <li>More complex eligibility requirements than environmental plantings</li>
+                            <li><strong>Requires:</strong> Detailed assessment by ERF specialist to confirm eligibility</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>✗ Existing Forest - Not Eligible</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>116 hectares of existing forest already sequestering carbon</li>
+                            <li>Not eligible under current ERF methods (no "additionality")</li>
+                            <li>May be eligible for "Avoided Deforestation" if clearing is legally permitted but foregone (rare circumstances)</li>
+                            <li>Could potentially be included in future biodiversity conservation schemes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 style="color: #2c5f3f; margin: 2rem 0 1rem; font-size: 1rem;">Key ERF Requirements</h4>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Requirement</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Permanence Obligation</strong></td>
+                            <td>25 years (with 5% discount on ACCUs) or 100 years (full ACCUs)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Additionality</strong></td>
+                            <td>Must prove sequestration would not occur under business-as-usual</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Newness</strong></td>
+                            <td>Activity must have started after 1 July 2010 (ERF commencement)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monitoring & Reporting</strong></td>
+                            <td>Regular reports to Clean Energy Regulator (typically 5-yearly)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Verification</strong></td>
+                            <td>Independent audit required at specified intervals</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Risk of Reversal</strong></td>
+                            <td>Buffer zone applies - if sequestered carbon released (fire, drought), may need to return ACCUs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Important Disclaimer -->
+            <div class="disclaimer-box">
+                <h4>⚠️ Important Notice - Not Financial or Investment Advice</h4>
+                <p style="margin-bottom: 0.75rem; line-height: 1.8;">
+                    This assessment provides <strong>biophysical carbon sequestration potential</strong> based on FullCAM modeling, land suitability analysis, 
+                    and current carbon balance estimates. It does <strong>not constitute financial, investment, or project advice</strong>.
+                </p>
+                <p style="margin-bottom: 0.75rem; font-weight: 600;">Carbon credit prices are volatile and future prices are uncertain.</p>
+                <p style="margin-bottom: 0.75rem;">Project returns depend on numerous factors including:</p>
+                <ul style="margin-bottom: 0.75rem;">
+                    <li>Establishment and ongoing costs (site-specific)</li>
+                    <li>Carbon price at time of ACCU issuance</li>
+                    <li>Project management fees and approach</li>
+                    <li>Opportunity costs (foregone agricultural income)</li>
+                    <li>Regulatory changes and policy settings</li>
+                    <li>Actual sequestration rates (may differ from projections)</li>
+                    <li>Risk of reversal (fire, drought, disease)</li>
+                </ul>
+                <p style="font-weight: 600; margin-bottom: 0.5rem;">Always consult qualified professionals:</p>
+                <ul>
+                    <li><strong>ERF-registered carbon project specialist</strong> for detailed feasibility assessment and eligibility confirmation</li>
+                    <li><strong>Financial advisor</strong> for investment analysis and financial projections</li>
+                    <li><strong>Legal advisor</strong> for contract review and permanence obligations</li>
+                    <li><strong>Tax advisor</strong> for tax implications of carbon income</li>
+                </ul>
+                <p style="margin-top: 0.75rem; font-style: italic;">
+                    Carbon projects involve long-term commitments (25-100 years) that bind current and future landowners. 
+                    Carefully consider all implications before proceeding.
+                </p>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recommended Next Steps</h3>
+                </div>
+                
+                <div style="line-height: 1.8;">
+                    <p style="margin-bottom: 1rem;">
+                        If interested in pursuing carbon projects on this property, the recommended approach is:
+                    </p>
+                    
+                    <ol style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>Desktop Assessment Complete</strong> ✓
+                            <br>This report provides initial sequestration potential and land availability analysis.
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>Engage ERF Specialist ($5,000-15,000)</strong>
+                            <br>Detailed feasibility study including eligibility confirmation, detailed financial modeling, 
+                            and project design. Essential before committing resources.
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>Develop Project Plan</strong>
+                            <br>Working with specialist, develop implementation plan including species selection, 
+                            planting layout, fencing requirements, and timeline.
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>Secure Funding/Contracts</strong>
+                            <br>Explore options: self-fund, carbon buyer pre-purchase agreements, aggregator arrangements, 
+                            or government grants where available.
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>Register Project</strong>
+                            <br>Submit application to Clean Energy Regulator through approved carbon service provider.
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <strong>Implement & Monitor</strong>
+                            <br>Carry out plantings/fencing, maintain site, monitor growth, and report according to ERF requirements.
+                        </li>
+                    </ol>
+
+                    <div class="alert alert-info">
+                        <strong>Carbon project aggregators:</strong> If project area is relatively small (<100 ha), consider joining 
+                        an aggregator who pools multiple landholders to reduce per-project costs. Aggregators typically take 10-30% 
+                        of ACCUs as their fee but handle all registration, monitoring, and reporting requirements.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data sources footer -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666;">
+                <strong>Data Sources & Methodology:</strong> Net Ecosystem Exchange (NEE) estimates from TERN AusEnv (2000-2024), 
+                FullCAM (Full Carbon Accounting Model) projections for plantation growth and sequestration rates, 
+                current forest biomass from Geoscience Australia vegetation structure mapping, 
+                regional forest NEE averages for comparative analysis. 
+                ACCU price data from Australian Carbon Exchange. Eligibility assessment based on current ERF methodologies. 
+                All sequestration projections are estimates based on modeling and assume favorable establishment and growth conditions.
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize charts
+        function initChart(id) {
+            const canvas = document.getElementById(id);
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            return canvas.getContext('2d');
+        }
+
+        // Carbon Land Map
+        const carbonMapCtx = initChart('carbonLandMap');
+        function drawCarbonLandMap() {
+            const width = carbonMapCtx.canvas.width;
+            const height = carbonMapCtx.canvas.height;
+            
+            carbonMapCtx.clearRect(0, 0, width, height);
+            
+            const gridSize = 15;
+            for (let y = 0; y < height; y += gridSize) {
+                for (let x = 0; x < width; x += gridSize) {
+                    let color;
+                    const rand = Math.random();
+                    const xRatio = x / width;
+                    const yRatio = y / height;
+                    
+                    // Existing forest (left side, scattered)
+                    if (xRatio < 0.4 && rand < 0.7) {
+                        color = '#1b5e20';
+                    }
+                    // Available for planting (low productivity areas)
+                    else if ((xRatio > 0.35 && xRatio < 0.5 && yRatio < 0.3) || 
+                             (xRatio > 0.2 && xRatio < 0.35 && yRatio > 0.6) ||
+                             (xRatio > 0.7 && yRatio > 0.7)) {
+                        color = '#a5d6a7';
+                    }
+                    // Potential HIR (sparse woodland)
+                    else if (xRatio > 0.4 && xRatio < 0.55 && yRatio > 0.4 && yRatio < 0.6 && rand < 0.4) {
+                        color = '#fff176';
+                    }
+                    // Keep for production (right side, middle)
+                    else if (xRatio > 0.6 && yRatio > 0.3 && yRatio < 0.7) {
+                        color = '#81c784';
+                    }
+                    // Unsuitable
+                    else {
+                        color = '#9e9e9e';
+                    }
+                    
+                    carbonMapCtx.fillStyle = color;
+                    carbonMapCtx.fillRect(x, y, gridSize, gridSize);
+                }
+            }
+            
+            // Property boundary
+            carbonMapCtx.strokeStyle = '#333';
+            carbonMapCtx.lineWidth = 3;
+            carbonMapCtx.strokeRect(20, 20, width - 40, height - 40);
+        }
+
+        // Sequestration Projection Chart
+        const seqChartCtx = initChart('sequestrationChart');
+        function drawSequestrationChart() {
+            const years = Array.from({length: 30}, (_, i) => i + 1);
+            const plantings = years.map(y => {
+                if (y <= 5) return 0.5 + y * 0.4;
+                if (y <= 18) return 3 + (y - 5) * 0.4;
+                return 8.2 - (y - 18) * 0.3;
+            });
+            const hir = years.map(y => {
+                if (y <= 7) return 0.2 + y * 0.15;
+                if (y <= 20) return 1.2 + (y - 7) * 0.15;
+                return 3.15 - (y - 20) * 0.05;
+            });
+            
+            const width = seqChartCtx.canvas.width;
+            const height = seqChartCtx.canvas.height;
+            const padding = 60;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            seqChartCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            seqChartCtx.fillStyle = '#fafafa';
+            seqChartCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            seqChartCtx.strokeStyle = '#e0e0e0';
+            seqChartCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                seqChartCtx.beginPath();
+                seqChartCtx.moveTo(padding, y);
+                seqChartCtx.lineTo(width - padding, y);
+                seqChartCtx.stroke();
+                
+                const value = 10 - (i * 2);
+                seqChartCtx.fillStyle = '#666';
+                seqChartCtx.font = '10px sans-serif';
+                seqChartCtx.textAlign = 'right';
+                seqChartCtx.fillText(value, padding - 5, y + 3);
+            }
+            
+            // Area fills
+            seqChartCtx.fillStyle = 'rgba(76, 175, 80, 0.2)';
+            seqChartCtx.beginPath();
+            seqChartCtx.moveTo(padding, padding + chartHeight);
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (plantings[i] / 10) * chartHeight;
+                seqChartCtx.lineTo(x, y);
+            }
+            seqChartCtx.lineTo(width - padding, padding + chartHeight);
+            seqChartCtx.closePath();
+            seqChartCtx.fill();
+            
+            seqChartCtx.fillStyle = 'rgba(255, 193, 7, 0.2)';
+            seqChartCtx.beginPath();
+            seqChartCtx.moveTo(padding, padding + chartHeight);
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (hir[i] / 10) * chartHeight;
+                seqChartCtx.lineTo(x, y);
+            }
+            seqChartCtx.lineTo(width - padding, padding + chartHeight);
+            seqChartCtx.closePath();
+            seqChartCtx.fill();
+            
+            // Lines
+            seqChartCtx.strokeStyle = '#4caf50';
+            seqChartCtx.lineWidth = 3;
+            seqChartCtx.beginPath();
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (plantings[i] / 10) * chartHeight;
+                if (i === 0) seqChartCtx.moveTo(x, y);
+                else seqChartCtx.lineTo(x, y);
+            }
+            seqChartCtx.stroke();
+            
+            seqChartCtx.strokeStyle = '#ffc107';
+            seqChartCtx.lineWidth = 2;
+            seqChartCtx.beginPath();
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (hir[i] / 10) * chartHeight;
+                if (i === 0) seqChartCtx.moveTo(x, y);
+                else seqChartCtx.lineTo(x, y);
+            }
+            seqChartCtx.stroke();
+            
+            // X-axis
+            seqChartCtx.fillStyle = '#666';
+            seqChartCtx.textAlign = 'center';
+            for (let i = 0; i < years.length; i += 5) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                seqChartCtx.fillText('Year ' + years[i], x, height - padding + 20);
+            }
+            
+            // Y-axis label
+            seqChartCtx.save();
+            seqChartCtx.translate(15, height / 2);
+            seqChartCtx.rotate(-Math.PI / 2);
+            seqChartCtx.textAlign = 'center';
+            seqChartCtx.font = '11px sans-serif';
+            seqChartCtx.fillText('Sequestration Rate (t CO₂-e/ha/year)', 0, 0);
+            seqChartCtx.restore();
+            
+            // Legend
+            seqChartCtx.strokeStyle = '#4caf50';
+            seqChartCtx.lineWidth = 3;
+            seqChartCtx.beginPath();
+            seqChartCtx.moveTo(width - 220, padding + 20);
+            seqChartCtx.lineTo(width - 190, padding + 20);
+            seqChartCtx.stroke();
+            seqChartCtx.fillStyle = '#666';
+            seqChartCtx.font = '10px sans-serif';
+            seqChartCtx.textAlign = 'left';
+            seqChartCtx.fillText('Environmental Plantings', width - 185, padding + 24);
+            
+            seqChartCtx.strokeStyle = '#ffc107';
+            seqChartCtx.lineWidth = 2;
+            seqChartCtx.beginPath();
+            seqChartCtx.moveTo(width - 220, padding + 40);
+            seqChartCtx.lineTo(width - 190, padding + 40);
+            seqChartCtx.stroke();
+            seqChartCtx.fillText('HIR', width - 185, padding + 44);
+        }
+
+        // ACCU Price Chart
+        const accuPriceCtx = initChart('accuPriceChart');
+        function drawACCUPriceChart() {
+            const years = ['2020', '2021', '2022', '2023', '2024'];
+            const prices = [18, 32, 45, 28, 35];
+            
+            const width = accuPriceCtx.canvas.width;
+            const height = accuPriceCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            accuPriceCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            accuPriceCtx.fillStyle = '#fafafa';
+            accuPriceCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            accuPriceCtx.strokeStyle = '#e0e0e0';
+            accuPriceCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                accuPriceCtx.beginPath();
+                accuPriceCtx.moveTo(padding, y);
+                accuPriceCtx.lineTo(width - padding, y);
+                accuPriceCtx.stroke();
+            }
+            
+            // Line
+            accuPriceCtx.strokeStyle = '#2c5f3f';
+            accuPriceCtx.lineWidth = 2;
+            accuPriceCtx.beginPath();
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (prices[i] / 60) * chartHeight;
+                if (i === 0) accuPriceCtx.moveTo(x, y);
+                else accuPriceCtx.lineTo(x, y);
+            }
+            accuPriceCtx.stroke();
+            
+            // Points
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (prices[i] / 60) * chartHeight;
+                
+                accuPriceCtx.fillStyle = '#2c5f3f';
+                accuPriceCtx.beginPath();
+                accuPriceCtx.arc(x, y, 4, 0, Math.PI * 2);
+                accuPriceCtx.fill();
+                
+                // Price label
+                accuPriceCtx.fillStyle = '#666';
+                accuPriceCtx.font = '10px sans-serif';
+                accuPriceCtx.textAlign = 'center';
+                accuPriceCtx.fillText('$' + prices[i], x, y - 10);
+            }
+            
+            // X-axis
+            accuPriceCtx.fillStyle = '#666';
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                accuPriceCtx.fillText(years[i], x, height - padding + 18);
+            }
+            
+            accuPriceCtx.textAlign = 'center';
+            accuPriceCtx.fillText('ACCU Price History ($/tonne)', width / 2, height - 10);
+        }
+
+        // Draw all
+        drawCarbonLandMap();
+        drawSequestrationChart();
+        drawACCUPriceChart();
+
+        // Utilities
+        function downloadData(type) {
+            alert(`Downloading ${type} data...\n\nWould include spatial data, sequestration projections, and project scenarios.`);
+        }
+
+
+        window.addEventListener('resize', () => {
+            drawCarbonLandMap();
+            drawSequestrationChart();
+            drawACCUPriceChart();
+        });
+    </script>
+</body>
+</html>

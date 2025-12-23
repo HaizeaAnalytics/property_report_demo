@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Report Dashboard - Primary Production</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7f9;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .property-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .property-title h1 {
+            font-size: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .property-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-header {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-header:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary:hover {
+            background: #3d7a52;
+        }
+        
+        /* Main layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+        
+        /* Sidebar navigation */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            padding: 1rem 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c5f3f;
+        }
+        
+        .nav-item.active {
+            background: #f0f7f0;
+            color: #2c5f3f;
+            font-weight: 600;
+            border-left: 3px solid #2c5f3f;
+            padding-left: calc(1.5rem - 3px);
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .section-header {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: #666;
+            font-size: 1.05rem;
+        }
+        
+        .premium-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Grid layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Card container */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-card {
+            padding: 0.25rem 0.6rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-card:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        /* Production rating */
+        .production-rating {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e9 100%);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .rating-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .rating-label {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .rating-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: #2c5f3f;
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2c5f3f;
+        }
+        
+        .stat-context {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+        
+        /* Comparison bars */
+        .comparison-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .comparison-label {
+            min-width: 150px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .comparison-bar {
+            flex: 1;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .comparison-fill {
+            height: 100%;
+            background: #2c5f3f;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: width 0.5s ease;
+        }
+        
+        .comparison-fill.highlight {
+            background: linear-gradient(90deg, #2c5f3f 0%, #3d7a52 100%);
+        }
+        
+        /* Map container */
+        .map-container {
+            width: 100%;
+            height: 350px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 0.85rem;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c5f3f;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        /* Chart container */
+        .chart-container {
+            width: 100%;
+            height: 280px;
+            position: relative;
+        }
+        
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Calendar grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .calendar-month {
+            padding: 0.75rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .calendar-month.surplus {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+        
+        .calendar-month.adequate {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+        }
+        
+        .calendar-month.marginal {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+        }
+        
+        .calendar-month.deficit {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+        
+        .calendar-month.low {
+            background: #e2e3e5;
+            border: 2px solid #6c757d;
+        }
+        
+        .month-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .month-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .month-status {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        .data-table thead {
+            background: #f8f9fa;
+        }
+        
+        .data-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .data-table tfoot {
+            font-weight: 600;
+            background: #f8f9fa;
+        }
+        
+        /* Alert boxes */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+            color: #155724;
+        }
+        
+        /* Summary box */
+        .summary-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .summary-box strong {
+            color: #2c5f3f;
+        }
+        
+        /* Zone cards */
+        .zone-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .zone-card {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+        }
+        
+        .zone-card h4 {
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .zone-card p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .zone-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="property-title">
+            <h1>Smith Farm Property Report</h1>
+            <div class="property-meta">
+                <div>📍 Mudgee, NSW</div>
+                <div>📏 275.6 hectares</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header">🔗 Share</button>
+            <button class="btn-header">📊 Export Data</button>
+            <button class="btn-header primary">📄 Download PDF</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Report Sections</div>
+                <a class="nav-item" href="dashboard_overview.html" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    Overview
+                </a>
+                <a class="nav-item" href="dashboard_terrain_soil.html" class="nav-link">
+                    <span class="nav-icon">⛰️</span>
+                    Terrain & Soil
+                </a>
+                <a class="nav-item" href="dashboard_climate.html" class="nav-link">
+                    <span class="nav-icon">🌦️</span>
+                    Climate
+                </a>
+                <a class="nav-item" href="dashboard_water.html" class="nav-link">
+                    <span class="nav-icon">💧</span>
+                    Water
+                </a>
+                <a class="nav-item" href="dashboard_vegetation.html" class="nav-link">
+                    <span class="nav-icon">🌿</span>
+                    Vegetation
+                </a>
+                <a class="nav-item" href="dashboard_hazards.html" class="nav-link">
+                    <span class="nav-icon">⚠️</span>
+                    Natural Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Premium Sections</div>
+                <a class="nav-item active">
+                    <span class="nav-icon">🌾</span>
+                    Primary Production
+                </a>
+                <a class="nav-item" onclick="showSection('solar')">
+                    <span class="nav-icon">☀️</span>
+                    Solar Energy
+                </a>
+                <a class="nav-item" href="dashboard_carbon.html" class="nav-link">
+                    <span class="nav-icon">🌱</span>
+                    Carbon Potential
+                </a>
+                <a class="nav-item" href="dashboard_nature.html" class="nav-link">
+                    <span class="nav-icon">🦘</span>
+                    Nature & Biodiversity
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="section-header">
+                <h2>Primary Production <span class="premium-badge">Premium</span></h2>
+                <p>Biomass production capacity and grazing land assessment</p>
+            </div>
+
+            <!-- Production Capacity Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Production Capacity</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('production')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="production-rating">
+                    <div class="rating-value">6.8 t DM/ha/yr</div>
+                    <div class="rating-label">Overall Biomass Production</div>
+                    <div class="rating-badge">GOOD - Above LGA Average</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Improved Pasture</div>
+                        <div class="stat-value">8.5 t/ha</div>
+                        <div class="stat-context">104 hectares</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Native Grassland</div>
+                        <div class="stat-value">5.2 t/ha</div>
+                        <div class="stat-context">50 hectares</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Woodland</div>
+                        <div class="stat-value">6.1 t/ha</div>
+                        <div class="stat-context">116 hectares (mixed)</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <h4 style="color: #2c5f3f; margin-bottom: 1rem; font-size: 1rem;">Regional Comparison</h4>
+                    
+                    <div class="comparison-item">
+                        <div class="comparison-label">This Property</div>
+                        <div class="comparison-bar">
+                            <div class="comparison-fill highlight" style="width: 100%;">6.8 t/ha ▲</div>
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <div class="comparison-label">LGA (Pasture)</div>
+                        <div class="comparison-bar">
+                            <div class="comparison-fill" style="width: 87%;">5.9 t/ha</div>
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <div class="comparison-label">LGA (Overall)</div>
+                        <div class="comparison-bar">
+                            <div class="comparison-fill" style="width: 91%;">6.2 t/ha</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Production assessment:</strong> Property produces 6.8 tonnes dry matter per hectare annually (25-year average). 
+                    This is <strong>15% above LGA pasture average</strong> and places property in top 30% for productivity in the region. 
+                    Total annual production approximately <strong>1,870 tonnes DM</strong>. 
+                    Improved pasture areas (38% of property) are most productive at 8.5 t/ha/yr.
+                </div>
+            </div>
+
+            <!-- Seasonal Production Patterns -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Seasonal Production Patterns</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('seasonal')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="seasonalChart"></canvas>
+                </div>
+                
+                <h4 style="color: #2c5f3f; margin: 1.5rem 0 1rem; font-size: 1rem;">Monthly Growth Calendar</h4>
+                
+                <div class="calendar-grid">
+                    <div class="calendar-month adequate">
+                        <div class="month-name">JAN</div>
+                        <div class="month-value">120</div>
+                        <div class="month-status">Adequate</div>
+                    </div>
+                    <div class="calendar-month marginal">
+                        <div class="month-name">FEB</div>
+                        <div class="month-value">95</div>
+                        <div class="month-status">Marginal</div>
+                    </div>
+                    <div class="calendar-month deficit">
+                        <div class="month-name">MAR</div>
+                        <div class="month-value">70</div>
+                        <div class="month-status">Deficit</div>
+                    </div>
+                    <div class="calendar-month deficit">
+                        <div class="month-name">APR</div>
+                        <div class="month-value">45</div>
+                        <div class="month-status">Deficit</div>
+                    </div>
+                    <div class="calendar-month deficit">
+                        <div class="month-name">MAY</div>
+                        <div class="month-value">30</div>
+                        <div class="month-status">Deficit</div>
+                    </div>
+                    <div class="calendar-month low">
+                        <div class="month-name">JUN</div>
+                        <div class="month-value">25</div>
+                        <div class="month-status">Low</div>
+                    </div>
+                    <div class="calendar-month low">
+                        <div class="month-name">JUL</div>
+                        <div class="month-value">22</div>
+                        <div class="month-status">Low</div>
+                    </div>
+                    <div class="calendar-month deficit">
+                        <div class="month-name">AUG</div>
+                        <div class="month-value">35</div>
+                        <div class="month-status">Deficit</div>
+                    </div>
+                    <div class="calendar-month adequate">
+                        <div class="month-name">SEP</div>
+                        <div class="month-value">85</div>
+                        <div class="month-status">Adequate</div>
+                    </div>
+                    <div class="calendar-month surplus">
+                        <div class="month-name">OCT</div>
+                        <div class="month-value">145</div>
+                        <div class="month-status">Surplus</div>
+                    </div>
+                    <div class="calendar-month surplus">
+                        <div class="month-name">NOV</div>
+                        <div class="month-value">160</div>
+                        <div class="month-status">Surplus</div>
+                    </div>
+                    <div class="calendar-month adequate">
+                        <div class="month-name">DEC</div>
+                        <div class="month-value">130</div>
+                        <div class="month-status">Adequate</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <strong>Feed gap identified:</strong> Growth rates fall below adequate levels for approximately 215 days per year (February-August). 
+                    Peak production occurs spring (September-November) with 3-month surplus period. 
+                    Supplementary feeding or strategic destocking recommended during winter/autumn to maintain stocking rates year-round.
+                </div>
+            </div>
+
+            <!-- Spatial Variation & Reliability -->
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Spatial Productivity Variation</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('spatial')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="map-container" style="height: 300px;">
+                        <canvas id="productivityMap"></canvas>
+                        <div class="map-legend">
+                            <div class="legend-title">Production (t DM/ha/yr)</div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #1b5e20;"></div>
+                                <span>High (>9)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #4caf50;"></div>
+                                <span>Moderate (6-9)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ffc107;"></div>
+                                <span>Low (3-6)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #9e9e9e;"></div>
+                                <span>Very Low (<3)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>High productivity (32%):</strong> North-facing improved pasture, deep soils, good drainage<br>
+                        <strong>Moderate (48%):</strong> Flats, mixed pasture/native grass, average soils<br>
+                        <strong>Low (20%):</strong> Dense forest, rocky/shallow soils, steep south-facing slopes
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Production Reliability</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('reliability')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="reliabilityChart"></canvas>
+                    </div>
+                    
+                    <div class="stats-grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="stat-box">
+                            <div class="stat-label">Range</div>
+                            <div class="stat-value">3.2-10.4</div>
+                            <div class="stat-context">t/ha (min-max)</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Variability</div>
+                            <div class="stat-value">28%</div>
+                            <div class="stat-context">Coefficient of variation</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Reliability assessment:</strong> Moderate year-to-year variability typical for dryland grazing. 
+                        Excellent years (>9 t/ha) occurred in 2010, 2011, 2016, 2020, 2021 (wet years). 
+                        Poor years (<5 t/ha) in 2002, 2006, 2019 (droughts). 
+                        During 2006 drought, maintained 58% of average productivity (better than LGA 48%).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Use Efficiency -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Water Use Efficiency</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('wue')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="wueChart"></canvas>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Production / Rainfall</div>
+                        <div class="stat-value">10.5</div>
+                        <div class="stat-context">kg DM per mm</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">LGA Average</div>
+                        <div class="stat-value">9.1</div>
+                        <div class="stat-context">kg DM per mm</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Efficiency Advantage</div>
+                        <div class="stat-value">+15%</div>
+                        <div class="stat-context">vs regional average</div>
+                    </div>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Water use efficiency:</strong> Property produces 10.5 kg DM per mm of rainfall, 15% more efficient than regional average. 
+                    Annual evapotranspiration averages 825 mm (slightly below potential 1,050 mm), indicating occasional water stress but generally good water availability. 
+                    Strong positive correlation between rainfall and production (R² = 0.76). 
+                    Higher efficiency likely due to better soil depth and management practices.
+                </div>
+            </div>
+
+            <!-- Grazing Land Assessment -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Grazing Land Assessment</h3>
+                </div>
+                
+                <h4 style="color: #2c5f3f; margin-bottom: 1rem; font-size: 1rem;">Production by Land Type</h4>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Zone</th>
+                            <th>Area (ha)</th>
+                            <th>Production (t DM/ha)</th>
+                            <th>Total (t DM)</th>
+                            <th>% of Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Improved Pasture</td>
+                            <td>104</td>
+                            <td>8.5</td>
+                            <td>884</td>
+                            <td>47%</td>
+                        </tr>
+                        <tr>
+                            <td>Native Grassland</td>
+                            <td>50</td>
+                            <td>5.2</td>
+                            <td>260</td>
+                            <td>14%</td>
+                        </tr>
+                        <tr>
+                            <td>Woodland (Grazeable)</td>
+                            <td>70</td>
+                            <td>4.5</td>
+                            <td>315</td>
+                            <td>17%</td>
+                        </tr>
+                        <tr>
+                            <td>Forest (Browse only)</td>
+                            <td>46</td>
+                            <td>2.8</td>
+                            <td>129</td>
+                            <td>7%</td>
+                        </tr>
+                        <tr>
+                            <td>Non-productive</td>
+                            <td>6</td>
+                            <td>0.5</td>
+                            <td>3</td>
+                            <td>0%</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>TOTAL</td>
+                            <td>276</td>
+                            <td>6.8 avg</td>
+                            <td>1,871</td>
+                            <td>100%</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="alert alert-info" style="margin-top: 1.5rem;">
+                    <strong>Productive grazing area:</strong> 224 hectares (81% of property) suitable for grazing, comprising improved pasture, native grassland, and woodland with accessible understory. 
+                    Remaining 19% includes dense forest (minimal grazing value) and rocky/degraded areas.
+                </div>
+            </div>
+
+            <!-- Carrying Capacity -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Indicative Carrying Capacity</h3>
+                </div>
+                
+                <div style="background: #fff3cd; padding: 1.5rem; border-radius: 8px; border: 2px solid #ffc107; margin-bottom: 1.5rem;">
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <div style="font-size: 0.9rem; color: #856404; margin-bottom: 0.5rem;">Based on 1,871 t DM annual production</div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #856404; margin-bottom: 0.5rem;">
+                            190-230 head
+                        </div>
+                        <div style="font-size: 1.1rem; color: #856404;">Cattle (year-round indicative)</div>
+                    </div>
+                    
+                    <div style="font-size: 0.85rem; color: #856404; line-height: 1.8;">
+                        <strong>Calculation basis:</strong> Assumes ~2 tonnes DM per beast per year (500-600 kg cattle)
+                        <br><strong>Sheep equivalent:</strong> Approximately 935 head
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <strong>⚠️ Important Limitations:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                        <li>These are <strong>rough indicators</strong> based on biomass production only</li>
+                        <li>Pasture species composition and quality not assessed</li>
+                        <li>Does not account for pasture utilization rates, trampling losses, or selective grazing</li>
+                        <li>Seasonal variation requires flexible stocking or supplementary feeding</li>
+                        <li>Water availability and infrastructure not considered</li>
+                        <li><strong>Recommendation:</strong> Consult agronomist or livestock advisor for detailed stocking rate assessment based on actual pasture composition and management objectives</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Management Zones -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recommended Management Zones</h3>
+                </div>
+                
+                <div class="zone-grid">
+                    <div class="zone-card" style="border-color: #1b5e20;">
+                        <h4>Zone 1 - Improved Pasture (104 ha)</h4>
+                        <p><strong>Production:</strong> 8.5 t/ha/yr (highest)</p>
+                        <p><strong>Management:</strong> Intensive rotational grazing suitable. Primary production area with best quality feed.</p>
+                        <p><strong>Opportunity:</strong> Consider fertilizer application to maintain productivity. Monitor for species composition changes.</p>
+                    </div>
+                    
+                    <div class="zone-card" style="border-color: #4caf50;">
+                        <h4>Zone 2 - Native Grassland (50 ha)</h4>
+                        <p><strong>Production:</strong> 5.2 t/ha/yr (moderate)</p>
+                        <p><strong>Management:</strong> Lower intensity grazing. Suitable for dry cattle or sheep. Maintain groundcover to prevent erosion.</p>
+                        <p><strong>Opportunity:</strong> Potential for light improvement with native species enhancement. Good biodiversity value.</p>
+                    </div>
+                    
+                    <div class="zone-card" style="border-color: #ffc107;">
+                        <h4>Zone 3 - Woodland (70 ha)</h4>
+                        <p><strong>Production:</strong> 4.5 t/ha/yr (lower, mixed grass/browse)</p>
+                        <p><strong>Management:</strong> Extensive grazing only. Light stocking to maintain tree health and understory. Provides shade and shelter.</p>
+                        <p><strong>Opportunity:</strong> Balance grazing with vegetation health. Potential carbon sequestration value.</p>
+                    </div>
+                    
+                    <div class="zone-card" style="border-color: #9e9e9e;">
+                        <h4>Zone 4 - Dense Forest (46 ha)</h4>
+                        <p><strong>Production:</strong> 2.8 t/ha/yr (minimal grazing value)</p>
+                        <p><strong>Management:</strong> Limited grazing benefit. Consider alternative uses: biodiversity conservation, carbon projects, timber (if applicable).</p>
+                        <p><strong>Opportunity:</strong> High conservation value. May qualify for biodiversity stewardship payments or carbon credits.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Production Summary & Key Findings</h3>
+                </div>
+                
+                <div style="display: grid; gap: 1rem;">
+                    <div class="alert alert-success">
+                        <strong>✓ Above-Average Productivity:</strong> Property produces 6.8 t DM/ha/yr, 15% above regional average. 
+                        Places property in top 30% for productivity in Mid-Western LGA. Total annual production ~1,870 tonnes supports substantial grazing operation.
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <strong>✓ Efficient Water Use:</strong> Converts rainfall to biomass 15% more efficiently than regional average (10.5 vs 9.1 kg DM/mm). 
+                        Indicates good soil quality and management practices.
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>⚠ Seasonal Feed Gap:</strong> Growth rates inadequate for 215 days/year (Feb-Aug). 
+                        Requires strategic management: flexible stocking, supplementary feeding, or conservative year-round rates.
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>→ Spatial Variation:</strong> 32% of property is high-productivity (>9 t/ha), primarily improved pasture on north-facing slopes. 
+                        Target intensive management to these areas. 20% is low-productivity - consider alternative uses (conservation, carbon).
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>→ Production Reliability:</strong> Moderate variability typical for dryland grazing (CV 28%). 
+                        Property performs well in drought (maintained 58% productivity vs regional 48% in 2006). 
+                        Indicates resilience and good management.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data sources footer -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666;">
+                <strong>Data Sources:</strong> TERN AusEnv carbon uptake estimates (250m, 2000-2024), 
+                high-resolution fractional cover and greenness (10m, 2017-2024), 
+                evapotranspiration from AWRA-L model, vegetation structure from crown cover and height analysis. 
+                Biomass conversion: 2.2 kg DM per kg C (standard factor). Regional comparisons based on Mid-Western LGA similar land use averages. 
+                Carrying capacity estimates indicative only - consult agronomist for detailed assessment.
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize charts
+        function initChart(id) {
+            const canvas = document.getElementById(id);
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            return canvas.getContext('2d');
+        }
+
+        // Seasonal Chart
+        const seasonalCtx = initChart('seasonalChart');
+        function drawSeasonalChart() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const growth = [120, 95, 70, 45, 30, 25, 22, 35, 85, 145, 160, 130];
+            const currentYear = [135, 88, 65, 52, 28, 22, 25, 38, 92, 158, 172, 142];
+            
+            const width = seasonalCtx.canvas.width;
+            const height = seasonalCtx.canvas.height;
+            const padding = 60;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            seasonalCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            seasonalCtx.fillStyle = '#fafafa';
+            seasonalCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            seasonalCtx.strokeStyle = '#e0e0e0';
+            seasonalCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                seasonalCtx.beginPath();
+                seasonalCtx.moveTo(padding, y);
+                seasonalCtx.lineTo(width - padding, y);
+                seasonalCtx.stroke();
+                
+                const value = 180 - (i * 40);
+                seasonalCtx.fillStyle = '#666';
+                seasonalCtx.font = '10px sans-serif';
+                seasonalCtx.textAlign = 'right';
+                seasonalCtx.fillText(value, padding - 5, y + 3);
+            }
+            
+            // Area fill (average)
+            seasonalCtx.fillStyle = 'rgba(44, 95, 63, 0.2)';
+            seasonalCtx.beginPath();
+            seasonalCtx.moveTo(padding, padding + chartHeight);
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (growth[i] / 180) * chartHeight;
+                seasonalCtx.lineTo(x, y);
+            }
+            seasonalCtx.lineTo(width - padding, padding + chartHeight);
+            seasonalCtx.closePath();
+            seasonalCtx.fill();
+            
+            // Lines
+            seasonalCtx.strokeStyle = '#2c5f3f';
+            seasonalCtx.lineWidth = 3;
+            seasonalCtx.beginPath();
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (growth[i] / 180) * chartHeight;
+                if (i === 0) seasonalCtx.moveTo(x, y);
+                else seasonalCtx.lineTo(x, y);
+            }
+            seasonalCtx.stroke();
+            
+            seasonalCtx.strokeStyle = '#dc3545';
+            seasonalCtx.lineWidth = 2;
+            seasonalCtx.setLineDash([5, 5]);
+            seasonalCtx.beginPath();
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (currentYear[i] / 180) * chartHeight;
+                if (i === 0) seasonalCtx.moveTo(x, y);
+                else seasonalCtx.lineTo(x, y);
+            }
+            seasonalCtx.stroke();
+            seasonalCtx.setLineDash([]);
+            
+            // X-axis labels
+            seasonalCtx.fillStyle = '#666';
+            seasonalCtx.textAlign = 'center';
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                seasonalCtx.fillText(months[i], x, height - padding + 18);
+            }
+            
+            // Y-axis label
+            seasonalCtx.save();
+            seasonalCtx.translate(15, height / 2);
+            seasonalCtx.rotate(-Math.PI / 2);
+            seasonalCtx.textAlign = 'center';
+            seasonalCtx.font = '11px sans-serif';
+            seasonalCtx.fillText('Growth Rate (kg DM/ha/day)', 0, 0);
+            seasonalCtx.restore();
+            
+            // Legend
+            seasonalCtx.strokeStyle = '#2c5f3f';
+            seasonalCtx.lineWidth = 3;
+            seasonalCtx.beginPath();
+            seasonalCtx.moveTo(width - 180, padding + 20);
+            seasonalCtx.lineTo(width - 150, padding + 20);
+            seasonalCtx.stroke();
+            seasonalCtx.fillStyle = '#666';
+            seasonalCtx.font = '10px sans-serif';
+            seasonalCtx.textAlign = 'left';
+            seasonalCtx.fillText('25-year average', width - 145, padding + 24);
+            
+            seasonalCtx.strokeStyle = '#dc3545';
+            seasonalCtx.lineWidth = 2;
+            seasonalCtx.setLineDash([5, 5]);
+            seasonalCtx.beginPath();
+            seasonalCtx.moveTo(width - 180, padding + 40);
+            seasonalCtx.lineTo(width - 150, padding + 40);
+            seasonalCtx.stroke();
+            seasonalCtx.setLineDash([]);
+            seasonalCtx.fillText('2024 current', width - 145, padding + 44);
+        }
+
+        // Productivity Map
+        const prodMapCtx = initChart('productivityMap');
+        function drawProductivityMap() {
+            const width = prodMapCtx.canvas.width;
+            const height = prodMapCtx.canvas.height;
+            
+            prodMapCtx.clearRect(0, 0, width, height);
+            
+            const gridSize = 12;
+            for (let y = 0; y < height; y += gridSize) {
+                for (let x = 0; x < width; x += gridSize) {
+                    // High productivity on right (improved pasture, north-facing)
+                    // Low on left (forest/rocky)
+                    const prodScore = (x / width) * 0.7 + (1 - y / height) * 0.3 + Math.random() * 0.2;
+                    
+                    let color = '#9e9e9e'; // Very low
+                    if (prodScore > 0.7) color = '#1b5e20'; // High
+                    else if (prodScore > 0.5) color = '#4caf50'; // Moderate
+                    else if (prodScore > 0.3) color = '#ffc107'; // Low
+                    
+                    prodMapCtx.fillStyle = color;
+                    prodMapCtx.fillRect(x, y, gridSize, gridSize);
+                }
+            }
+            
+            // Property boundary
+            prodMapCtx.strokeStyle = '#333';
+            prodMapCtx.lineWidth = 3;
+            prodMapCtx.strokeRect(20, 20, width - 40, height - 40);
+        }
+
+        // Reliability Chart
+        const reliabilityCtx = initChart('reliabilityChart');
+        function drawReliabilityChart() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const production = [6.8, 5.2, 3.8, 7.2, 7.8, 6.5, 3.2, 5.8, 7.2, 8.5, 10.2, 7.8, 6.9, 7.5, 8.9, 7.2, 10.4, 8.2, 6.8, 4.2, 9.8, 7.2, 6.5, 7.8, 8.2];
+            
+            const width = reliabilityCtx.canvas.width;
+            const height = reliabilityCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barWidth = chartWidth / years.length * 0.7;
+            
+            reliabilityCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            reliabilityCtx.fillStyle = '#fafafa';
+            reliabilityCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            reliabilityCtx.strokeStyle = '#e0e0e0';
+            reliabilityCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                reliabilityCtx.beginPath();
+                reliabilityCtx.moveTo(padding, y);
+                reliabilityCtx.lineTo(width - padding, y);
+                reliabilityCtx.stroke();
+            }
+            
+            // Mean line
+            reliabilityCtx.strokeStyle = '#999';
+            reliabilityCtx.lineWidth = 2;
+            reliabilityCtx.setLineDash([5, 5]);
+            const meanY = padding + chartHeight - (6.8 / 12) * chartHeight;
+            reliabilityCtx.beginPath();
+            reliabilityCtx.moveTo(padding, meanY);
+            reliabilityCtx.lineTo(width - padding, meanY);
+            reliabilityCtx.stroke();
+            reliabilityCtx.setLineDash([]);
+            
+            // Bars
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / years.length) * chartWidth + (chartWidth / years.length - barWidth) / 2;
+                const barHeight = (production[i] / 12) * chartHeight;
+                
+                reliabilityCtx.fillStyle = production[i] > 9 ? '#2c5f3f' : production[i] < 5 ? '#dc3545' : '#52a37a';
+                reliabilityCtx.fillRect(x, padding + chartHeight - barHeight, barWidth, barHeight);
+                
+                if (i % 5 === 0) {
+                    reliabilityCtx.fillStyle = '#666';
+                    reliabilityCtx.font = '9px sans-serif';
+                    reliabilityCtx.textAlign = 'center';
+                    reliabilityCtx.fillText(years[i], x + barWidth / 2, height - padding + 15);
+                }
+            }
+            
+            reliabilityCtx.save();
+            reliabilityCtx.translate(15, height / 2);
+            reliabilityCtx.rotate(-Math.PI / 2);
+            reliabilityCtx.fillStyle = '#666';
+            reliabilityCtx.textAlign = 'center';
+            reliabilityCtx.font = '10px sans-serif';
+            reliabilityCtx.fillText('Production (t DM/ha)', 0, 0);
+            reliabilityCtx.restore();
+        }
+
+        // WUE Chart
+        const wueCtx = initChart('wueChart');
+        function drawWUEChart() {
+            // Scatter plot: rainfall vs production
+            const data = Array.from({length: 25}, () => ({
+                rainfall: 450 + Math.random() * 350,
+                production: 3 + Math.random() * 7.5
+            }));
+            
+            const width = wueCtx.canvas.width;
+            const height = wueCtx.canvas.height;
+            const padding = 60;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            wueCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            wueCtx.fillStyle = '#fafafa';
+            wueCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            wueCtx.strokeStyle = '#e0e0e0';
+            wueCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                wueCtx.beginPath();
+                wueCtx.moveTo(padding, y);
+                wueCtx.lineTo(width - padding, y);
+                wueCtx.stroke();
+                
+                const x = padding + (chartWidth / 5) * i;
+                wueCtx.beginPath();
+                wueCtx.moveTo(x, padding);
+                wueCtx.lineTo(x, padding + chartHeight);
+                wueCtx.stroke();
+            }
+            
+            // Trend line
+            wueCtx.strokeStyle = '#2c5f3f';
+            wueCtx.lineWidth = 2;
+            wueCtx.setLineDash([5, 5]);
+            wueCtx.beginPath();
+            wueCtx.moveTo(padding, padding + chartHeight - (2 / 12) * chartHeight);
+            wueCtx.lineTo(width - padding, padding + chartHeight - (11 / 12) * chartHeight);
+            wueCtx.stroke();
+            wueCtx.setLineDash([]);
+            
+            // Points
+            data.forEach(point => {
+                const x = padding + ((point.rainfall - 450) / 350) * chartWidth;
+                const y = padding + chartHeight - (point.production / 12) * chartHeight;
+                
+                wueCtx.fillStyle = 'rgba(44, 95, 63, 0.6)';
+                wueCtx.beginPath();
+                wueCtx.arc(x, y, 4, 0, Math.PI * 2);
+                wueCtx.fill();
+                
+                wueCtx.strokeStyle = '#2c5f3f';
+                wueCtx.lineWidth = 1;
+                wueCtx.stroke();
+            });
+            
+            // Labels
+            wueCtx.fillStyle = '#666';
+            wueCtx.font = '10px sans-serif';
+            wueCtx.textAlign = 'center';
+            for (let i = 0; i <= 4; i++) {
+                const val = 450 + (i * 87.5);
+                const x = padding + (i / 4) * chartWidth;
+                wueCtx.fillText(Math.round(val) + 'mm', x, height - padding + 18);
+            }
+            
+            wueCtx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const val = 12 - (i * 2.4);
+                const y = padding + (i / 5) * chartHeight;
+                wueCtx.fillText(val.toFixed(1), padding - 5, y + 3);
+            }
+            
+            // Axis labels
+            wueCtx.textAlign = 'center';
+            wueCtx.fillText('Annual Rainfall (mm)', width / 2, height - padding + 35);
+            
+            wueCtx.save();
+            wueCtx.translate(15, height / 2);
+            wueCtx.rotate(-Math.PI / 2);
+            wueCtx.fillText('Production (t DM/ha)', 0, 0);
+            wueCtx.restore();
+        }
+
+        // Draw all
+        drawSeasonalChart();
+        drawProductivityMap();
+        drawReliabilityChart();
+        drawWUEChart();
+
+        // Utilities
+        function downloadData(type) {
+            alert(`Downloading ${type} data...\n\nWould include spatial grids, time series, and summary statistics.`);
+        }
+
+
+        window.addEventListener('resize', () => {
+            drawSeasonalChart();
+            drawProductivityMap();
+            drawReliabilityChart();
+            drawWUEChart();
+        });
+    </script>
+</body>
+</html>

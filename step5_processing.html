@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generating Your Report - Property Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .status-icon.complete {
+            animation: none;
+            color: #28a745;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-container {
+            margin: 2rem 0;
+        }
+        
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-steps {
+            text-align: left;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+        
+        .step-icon {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        .step.complete {
+            color: #28a745;
+        }
+        
+        .step.active {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .step.pending {
+            color: #999;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn.hidden {
+            display: none;
+        }
+        
+        .order-info {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .order-info strong {
+            color: #2c5f3f;
+        }
+        
+        .redirect-message {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+        
+        /* Chat widget */
+        .chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+        
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .chat-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 320px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .chat-panel.open {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+        }
+        
+        .chat-body {
+            padding: 1.5rem;
+        }
+        
+        .chat-body p {
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .contact-option {
+            display: block;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .contact-option:hover {
+            background: #e8f0ff;
+            transform: translateX(5px);
+        }
+        
+        .contact-option:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Support bar */
+        .support-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .support-bar a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 1rem;
+        }
+        
+        .support-bar a:hover {
+            text-decoration: underline;
+        }
+        
+        .delayed-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #856404;
+            display: none;
+        }
+        
+        .delayed-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="thank-you-message">
+            <h1 style="color: #28a745; margin-bottom: 0.5rem;">Thank You for Your Order!</h1>
+            <p style="font-size: 1rem; color: #666; margin-bottom: 0.25rem;">
+                <strong>Order #:</strong> PR-2024-1234
+            </p>
+            <p style="font-size: 0.9rem; color: #666;">
+                Invoice and confirmation sent to: <strong>your.email@example.com</strong>
+            </p>
+        </div>
+        
+        <div style="margin: 2rem 0; padding-top: 2rem; border-top: 1px solid #e0e0e0;">
+            <div class="status-icon" id="statusIcon">⏳</div>
+            <h2 id="statusTitle" style="font-size: 1.5rem;">Generating Your Report</h2>
+            <p class="subtitle" id="statusSubtitle">Please wait while we analyze your property...</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-percentage" id="progressPercentage">0%</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p class="progress-text" id="progressText">Initializing...</p>
+        </div>
+        
+        <div class="status-steps" id="statusSteps">
+            <div class="step pending" id="step1">
+                <span class="step-icon">○</span>
+                <span>Payment confirmed</span>
+            </div>
+            <div class="step pending" id="step2">
+                <span class="step-icon">○</span>
+                <span>Retrieving property data</span>
+            </div>
+            <div class="step pending" id="step3">
+                <span class="step-icon">○</span>
+                <span>Analyzing terrain and climate</span>
+            </div>
+            <div class="step pending" id="step4">
+                <span class="step-icon">○</span>
+                <span>Processing vegetation and water</span>
+            </div>
+            <div class="step pending" id="step5">
+                <span class="step-icon">○</span>
+                <span>Generating maps and charts</span>
+            </div>
+            <div class="step pending" id="step6">
+                <span class="step-icon">○</span>
+                <span>Finalizing report</span>
+            </div>
+        </div>
+        
+        <div class="delayed-message" id="delayedMessage">
+            <strong>Still processing...</strong> Large properties can take up to 2 minutes.
+        </div>
+        
+        <button class="btn hidden" id="viewReportBtn" onclick="viewReport()">
+            View Your Report →
+        </button>
+        
+        <p class="redirect-message hidden" id="redirectMessage">
+            Redirecting to your dashboard in <span id="countdown">3</span> seconds...
+        </p>
+    </div>
+    
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                Need Help?
+            </div>
+            <div class="chat-body">
+                <p>Report generation typically takes 30-60 seconds.</p>
+                <p>If you're experiencing issues, contact us:</p>
+                <a href="/cdn-cgi/l/email-protection#c5b6b0b5b5aab7b185b5b7aab5a0b7b1bcb7a0b5aab7b1eba6aaa8" class="contact-option">
+                    📧 Email Support
+                </a>
+                <a href="#" class="contact-option" onclick="alert('Live chat would open here'); return false;">
+                    💬 Live Chat
+                </a>
+            </div>
+        </div>
+        <button class="chat-button" onclick="toggleChat()">💬</button>
+    </div>
+    
+    <!-- Support Bar -->
+    <div class="support-bar">
+        Need help? 
+        <a href="/cdn-cgi/l/email-protection#03707673736c71774373716c736671777a7166736c71772d606c6e">📧 Email</a>
+        <a href="#" onclick="toggleChat(); return false;">💬 Chat</a>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        let progress = 0;
+        let currentStep = 0;
+        const totalSteps = 6;
+        const totalDuration = 30000; // 30 seconds total
+        const updateInterval = 500; // Update every 500ms
+        const progressIncrement = 100 / (totalDuration / updateInterval);
+        
+        const steps = [
+            { time: 0, text: 'Payment confirmed', id: 'step1' },
+            { time: 2000, text: 'Retrieving property data', id: 'step2' },
+            { time: 8000, text: 'Analyzing terrain and climate', id: 'step3' },
+            { time: 15000, text: 'Processing vegetation and water', id: 'step4' },
+            { time: 22000, text: 'Generating maps and charts', id: 'step5' },
+            { time: 27000, text: 'Finalizing report', id: 'step6' }
+        ];
+        
+        let startTime = Date.now();
+        
+        function updateProgress() {
+            const elapsed = Date.now() - startTime;
+            
+            // Update progress percentage
+            progress = Math.min(100, (elapsed / totalDuration) * 100);
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressPercentage').textContent = Math.floor(progress) + '%';
+            
+            // Update current step
+            for (let i = 0; i < steps.length; i++) {
+                if (elapsed >= steps[i].time) {
+                    if (i > currentStep) {
+                        // Mark previous step as complete
+                        if (currentStep >= 0) {
+                            const prevStep = document.getElementById(steps[currentStep].id);
+                            prevStep.classList.remove('active');
+                            prevStep.classList.add('complete');
+                            prevStep.querySelector('.step-icon').textContent = '✓';
+                        }
+                        
+                        // Mark current step as active
+                        const currStep = document.getElementById(steps[i].id);
+                        currStep.classList.remove('pending');
+                        currStep.classList.add('active');
+                        currStep.querySelector('.step-icon').textContent = '⟳';
+                        
+                        document.getElementById('progressText').textContent = steps[i].text;
+                        currentStep = i;
+                    }
+                }
+            }
+            
+            // Show delayed message after 60 seconds
+            if (elapsed > 60000) {
+                document.getElementById('delayedMessage').classList.add('show');
+            }
+            
+            // Complete
+            if (progress >= 100) {
+                completeProcessing();
+            } else {
+                requestAnimationFrame(updateProgress);
+            }
+        }
+        
+        function completeProcessing() {
+            // Mark final step as complete
+            const finalStep = document.getElementById(steps[steps.length - 1].id);
+            finalStep.classList.remove('active');
+            finalStep.classList.add('complete');
+            finalStep.querySelector('.step-icon').textContent = '✓';
+            
+            // Update UI
+            document.getElementById('statusIcon').textContent = '✓';
+            document.getElementById('statusIcon').classList.add('complete');
+            document.getElementById('statusTitle').textContent = 'Report Ready!';
+            document.getElementById('statusSubtitle').textContent = 'Your comprehensive property report is complete.';
+            document.getElementById('progressText').textContent = 'Complete';
+            document.getElementById('progressPercentage').textContent = '100%';
+            
+            // Show button and redirect message
+            document.getElementById('viewReportBtn').classList.remove('hidden');
+            document.getElementById('redirectMessage').classList.remove('hidden');
+            
+            // Start countdown
+            startCountdown();
+        }
+        
+        function startCountdown() {
+            let countdown = 3;
+            const countdownElement = document.getElementById('countdown');
+            
+            const interval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    viewReport();
+                }
+            }, 1000);
+        }
+        
+        function viewReport() {
+            window.location.href = 'index.html';
+        }
+        
+        function toggleChat() {
+            const chatPanel = document.getElementById('chatPanel');
+            chatPanel.classList.toggle('open');
+        }
+        
+        // Close chat when clicking outside
+        document.addEventListener('click', function(event) {
+            const chatWidget = document.querySelector('.chat-widget');
+            const chatPanel = document.getElementById('chatPanel');
+            
+            if (!chatWidget.contains(event.target)) {
+                chatPanel.classList.remove('open');
+            }
+        });
+        
+        // Start processing animation
+        updateProgress();
+    </script>
+</body>
+</html>

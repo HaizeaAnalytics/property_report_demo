@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Report Dashboard - Water</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7f9;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .property-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .property-title h1 {
+            font-size: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .property-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-header {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-header:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary:hover {
+            background: #3d7a52;
+        }
+        
+        /* Main layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+        
+        /* Sidebar navigation */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            padding: 1rem 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c5f3f;
+        }
+        
+        .nav-item.active {
+            background: #f0f7f0;
+            color: #2c5f3f;
+            font-weight: 600;
+            border-left: 3px solid #2c5f3f;
+            padding-left: calc(1.5rem - 3px);
+        }
+        
+        .nav-item.locked {
+            opacity: 0.5;
+            position: relative;
+        }
+        
+        .nav-item.locked::after {
+            content: '🔒';
+            margin-left: auto;
+            font-size: 0.8rem;
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .section-header {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: #666;
+            font-size: 1.05rem;
+        }
+        
+        /* Grid layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .content-grid.single {
+            grid-template-columns: 1fr;
+        }
+        
+        /* Card container */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-card {
+            padding: 0.25rem 0.6rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-card:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        /* Dual chart container */
+        .dual-chart {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        /* Chart containers */
+        .chart-container {
+            width: 100%;
+            height: 280px;
+            position: relative;
+        }
+        
+        .chart-container.tall {
+            height: 350px;
+        }
+        
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Summary box */
+        .summary-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .summary-box strong {
+            color: #2c5f3f;
+        }
+        
+        /* Stats inline */
+        .stats-inline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-inline {
+            text-align: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .stat-inline-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-inline-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c5f3f;
+        }
+        
+        .stat-inline-context {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+        
+        /* Map container */
+        .map-container {
+            width: 100%;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 0.85rem;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c5f3f;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        /* Map controls */
+        .map-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .map-control-btn {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .map-control-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .map-control-btn.active {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        .data-table thead {
+            background: #f8f9fa;
+        }
+        
+        .data-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .data-table td:last-child {
+            text-align: right;
+        }
+        
+        /* Info callout */
+        .info-callout {
+            background: #e8f4f8;
+            border-left: 3px solid #2196f3;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .info-callout strong {
+            color: #1976d2;
+        }
+        
+        /* Trend indicator */
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .trend-indicator.neutral {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .trend-indicator.increasing {
+            background: #e8f4f8;
+            color: #1976d2;
+        }
+        
+        .trend-indicator.decreasing {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dual-chart {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-inline {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="property-title">
+            <h1>Smith Farm Property Report</h1>
+            <div class="property-meta">
+                <div>📍 Mudgee, NSW</div>
+                <div>📏 275.6 hectares</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header">🔗 Share</button>
+            <button class="btn-header">📊 Export Data</button>
+            <button class="btn-header primary">📄 Download PDF</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Report Sections</div>
+                <a class="nav-item" href="dashboard_overview.html" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    Overview
+                </a>
+                <a class="nav-item" href="dashboard_terrain_soil.html" class="nav-link">
+                    <span class="nav-icon">⛰️</span>
+                    Terrain & Soil
+                </a>
+                <a class="nav-item" href="dashboard_climate.html" class="nav-link">
+                    <span class="nav-icon">🌦️</span>
+                    Climate
+                </a>
+                <a class="nav-item active">
+                    <span class="nav-icon">💧</span>
+                    Water
+                </a>
+                <a class="nav-item" href="dashboard_vegetation.html" class="nav-link">
+                    <span class="nav-icon">🌿</span>
+                    Vegetation
+                </a>
+                <a class="nav-item" href="dashboard_hazards.html" class="nav-link">
+                    <span class="nav-icon">⚠️</span>
+                    Natural Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Premium Sections</div>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌾</span>
+                    Primary Production
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">☀️</span>
+                    Solar Energy
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌱</span>
+                    Carbon Potential
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🦘</span>
+                    Nature & Biodiversity
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="section-header">
+                <h2>Water</h2>
+                <p>Soil moisture, runoff and surface water analysis (2000-2024)</p>
+            </div>
+
+            <!-- Annual Runoff -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Annual Runoff (2000-2024)</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('runoff')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="dual-chart">
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="runoffTimeSeriesChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="runoffDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-inline">
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Mean Annual</div>
+                        <div class="stat-inline-value">145 ML</div>
+                        <div class="stat-inline-context">2000-2024</div>
+                    </div>
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Range</div>
+                        <div class="stat-inline-value">52-285 ML</div>
+                        <div class="stat-inline-context">Min-max</div>
+                    </div>
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">2024 Value</div>
+                        <div class="stat-inline-value">168 ML</div>
+                        <div class="stat-inline-context">72nd percentile</div>
+                    </div>
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Trend</div>
+                        <div class="stat-inline-value">
+                            <span class="trend-indicator neutral">Stable</span>
+                        </div>
+                        <div class="stat-inline-context">+3% over 25yr</div>
+                    </div>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Runoff reliability:</strong> Property generates reliable runoff with average of 145 ML/year (equivalent to filling a 10 ML dam 14 times annually). 
+                    High variability between wet and dry years (52-285 ML range). 2024 was above average. No statistically significant trend detected over 25-year period.
+                </div>
+            </div>
+
+            <!-- Soil Moisture Deficit & Seasonal Pattern -->
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Annual Maximum Soil Moisture Deficit</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('deficit')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="dual-chart">
+                        <div>
+                            <div class="chart-container" style="height: 220px;">
+                                <canvas id="deficitTimeSeriesChart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="chart-container" style="height: 220px;">
+                                <canvas id="deficitDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Deficit patterns:</strong> Maximum deficit averaged -195mm (typically reached in March). 
+                        Worst deficit: -285mm (2006). 2024: -178mm (below average deficit = better conditions). 
+                        Slight trend toward deeper deficits (+12mm/decade, not statistically significant).
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Seasonal Soil Moisture Pattern</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('seasonal')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container" style="height: 220px;">
+                        <canvas id="seasonalBoxplotChart"></canvas>
+                    </div>
+                    
+                    <div class="info-callout">
+                        <strong>Seasonal cycle:</strong> Soil moisture typically peaks in August-September after winter rainfall recharge, 
+                        then declines through summer to reach minimum in March. Spring (Sep-Nov) offers best planting window with adequate soil moisture.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inundation Frequency Map -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Inundation Frequency Mapping</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('inundation')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="map-controls">
+                    <button class="map-control-btn active" onclick="switchInundationView('250m')">250m Resolution (2000-2024)</button>
+                    <button class="map-control-btn" onclick="switchInundationView('10m')">10m Resolution (2017-2024)</button>
+                </div>
+                
+                <div class="map-container">
+                    <canvas id="inundationMap"></canvas>
+                    <div class="map-legend">
+                        <div class="legend-title">Times Flooded (2000-2024)</div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f0f0f0;"></div>
+                            <span>Never (0)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #c8e6ff;"></div>
+                            <span>Rare (1-2)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #80c4ff;"></div>
+                            <span>Occasional (3-5)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #4098db;"></div>
+                            <span>Frequent (6-10)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #1565c0;"></div>
+                            <span>Very Frequent (>10)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Inundation Frequency</th>
+                            <th>Area (ha)</th>
+                            <th>% of Property</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Never flooded</td>
+                            <td>242.4</td>
+                            <td>88%</td>
+                            <td>Not inundated in 25-year record</td>
+                        </tr>
+                        <tr>
+                            <td>Rare (1-2 times)</td>
+                            <td>16.5</td>
+                            <td>6%</td>
+                            <td>Extreme events only</td>
+                        </tr>
+                        <tr>
+                            <td>Occasional (3-5 times)</td>
+                            <td>11.0</td>
+                            <td>4%</td>
+                            <td>Major flood events</td>
+                        </tr>
+                        <tr>
+                            <td>Frequent (6-10 times)</td>
+                            <td>4.1</td>
+                            <td>1.5%</td>
+                            <td>Creek flats, drainage lines</td>
+                        </tr>
+                        <tr>
+                            <td>Very Frequent (>10 times)</td>
+                            <td>1.6</td>
+                            <td>0.5%</td>
+                            <td>Active floodplain, wetlands</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="summary-box">
+                    <strong>Flood risk assessment:</strong> 88% of property has never been inundated in 25-year satellite record. 
+                    High-frequency flood areas (>6 times) limited to 2% of property, mainly creek flats in northeast section. 
+                    Most recent significant inundation: March 2021 (affected 8% of property). 10m resolution data (2017-2024) shows similar patterns with better spatial detail.
+                </div>
+            </div>
+
+            <!-- Runoff Coefficient & Water Balance -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Runoff Generation & Water Balance</h3>
+                </div>
+                
+                <div class="chart-container" style="height: 280px;">
+                    <canvas id="runoffCoefficientChart"></canvas>
+                </div>
+                
+                <div class="stats-inline" style="margin-top: 1.5rem;">
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Runoff Coefficient</div>
+                        <div class="stat-inline-value">0.21</div>
+                        <div class="stat-inline-context">21% of rainfall → runoff</div>
+                    </div>
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Annual Rainfall</div>
+                        <div class="stat-inline-value">650 mm</div>
+                        <div class="stat-inline-context">179 ML total</div>
+                    </div>
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Annual Runoff</div>
+                        <div class="stat-inline-value">137 mm</div>
+                        <div class="stat-inline-context">38 ML total</div>
+                    </div>
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Infiltration + ET</div>
+                        <div class="stat-inline-value">513 mm</div>
+                        <div class="stat-inline-context">141 ML lost</div>
+                    </div>
+                </div>
+                
+                <div class="info-callout" style="margin-top: 1.5rem;">
+                    <strong>Water harvesting potential:</strong> Property generates approximately 145 ML of runoff annually on average. 
+                    This is equivalent to:
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                        <li>Filling a 15 ML farm dam 9.6 times per year</li>
+                        <li>Supporting irrigation of ~12 hectares at 12 ML/ha/year</li>
+                        <li>Stock water for ~580 cattle year-round (250L/head/day)</li>
+                    </ul>
+                    Seasonal distribution important: 65% of runoff occurs in spring-summer (Oct-Mar), 35% in autumn-winter (Apr-Sep).
+                </div>
+            </div>
+
+            <!-- Historical Extreme Events -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Historical Extreme Events (2000-2024)</h3>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Event Type</th>
+                            <th>Severity</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>March 2021</td>
+                            <td>Major flood</td>
+                            <td>Extreme</td>
+                            <td>8% of property inundated, 285 ML runoff (max on record)</td>
+                        </tr>
+                        <tr>
+                            <td>February 2020</td>
+                            <td>Heavy rainfall</td>
+                            <td>High</td>
+                            <td>4% inundated, 242 ML runoff</td>
+                        </tr>
+                        <tr>
+                            <td>Nov 2010</td>
+                            <td>Major flood</td>
+                            <td>Extreme</td>
+                            <td>7% inundated, La Niña event</td>
+                        </tr>
+                        <tr>
+                            <td>Jun-Aug 2006</td>
+                            <td>Severe drought</td>
+                            <td>Extreme</td>
+                            <td>Maximum deficit -285mm, lowest runoff on record (52 ML)</td>
+                        </tr>
+                        <tr>
+                            <td>Jan-Mar 2003</td>
+                            <td>Drought</td>
+                            <td>High</td>
+                            <td>Deficit -262mm, 68 ML runoff</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="summary-box">
+                    <strong>Event frequency:</strong> Major floods (>250 ML runoff) have occurred approximately every 5-7 years. 
+                    Severe droughts (deficit >250mm) approximately every 8-10 years. Most extreme events linked to ENSO cycles (El Niño/La Niña). 
+                    Property has experienced 3 major flood events and 2 severe drought events in the 25-year record.
+                </div>
+            </div>
+
+            <!-- Data sources footer -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666;">
+                <strong>Data Sources:</strong> OzWALD environmental data system (ANU), TERN AusEnv, Geoscience Australia surface water detection, 
+                Bureau of Meteorology rainfall data, SILO climate database. Soil moisture modeled using AWRA-L water balance model. 
+                Inundation derived from Landsat and Sentinel-2 satellite imagery (250m: 2000-2024, 10m: 2017-2024).
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize charts
+        function initChart(id) {
+            const canvas = document.getElementById(id);
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            return canvas.getContext('2d');
+        }
+
+        // Runoff Time Series
+        const runoffTSCtx = initChart('runoffTimeSeriesChart');
+        function drawRunoffTimeSeries() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const runoff = [125, 98, 68, 142, 168, 178, 52, 95, 156, 188, 285, 165, 132, 148, 95, 112, 158, 172, 142, 
+                           242, 195, 168, 135, 152, 168];
+            
+            const width = runoffTSCtx.canvas.width;
+            const height = runoffTSCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            runoffTSCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            runoffTSCtx.fillStyle = '#fafafa';
+            runoffTSCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            runoffTSCtx.strokeStyle = '#e0e0e0';
+            runoffTSCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                runoffTSCtx.beginPath();
+                runoffTSCtx.moveTo(padding, y);
+                runoffTSCtx.lineTo(width - padding, y);
+                runoffTSCtx.stroke();
+                
+                const value = 300 - (i * 60);
+                runoffTSCtx.fillStyle = '#666';
+                runoffTSCtx.font = '11px sans-serif';
+                runoffTSCtx.textAlign = 'right';
+                runoffTSCtx.fillText(value + ' ML', padding - 5, y + 4);
+            }
+            
+            // Mean line
+            runoffTSCtx.strokeStyle = '#999';
+            runoffTSCtx.lineWidth = 1;
+            runoffTSCtx.setLineDash([5, 5]);
+            const meanY = padding + chartHeight - (145 / 300) * chartHeight;
+            runoffTSCtx.beginPath();
+            runoffTSCtx.moveTo(padding, meanY);
+            runoffTSCtx.lineTo(width - padding, meanY);
+            runoffTSCtx.stroke();
+            runoffTSCtx.setLineDash([]);
+            
+            // Line chart
+            runoffTSCtx.strokeStyle = '#2c5f3f';
+            runoffTSCtx.lineWidth = 2;
+            runoffTSCtx.beginPath();
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (runoff[i] / 300) * chartHeight;
+                if (i === 0) runoffTSCtx.moveTo(x, y);
+                else runoffTSCtx.lineTo(x, y);
+            }
+            runoffTSCtx.stroke();
+            
+            // Points
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (runoff[i] / 300) * chartHeight;
+                runoffTSCtx.fillStyle = runoff[i] > 200 ? '#dc3545' : '#2c5f3f';
+                runoffTSCtx.beginPath();
+                runoffTSCtx.arc(x, y, 3, 0, Math.PI * 2);
+                runoffTSCtx.fill();
+            }
+            
+            // X-axis labels
+            runoffTSCtx.fillStyle = '#666';
+            runoffTSCtx.textAlign = 'center';
+            for (let i = 0; i < years.length; i += 5) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                runoffTSCtx.fillText(years[i], x, height - padding + 20);
+            }
+            
+            // Title
+            runoffTSCtx.fillStyle = '#666';
+            runoffTSCtx.font = '12px sans-serif';
+            runoffTSCtx.textAlign = 'left';
+            runoffTSCtx.fillText('Time Series', padding, padding - 10);
+        }
+
+        // Runoff Distribution (histogram)
+        const runoffDistCtx = initChart('runoffDistributionChart');
+        function drawRunoffDistribution() {
+            const bins = [
+                {range: '0-75', count: 3, color: '#dc3545'},
+                {range: '75-125', count: 5, color: '#ffc107'},
+                {range: '125-175', count: 11, color: '#52a37a'},
+                {range: '175-225', count: 4, color: '#2c5f3f'},
+                {range: '225+', count: 2, color: '#1565c0'}
+            ];
+            
+            const width = runoffDistCtx.canvas.width;
+            const height = runoffDistCtx.canvas.height;
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barWidth = chartWidth / bins.length * 0.75;
+            
+            runoffDistCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            runoffDistCtx.fillStyle = '#fafafa';
+            runoffDistCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            runoffDistCtx.strokeStyle = '#e0e0e0';
+            runoffDistCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                runoffDistCtx.beginPath();
+                runoffDistCtx.moveTo(padding, y);
+                runoffDistCtx.lineTo(width - padding, y);
+                runoffDistCtx.stroke();
+                
+                runoffDistCtx.fillStyle = '#666';
+                runoffDistCtx.font = '10px sans-serif';
+                runoffDistCtx.textAlign = 'right';
+                runoffDistCtx.fillText((12 - i * 3) + ' yrs', padding - 5, y + 3);
+            }
+            
+            // Bars
+            for (let i = 0; i < bins.length; i++) {
+                const x = padding + (i / bins.length) * chartWidth + (chartWidth / bins.length - barWidth) / 2;
+                const barHeight = (bins[i].count / 12) * chartHeight;
+                
+                runoffDistCtx.fillStyle = bins[i].color;
+                runoffDistCtx.fillRect(x, padding + chartHeight - barHeight, barWidth, barHeight);
+                
+                // Count label
+                runoffDistCtx.fillStyle = '#333';
+                runoffDistCtx.font = 'bold 11px sans-serif';
+                runoffDistCtx.textAlign = 'center';
+                runoffDistCtx.fillText(bins[i].count, x + barWidth / 2, padding + chartHeight - barHeight - 5);
+                
+                // X-axis label
+                runoffDistCtx.font = '9px sans-serif';
+                runoffDistCtx.fillText(bins[i].range, x + barWidth / 2, height - padding + 15);
+            }
+            
+            // Title
+            runoffDistCtx.fillStyle = '#666';
+            runoffDistCtx.font = '12px sans-serif';
+            runoffDistCtx.textAlign = 'left';
+            runoffDistCtx.fillText('Distribution', padding, padding - 10);
+            
+            // X-axis label
+            runoffDistCtx.textAlign = 'center';
+            runoffDistCtx.fillText('ML/year', width / 2, height - 5);
+        }
+
+        // Deficit Time Series
+        const deficitTSCtx = initChart('deficitTimeSeriesChart');
+        function drawDeficitTimeSeries() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const deficit = [-185, -205, -262, -165, -158, -142, -285, -215, -168, -152, -135, -172, -198, -165, 
+                            -208, -225, -175, -162, -195, -148, -168, -178, -198, -185, -178];
+            
+            const width = deficitTSCtx.canvas.width;
+            const height = deficitTSCtx.canvas.height;
+            const padding = 45;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            deficitTSCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            deficitTSCtx.fillStyle = '#fafafa';
+            deficitTSCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            deficitTSCtx.strokeStyle = '#e0e0e0';
+            deficitTSCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                deficitTSCtx.beginPath();
+                deficitTSCtx.moveTo(padding, y);
+                deficitTSCtx.lineTo(width - padding, y);
+                deficitTSCtx.stroke();
+                
+                const value = -100 - (i * 40);
+                deficitTSCtx.fillStyle = '#666';
+                deficitTSCtx.font = '10px sans-serif';
+                deficitTSCtx.textAlign = 'right';
+                deficitTSCtx.fillText(value + 'mm', padding - 5, y + 3);
+            }
+            
+            // Line
+            deficitTSCtx.strokeStyle = '#dc3545';
+            deficitTSCtx.lineWidth = 2;
+            deficitTSCtx.beginPath();
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (Math.abs(deficit[i]) - 100) / 200 * chartHeight;
+                if (i === 0) deficitTSCtx.moveTo(x, y);
+                else deficitTSCtx.lineTo(x, y);
+            }
+            deficitTSCtx.stroke();
+            
+            // X-axis labels
+            deficitTSCtx.fillStyle = '#666';
+            deficitTSCtx.textAlign = 'center';
+            for (let i = 0; i < years.length; i += 8) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                deficitTSCtx.fillText(years[i], x, height - padding + 18);
+            }
+            
+            deficitTSCtx.fillText('Time Series', width / 2, padding - 10);
+        }
+
+        // Deficit Distribution
+        const deficitDistCtx = initChart('deficitDistributionChart');
+        function drawDeficitDistribution() {
+            const bins = [
+                {range: '-285\nto\n-250', count: 2},
+                {range: '-250\nto\n-200', count: 7},
+                {range: '-200\nto\n-150', count: 12},
+                {range: '-150\nto\n-100', count: 4}
+            ];
+            
+            const width = deficitDistCtx.canvas.width;
+            const height = deficitDistCtx.canvas.height;
+            const padding = 35;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barWidth = chartWidth / bins.length * 0.75;
+            
+            deficitDistCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            deficitDistCtx.fillStyle = '#fafafa';
+            deficitDistCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            deficitDistCtx.strokeStyle = '#e0e0e0';
+            deficitDistCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                deficitDistCtx.beginPath();
+                deficitDistCtx.moveTo(padding, y);
+                deficitDistCtx.lineTo(width - padding, y);
+                deficitDistCtx.stroke();
+            }
+            
+            // Bars
+            for (let i = 0; i < bins.length; i++) {
+                const x = padding + (i / bins.length) * chartWidth + (chartWidth / bins.length - barWidth) / 2;
+                const barHeight = (bins[i].count / 12) * chartHeight;
+                
+                deficitDistCtx.fillStyle = '#dc3545';
+                deficitDistCtx.fillRect(x, padding + chartHeight - barHeight, barWidth, barHeight);
+                
+                // Count
+                deficitDistCtx.fillStyle = '#333';
+                deficitDistCtx.font = 'bold 11px sans-serif';
+                deficitDistCtx.textAlign = 'center';
+                deficitDistCtx.fillText(bins[i].count, x + barWidth / 2, padding + chartHeight - barHeight - 5);
+                
+                // Label
+                deficitDistCtx.font = '8px sans-serif';
+                const lines = bins[i].range.split('\n');
+                lines.forEach((line, j) => {
+                    deficitDistCtx.fillText(line, x + barWidth / 2, height - padding + 12 + (j * 9));
+                });
+            }
+            
+            deficitDistCtx.font = '11px sans-serif';
+            deficitDistCtx.fillText('Distribution', width / 2, padding - 10);
+        }
+
+        // Seasonal Boxplot
+        const seasonalCtx = initChart('seasonalBoxplotChart');
+        function drawSeasonalBoxplot() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const data = [
+                {median: -180, q1: -220, q3: -150, min: -260, max: -120},
+                {median: -210, q1: -245, q3: -175, min: -280, max: -140},
+                {median: -195, q1: -235, q3: -165, min: -285, max: -130},
+                {median: -165, q1: -195, q3: -135, min: -245, max: -105},
+                {median: -125, q1: -155, q3: -95, min: -195, max: -65},
+                {median: -85, q1: -115, q3: -60, min: -145, max: -35},
+                {median: -65, q1: -90, q3: -45, min: -125, max: -25},
+                {median: -55, q1: -75, q3: -35, min: -105, max: -15},
+                {median: -72, q1: -95, q3: -52, min: -125, max: -30},
+                {median: -105, q1: -135, q3: -80, min: -175, max: -55},
+                {median: -142, q1: -175, q3: -115, min: -215, max: -85},
+                {median: -165, q1: -195, q3: -135, min: -235, max: -105}
+            ];
+            
+            const width = seasonalCtx.canvas.width;
+            const height = seasonalCtx.canvas.height;
+            const padding = 45;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const boxWidth = chartWidth / months.length * 0.6;
+            
+            seasonalCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            seasonalCtx.fillStyle = '#fafafa';
+            seasonalCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            seasonalCtx.strokeStyle = '#e0e0e0';
+            seasonalCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                seasonalCtx.beginPath();
+                seasonalCtx.moveTo(padding, y);
+                seasonalCtx.lineTo(width - padding, y);
+                seasonalCtx.stroke();
+                
+                const value = 0 - (i * 60);
+                seasonalCtx.fillStyle = '#666';
+                seasonalCtx.font = '10px sans-serif';
+                seasonalCtx.textAlign = 'right';
+                seasonalCtx.fillText(value + 'mm', padding - 5, y + 3);
+            }
+            
+            // Draw boxplots
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i + 0.5) / months.length * chartWidth;
+                const d = data[i];
+                
+                // Convert values to y coordinates
+                const yMax = padding + chartHeight - (Math.abs(d.max) / 300) * chartHeight;
+                const yQ3 = padding + chartHeight - (Math.abs(d.q3) / 300) * chartHeight;
+                const yMedian = padding + chartHeight - (Math.abs(d.median) / 300) * chartHeight;
+                const yQ1 = padding + chartHeight - (Math.abs(d.q1) / 300) * chartHeight;
+                const yMin = padding + chartHeight - (Math.abs(d.min) / 300) * chartHeight;
+                
+                // Whiskers
+                seasonalCtx.strokeStyle = '#666';
+                seasonalCtx.lineWidth = 1;
+                seasonalCtx.beginPath();
+                seasonalCtx.moveTo(x, yMax);
+                seasonalCtx.lineTo(x, yMin);
+                seasonalCtx.stroke();
+                
+                // Box
+                seasonalCtx.fillStyle = 'rgba(44, 95, 63, 0.3)';
+                seasonalCtx.fillRect(x - boxWidth / 2, yQ3, boxWidth, yQ1 - yQ3);
+                seasonalCtx.strokeStyle = '#2c5f3f';
+                seasonalCtx.lineWidth = 1;
+                seasonalCtx.strokeRect(x - boxWidth / 2, yQ3, boxWidth, yQ1 - yQ3);
+                
+                // Median line
+                seasonalCtx.strokeStyle = '#2c5f3f';
+                seasonalCtx.lineWidth = 2;
+                seasonalCtx.beginPath();
+                seasonalCtx.moveTo(x - boxWidth / 2, yMedian);
+                seasonalCtx.lineTo(x + boxWidth / 2, yMedian);
+                seasonalCtx.stroke();
+                
+                // X-axis labels
+                seasonalCtx.fillStyle = '#666';
+                seasonalCtx.font = '10px sans-serif';
+                seasonalCtx.textAlign = 'center';
+                seasonalCtx.fillText(months[i], x, height - padding + 18);
+            }
+        }
+
+        // Inundation Map
+        const inundationCtx = initChart('inundationMap');
+        let currentInundationView = '250m';
+        
+        function drawInundationMap() {
+            const width = inundationCtx.canvas.width;
+            const height = inundationCtx.canvas.height;
+            const padding = 20;
+            
+            inundationCtx.clearRect(0, 0, width, height);
+            
+            // Background (never flooded)
+            inundationCtx.fillStyle = '#f0f0f0';
+            inundationCtx.fillRect(0, 0, width, height);
+            
+            // Create inundation zones
+            const gridSize = currentInundationView === '250m' ? 25 : 10;
+            
+            for (let y = 0; y < height; y += gridSize) {
+                for (let x = 0; x < width; x += gridSize) {
+                    // Simulate inundation frequency - higher near bottom (creek)
+                    const distanceFromBottom = height - y;
+                    const proximity = distanceFromBottom / height;
+                    
+                    let frequency = 0;
+                    const rand = Math.random();
+                    
+                    if (proximity < 0.1 && rand < 0.8) {
+                        frequency = Math.floor(Math.random() * 15) + 8; // Very frequent
+                    } else if (proximity < 0.15 && rand < 0.6) {
+                        frequency = Math.floor(Math.random() * 5) + 6; // Frequent
+                    } else if (proximity < 0.25 && rand < 0.4) {
+                        frequency = Math.floor(Math.random() * 3) + 3; // Occasional
+                    } else if (proximity < 0.35 && rand < 0.15) {
+                        frequency = Math.floor(Math.random() * 2) + 1; // Rare
+                    }
+                    
+                    let color = '#f0f0f0'; // Never
+                    if (frequency >= 11) color = '#1565c0'; // Very frequent
+                    else if (frequency >= 6) color = '#4098db'; // Frequent
+                    else if (frequency >= 3) color = '#80c4ff'; // Occasional
+                    else if (frequency >= 1) color = '#c8e6ff'; // Rare
+                    
+                    inundationCtx.fillStyle = color;
+                    inundationCtx.fillRect(x, y, gridSize, gridSize);
+                }
+            }
+            
+            // Property boundary
+            inundationCtx.strokeStyle = '#333';
+            inundationCtx.lineWidth = 2;
+            inundationCtx.strokeRect(padding, padding, width - padding * 2, height - padding * 2);
+        }
+
+        // Runoff Coefficient Chart
+        const rcCtx = initChart('runoffCoefficientChart');
+        function drawRunoffCoefficientChart() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const coefficient = years.map((y, i) => 0.18 + Math.sin(i/3) * 0.05 + (Math.random() - 0.5) * 0.03);
+            
+            const width = rcCtx.canvas.width;
+            const height = rcCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            rcCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            rcCtx.fillStyle = '#fafafa';
+            rcCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            rcCtx.strokeStyle = '#e0e0e0';
+            rcCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                rcCtx.beginPath();
+                rcCtx.moveTo(padding, y);
+                rcCtx.lineTo(width - padding, y);
+                rcCtx.stroke();
+                
+                const value = 0.35 - (i * 0.05);
+                rcCtx.fillStyle = '#666';
+                rcCtx.font = '11px sans-serif';
+                rcCtx.textAlign = 'right';
+                rcCtx.fillText(value.toFixed(2), padding - 5, y + 4);
+            }
+            
+            // Mean line
+            rcCtx.strokeStyle = '#999';
+            rcCtx.lineWidth = 1;
+            rcCtx.setLineDash([5, 5]);
+            const meanY = padding + chartHeight - (0.21 / 0.35) * chartHeight;
+            rcCtx.beginPath();
+            rcCtx.moveTo(padding, meanY);
+            rcCtx.lineTo(width - padding, meanY);
+            rcCtx.stroke();
+            rcCtx.setLineDash([]);
+            
+            // Area under curve
+            rcCtx.fillStyle = 'rgba(44, 95, 63, 0.2)';
+            rcCtx.beginPath();
+            rcCtx.moveTo(padding, padding + chartHeight);
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (coefficient[i] / 0.35) * chartHeight;
+                rcCtx.lineTo(x, y);
+            }
+            rcCtx.lineTo(width - padding, padding + chartHeight);
+            rcCtx.closePath();
+            rcCtx.fill();
+            
+            // Line
+            rcCtx.strokeStyle = '#2c5f3f';
+            rcCtx.lineWidth = 2;
+            rcCtx.beginPath();
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (coefficient[i] / 0.35) * chartHeight;
+                if (i === 0) rcCtx.moveTo(x, y);
+                else rcCtx.lineTo(x, y);
+            }
+            rcCtx.stroke();
+            
+            // X-axis labels
+            rcCtx.fillStyle = '#666';
+            rcCtx.textAlign = 'center';
+            for (let i = 0; i < years.length; i += 5) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                rcCtx.fillText(years[i], x, height - padding + 20);
+            }
+            
+            // Y-axis label
+            rcCtx.save();
+            rcCtx.translate(15, height / 2);
+            rcCtx.rotate(-Math.PI / 2);
+            rcCtx.textAlign = 'center';
+            rcCtx.font = '12px sans-serif';
+            rcCtx.fillText('Runoff Coefficient', 0, 0);
+            rcCtx.restore();
+        }
+
+        // Draw all charts
+        drawRunoffTimeSeries();
+        drawRunoffDistribution();
+        drawDeficitTimeSeries();
+        drawDeficitDistribution();
+        drawSeasonalBoxplot();
+        drawInundationMap();
+        drawRunoffCoefficientChart();
+
+        // Utility functions
+        function switchInundationView(resolution) {
+            currentInundationView = resolution;
+            
+            document.querySelectorAll('.map-control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            drawInundationMap();
+        }
+
+        function downloadData(type) {
+            alert(`Downloading ${type} data...\n\nWould include:\n• Time series data (CSV)\n• Summary statistics\n• Spatial data (GeoTIFF) where applicable`);
+        }
+
+
+        function showUpgrade() {
+            alert('This section is available in the Professional package.');
+        }
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            drawRunoffTimeSeries();
+            drawRunoffDistribution();
+            drawDeficitTimeSeries();
+            drawDeficitDistribution();
+            drawSeasonalBoxplot();
+            drawInundationMap();
+            drawRunoffCoefficientChart();
+        });
+    </script>
+</body>
+</html>

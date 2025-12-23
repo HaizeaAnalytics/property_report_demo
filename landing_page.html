@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rural Property Report - Comprehensive Property Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: #2c5f3f;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .header-links {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .header-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+        }
+        
+        .header-links a:hover {
+            opacity: 1;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #2c5f3f 0%, #3d7a52 100%);
+            color: white;
+            padding: 4rem 2rem;
+        }
+        
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .hero-text h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero-text p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            background: white;
+            color: #2c5f3f;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .hero-image {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        
+        .hero-image img {
+            width: 100%;
+            border-radius: 4px;
+        }
+        
+        .features {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: #2c5f3f;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: #e8f4ed;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #2c5f3f;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .sample-section {
+            background: white;
+            padding: 3rem 2rem;
+            margin: 4rem 0;
+        }
+        
+        .sample-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .sample-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #2c5f3f;
+        }
+        
+        .sample-section p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .sample-preview {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .pricing-preview {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .pricing-preview h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #2c5f3f;
+        }
+        
+        .pricing-preview p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+        
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        
+        .pricing-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .pricing-card.featured {
+            border-color: #2c5f3f;
+            box-shadow: 0 4px 16px rgba(44, 95, 63, 0.15);
+        }
+        
+        .pricing-badge {
+            background: #2c5f3f;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: #2c5f3f;
+        }
+        
+        .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .price-note {
+            color: #999;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pricing-features {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features li {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .pricing-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2c5f3f;
+            font-weight: 700;
+        }
+        
+        .footer {
+            background: #2c5f3f;
+            color: white;
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .footer-section a:hover {
+            opacity: 1;
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+            opacity: 0.8;
+            font-size: 0.85rem;
+        }
+        
+        .disclaimer-box {
+            background: #fff9e6;
+            border: 1px solid #f0d88f;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+        
+        .disclaimer-box h3 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .disclaimer-box p {
+            color: #856404;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .acknowledge-button {
+            background: #2c5f3f;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 1.5rem auto 0;
+            transition: background 0.3s ease;
+        }
+        
+        .acknowledge-button:hover {
+            background: #3d7a52;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-grid,
+            .pricing-cards,
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+            
+            .header-links {
+                gap: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🌾 Rural Property Report</div>
+            <nav class="header-links">
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#sample">Sample Report</a>
+                <a href="#enterprise">Enterprise</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Comprehensive Rural Property Intelligence</h1>
+                <p>Make informed decisions with detailed reports on terrain, soil, climate, water, vegetation, and natural hazards for any rural property in Australia.</p>
+                
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">15M+</div>
+                        <div class="stat-label">Hectares covered</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Data sources</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">&lt;2 min</div>
+                        <div class="stat-label">Report delivery</div>
+                    </div>
+                </div>
+                
+                <button class="cta-button" onclick="scrollToDisclaimer()">Get Started</button>
+            </div>
+            
+            <div class="hero-image">
+                <svg width="100%" height="300" viewBox="0 0 600 300">
+                    <!-- Background -->
+                    <rect width="600" height="300" fill="#f0f4f0"/>
+                    
+                    <!-- Topographic map representation -->
+                    <path d="M 50,100 Q 150,80 250,100 T 450,100 T 550,80" stroke="#2c5f3f" stroke-width="1.5" fill="none" opacity="0.3"/>
+                    <path d="M 50,130 Q 150,110 250,130 T 450,130 T 550,110" stroke="#2c5f3f" stroke-width="1.5" fill="none" opacity="0.3"/>
+                    <path d="M 50,160 Q 150,140 250,160 T 450,160 T 550,140" stroke="#2c5f3f" stroke-width="1.5" fill="none" opacity="0.3"/>
+                    
+                    <!-- Property boundary -->
+                    <rect x="150" y="80" width="300" height="160" stroke="#ff6b35" stroke-width="2.5" fill="none" stroke-dasharray="5,5"/>
+                    
+                    <!-- Sample data points -->
+                    <circle cx="200" cy="120" r="4" fill="#2c5f3f"/>
+                    <circle cx="300" cy="150" r="4" fill="#2c5f3f"/>
+                    <circle cx="380" cy="130" r="4" fill="#2c5f3f"/>
+                    
+                    <!-- Legend -->
+                    <rect x="20" y="240" width="180" height="50" fill="white" stroke="#ddd" rx="4"/>
+                    <text x="30" y="260" font-size="12" font-weight="600" fill="#333">Sample Report Data:</text>
+                    <text x="30" y="278" font-size="10" fill="#666">• Terrain & Elevation</text>
+                    <line x1="230" y1="250" x2="260" y2="250" stroke="#ff6b35" stroke-width="2" stroke-dasharray="3,3"/>
+                    <text x="265" y="253" font-size="10" fill="#666">Property Boundary</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2>What's Included in Your Report</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h3>Terrain & Soil</h3>
+                <p>Detailed elevation profiles, slope analysis, soil types, depth, texture, pH levels, and agricultural suitability ratings.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🌦️</div>
+                <h3>Climate Data</h3>
+                <p>Historical weather patterns, rainfall records, temperature trends, frost risk, and crop water requirements.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💧</div>
+                <h3>Water Resources</h3>
+                <p>Soil moisture analysis, surface water features, runoff patterns, and drainage characteristics.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🌾</div>
+                <h3>Primary Production</h3>
+                <p>Vegetation growth patterns, pasture quality assessments, and seasonal productivity analysis.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚠️</div>
+                <h3>Natural Hazards</h3>
+                <p>Flood history and risk zones, fire history, bushfire risk ratings, and extreme weather events.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🌳</div>
+                <h3>Vegetation & Nature</h3>
+                <p>Native vegetation mapping, biodiversity indicators, threatened species records, and vegetation change over time.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="sample" class="sample-section">
+        <div class="sample-content">
+            <h2>See What You'll Get</h2>
+            <p>Every report includes an interactive dashboard and a comprehensive PDF document</p>
+            <div class="sample-preview">
+                <p style="color: #666; margin-bottom: 1rem;">📄 Sample 24-page report for a 450ha property in central NSW</p>
+                <button class="cta-button" style="margin: 0 auto;">View Full Sample Report (PDF)</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing-preview">
+        <h2>Transparent Pricing</h2>
+        <p>Choose the package that suits your needs. All reports delivered in under 2 minutes.</p>
+        
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <h3>Essentials</h3>
+                <div class="price">$25</div>
+                <div class="price-note">0-100 hectares</div>
+                <ul class="pricing-features">
+                    <li>Land use & terrain analysis</li>
+                    <li>Climate data & rainfall</li>
+                    <li>Soil types & suitability</li>
+                    <li>Basic vegetation mapping</li>
+                    <li>Interactive dashboard</li>
+                    <li>PDF download</li>
+                </ul>
+                <button class="cta-button" style="width: 100%; font-size: 1rem; padding: 0.75rem;">Select</button>
+            </div>
+            
+            <div class="pricing-card featured">
+                <div class="pricing-badge">MOST POPULAR</div>
+                <h3>Due Diligence</h3>
+                <div class="price">$45</div>
+                <div class="price-note">0-100 hectares</div>
+                <ul class="pricing-features">
+                    <li>Everything in Essentials</li>
+                    <li>Water resources analysis</li>
+                    <li>Flood & fire risk assessment</li>
+                    <li>Detailed vegetation history</li>
+                    <li>Natural hazards report</li>
+                    <li>Priority support</li>
+                </ul>
+                <button class="cta-button" style="width: 100%; font-size: 1rem; padding: 0.75rem;">Select</button>
+            </div>
+            
+            <div class="pricing-card">
+                <h3>Professional</h3>
+                <div class="price">$75</div>
+                <div class="price-note">0-100 hectares</div>
+                <ul class="pricing-features">
+                    <li>Everything in Due Diligence</li>
+                    <li>Primary production analysis</li>
+                    <li>Biodiversity assessment</li>
+                    <li>Carbon sequestration potential</li>
+                    <li>Solar energy options</li>
+                    <li>Custom branding available</li>
+                </ul>
+                <button class="cta-button" style="width: 100%; font-size: 1rem; padding: 0.75rem;">Select</button>
+            </div>
+        </div>
+        
+        <p style="margin-top: 2rem; font-size: 0.9rem;">Larger properties (100+ hectares) and volume discounts available. <a href="#enterprise" style="color: #2c5f3f; font-weight: 600;">View enterprise pricing</a></p>
+    </section>
+
+    <div class="disclaimer-box">
+        <h3>Important Information</h3>
+        <p>Reports are provided for informational purposes only and should not be relied upon as the sole basis for property purchase or land use decisions. Data is sourced from publicly available government and scientific databases. While we strive for accuracy, users should verify critical information independently. This service does not constitute professional advice.</p>
+        <button class="acknowledge-button" onclick="proceedToApp()">I Understand, Continue to Report Builder</button>
+    </div>
+
+    <footer id="enterprise" class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#">How it Works</a></li>
+                    <li><a href="#">Sample Reports</a></li>
+                    <li><a href="#">Data Sources</a></li>
+                    <li><a href="#">API Access</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Enterprise</h4>
+                <ul>
+                    <li><a href="#">Volume Pricing</a></li>
+                    <li><a href="#">White Label Options</a></li>
+                    <li><a href="#">Custom Integrations</a></li>
+                    <li><a href="#">Contact Sales</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Centre</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Rural Property Report. Data sourced from Australian Government, CSIRO, Bureau of Meteorology, and other authoritative sources.</p>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToDisclaimer() {
+            document.querySelector('.disclaimer-box').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function proceedToApp() {
+            alert('Proceeding to Step 2: Property Selection\n(Next mockup will show the map interface)');
+            window.location.href = 'step2_property_selection.html';
+        }
+    </script>
+</body>
+</html>

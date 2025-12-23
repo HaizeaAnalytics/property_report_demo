@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Rural Property Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: #2c5f3f;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .step-number.active {
+            background: white;
+            color: #2c5f3f;
+        }
+        
+        .step-number.completed {
+            background: rgba(255,255,255,0.4);
+        }
+        
+        .step-arrow {
+            opacity: 0.5;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+        
+        .checkout-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        /* Section cards */
+        .section-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .section-card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #2c5f3f;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-number {
+            width: 28px;
+            height: 28px;
+            background: #2c5f3f;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2c5f3f;
+            box-shadow: 0 0 0 3px rgba(44, 95, 63, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        
+        .info-note {
+            background: #f0f7ff;
+            border-left: 3px solid #2c5f3f;
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .info-note strong {
+            color: #2c5f3f;
+        }
+        
+        /* Payment options */
+        .payment-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .payment-option:hover {
+            border-color: #2c5f3f;
+            background: #f8f9fa;
+        }
+        
+        .payment-option.selected {
+            border-color: #2c5f3f;
+            background: #f0f7f0;
+        }
+        
+        .payment-option-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .payment-option-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .card-logos {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #999;
+        }
+        
+        /* Terms checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            cursor: pointer;
+            margin-top: 0.25rem;
+        }
+        
+        .checkbox-group label {
+            font-size: 0.9rem;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .checkbox-group a {
+            color: #2c5f3f;
+            text-decoration: none;
+        }
+        
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Order summary sidebar */
+        .order-summary {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 2rem;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+        
+        .order-summary h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .summary-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .summary-section:last-of-type {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .summary-section h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .property-details {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .summary-item-name {
+            color: #333;
+        }
+        
+        .summary-item-price {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .price-breakdown {
+            margin-top: 1.5rem;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+        
+        .price-row.subtotal {
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+            font-weight: 600;
+        }
+        
+        .price-row.total {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c5f3f;
+            padding-top: 1rem;
+            border-top: 2px solid #2c5f3f;
+        }
+        
+        .delivery-note {
+            background: #f0f7f0;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #2c5f3f;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .security-badges {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .security-badges svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Navigation buttons */
+        .navigation {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+            margin: 2rem -2rem -2rem -2rem;
+        }
+        
+        .button-group {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-primary {
+            background: #2c5f3f;
+            color: white;
+            flex: 1;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #3d7a52;
+            box-shadow: 0 4px 12px rgba(44, 95, 63, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+                order: -1;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🌾 Rural Property Report</div>
+        <div class="progress-indicator">
+            <div class="step">
+                <div class="step-number completed">✓</div>
+                <span>Introduction</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number completed">✓</div>
+                <span>Select Property</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number completed">✓</div>
+                <span>Choose Report</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number active">4</div>
+                <span>Payment</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1>Complete Your Purchase</h1>
+            <p>You're one step away from your property report</p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="checkout-area">
+                <!-- Contact Information -->
+                <div class="section-card">
+                    <h2>
+                        <span class="section-number">1</span>
+                        Contact Information
+                    </h2>
+                    
+                    <form id="checkoutForm">
+                        <div class="form-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" required placeholder="your.email@example.com">
+                            <div class="help-text">Report delivery and receipt will be sent to this email</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fullName">Name (Optional)</label>
+                            <input type="text" id="fullName" placeholder="John Smith">
+                            <div class="help-text">Will appear on your PDF report if provided</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="company">Company/Organisation (Optional)</label>
+                            <input type="text" id="company" placeholder="e.g., Smith Agricultural Consulting">
+                            <div class="help-text">Will appear on your PDF report if provided</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number (Optional)</label>
+                            <input type="tel" id="phone" placeholder="04XX XXX XXX">
+                            <div class="help-text">Only used if we need to contact you about your report</div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="section-card">
+                    <h2>
+                        <span class="section-number">2</span>
+                        Payment Method
+                    </h2>
+
+                    <div class="payment-options">
+                        <div class="payment-option selected" onclick="selectPayment('card')">
+                            <div class="payment-option-icon">💳</div>
+                            <div class="payment-option-name">Credit/Debit Card</div>
+                            <div class="card-logos">Visa • Mastercard • Amex</div>
+                        </div>
+                        <div class="payment-option" onclick="selectPayment('paypal')">
+                            <div class="payment-option-icon">🅿️</div>
+                            <div class="payment-option-name">PayPal</div>
+                        </div>
+                    </div>
+
+                    <div id="cardPayment">
+                        <div class="info-note">
+                            <strong>🔒 Secure Payment</strong><br>
+                            Your payment is processed securely via Stripe. We never store your card details.
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem; padding: 2rem; background: #f8f9fa; border-radius: 4px; text-align: center; color: #666;">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 0.5rem;">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            <p>Stripe payment form will appear here</p>
+                            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Card details, expiry, and CVV</p>
+                        </div>
+                    </div>
+
+                    <div id="paypalPayment" style="display: none;">
+                        <div class="info-note">
+                            You'll be redirected to PayPal to complete your payment securely.
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem; padding: 2rem; background: #f8f9fa; border-radius: 4px; text-align: center; color: #666;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🅿️</div>
+                            <p>PayPal checkout button will appear here</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="section-card">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="termsCheckbox">
+                        <label for="termsCheckbox">
+                            I agree to the <a href="#" target="_blank">Terms of Service</a> and understand this report is for informational purposes only. I acknowledge that data is sourced from publicly available databases and should be independently verified for critical decisions.
+                        </label>
+                    </div>
+
+                    <div class="info-note" style="margin-top: 1rem;">
+                        <strong>📧 Report Delivery:</strong> You will receive an email as soon as your report is ready (typically within 2 minutes). The email will contain links to your interactive dashboard and downloadable PDF.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <aside class="order-summary">
+                <h2>Order Summary</h2>
+
+                <div class="summary-section">
+                    <h3>Property Details</h3>
+                    <div class="property-details">
+                        <strong>Location:</strong> Mudgee, NSW<br>
+                        <strong>Parcels:</strong> 3 parcels<br>
+                        <strong>Total Area:</strong> 275.6 hectares<br>
+                        <strong>Configuration:</strong> Combined report
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>Report Package</h3>
+                    <div class="summary-item">
+                        <span class="summary-item-name">Due Diligence</span>
+                        <span class="summary-item-price">$85.00</span>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>Data Exports</h3>
+                    <div class="summary-item">
+                        <span class="summary-item-name">GIS Data Package</span>
+                        <span class="summary-item-price">$10.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-item-name">Excel Data Package</span>
+                        <span class="summary-item-price">$8.00</span>
+                    </div>
+                </div>
+
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span>Subtotal:</span>
+                        <span>$103.00</span>
+                    </div>
+                    <div class="price-row">
+                        <span>GST (10%):</span>
+                        <span>$10.30</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total:</span>
+                        <span>$113.30</span>
+                    </div>
+                </div>
+
+                <div class="delivery-note">
+                    ⚡ Report ready in under 2 minutes
+                </div>
+
+                <div class="security-badges">
+                    <span>🔒 256-bit SSL</span>
+                    <span>•</span>
+                    <span>PCI Compliant</span>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <nav class="navigation">
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="goBack()">← Previous</button>
+            <button class="btn btn-primary" id="payButton" disabled onclick="processPayment()">
+                <span>Complete Purchase</span>
+                <span>$113.30</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        let selectedPaymentMethod = 'card';
+
+        function selectPayment(method) {
+            selectedPaymentMethod = method;
+            
+            // Update UI
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Show/hide payment forms
+            document.getElementById('cardPayment').style.display = method === 'card' ? 'block' : 'none';
+            document.getElementById('paypalPayment').style.display = method === 'paypal' ? 'block' : 'none';
+        }
+
+        // Enable pay button when terms are accepted and email is valid
+        document.getElementById('termsCheckbox').addEventListener('change', function() {
+            validateForm();
+        });
+
+        document.getElementById('email').addEventListener('input', validateForm);
+
+        function validateForm() {
+            const email = document.getElementById('email').value;
+            const termsAccepted = document.getElementById('termsCheckbox').checked;
+
+            const isValid = email && termsAccepted;
+            document.getElementById('payButton').disabled = !isValid;
+        }
+
+        function goBack() {
+            alert('Going back to Step 3: Choose Report');
+        }
+
+        function processPayment() {
+            // Redirect to processing page
+            window.location.href = 'step5_processing.html';
+        }
+    </script>
+</body>
+</html>

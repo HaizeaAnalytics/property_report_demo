@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Report - Rural Property Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: #2c5f3f;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .step-number.active {
+            background: white;
+            color: #2c5f3f;
+        }
+        
+        .step-number.completed {
+            background: rgba(255,255,255,0.4);
+        }
+        
+        .step-arrow {
+            opacity: 0.5;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+        
+        .selection-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        /* Property Summary */
+        .property-summary {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .property-summary h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #2c5f3f;
+        }
+        
+        .property-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        .info-item {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* Multi-parcel choice */
+        .parcel-choice {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .parcel-choice h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #2c5f3f;
+        }
+        
+        .choice-options {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .choice-card {
+            flex: 1;
+            padding: 1.25rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .choice-card:hover {
+            border-color: #2c5f3f;
+            box-shadow: 0 4px 12px rgba(44, 95, 63, 0.1);
+        }
+        
+        .choice-card.selected {
+            border-color: #2c5f3f;
+            background: #f0f7f0;
+        }
+        
+        .choice-radio {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .choice-card.selected .choice-radio {
+            border-color: #2c5f3f;
+            background: #2c5f3f;
+        }
+        
+        .choice-card.selected .choice-radio::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .choice-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            padding-right: 2rem;
+        }
+        
+        .choice-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .choice-card .price-preview {
+            font-size: 0.85rem;
+            color: #2c5f3f;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .savings-badge {
+            background: #e8f4ed;
+            color: #2c5f3f;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+        
+        /* Package selection */
+        .package-selection {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .package-selection h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #2c5f3f;
+        }
+        
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .package-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .package-card:hover {
+            border-color: #2c5f3f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 95, 63, 0.15);
+        }
+        
+        .package-card.selected {
+            border-color: #2c5f3f;
+            border-width: 3px;
+            background: #f0f7f0;
+        }
+        
+        .package-badge {
+            position: absolute;
+            top: -10px;
+            right: 1rem;
+            background: #2c5f3f;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .package-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2c5f3f;
+        }
+        
+        .package-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        
+        .package-price-note {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 1rem;
+        }
+        
+        .package-features {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+        
+        .package-features li {
+            font-size: 0.85rem;
+            color: #666;
+            padding-left: 1.25rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .package-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2c5f3f;
+            font-weight: 700;
+        }
+        
+        /* Add-ons */
+        .addons-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .addons-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .addons-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .addon-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .addon-item:hover {
+            border-color: #2c5f3f;
+            background: #f8f9fa;
+        }
+        
+        .addon-item.selected {
+            border-color: #2c5f3f;
+            background: #f0f7f0;
+        }
+        
+        .addon-checkbox {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .addon-item.selected .addon-checkbox {
+            background: #2c5f3f;
+            border-color: #2c5f3f;
+        }
+        
+        .addon-item.selected .addon-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .addon-info {
+            flex: 1;
+        }
+        
+        .addon-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .addon-info p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .addon-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .bundle-highlight {
+            background: #fff9e6;
+            border: 1px solid #f0d88f;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #856404;
+        }
+        
+        /* Description field */
+        .description-field {
+            margin-top: 2rem;
+        }
+        
+        .description-field label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .description-field textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+        
+        .description-field textarea:focus {
+            outline: none;
+            border-color: #2c5f3f;
+        }
+        
+        .info-box {
+            background: #f0f7ff;
+            border-left: 3px solid #2c5f3f;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1.5rem;
+        }
+        
+        .info-box p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Order summary sidebar */
+        .order-summary {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 2rem;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+        
+        .order-summary h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .summary-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .summary-section:last-of-type {
+            border-bottom: none;
+        }
+        
+        .summary-section h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .summary-item-name {
+            color: #333;
+        }
+        
+        .summary-item-price {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .price-breakdown {
+            margin-top: 1rem;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+        
+        .price-row.subtotal {
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+            font-weight: 600;
+        }
+        
+        .price-row.total {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c5f3f;
+            padding-top: 1rem;
+            border-top: 2px solid #2c5f3f;
+        }
+        
+        .delivery-note {
+            background: #f0f7f0;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #2c5f3f;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        /* Navigation buttons */
+        .navigation {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+            margin: 2rem -2rem -2rem -2rem;
+        }
+        
+        .button-group {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-primary {
+            background: #2c5f3f;
+            color: white;
+            flex: 1;
+            max-width: 300px;
+        }
+        
+        .btn-primary:hover {
+            background: #3d7a52;
+            box-shadow: 0 4px 12px rgba(44, 95, 63, 0.3);
+        }
+        
+        @media (max-width: 1200px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+            }
+            
+            .packages-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🌾 Rural Property Report</div>
+        <div class="progress-indicator">
+            <div class="step">
+                <div class="step-number completed">✓</div>
+                <span>Introduction</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number completed">✓</div>
+                <span>Select Property</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number active">3</div>
+                <span>Choose Report</span>
+            </div>
+            <span class="step-arrow">→</span>
+            <div class="step">
+                <div class="step-number">4</div>
+                <span>Payment</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1>Choose Your Report</h1>
+            <p>Select a package and any additional data exports you need</p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="selection-area">
+                <!-- Property Summary -->
+                <div class="property-summary">
+                    <h2>Your Selection</h2>
+                    <div class="property-info">
+                        <div class="info-item">
+                            <div class="info-label">Parcels</div>
+                            <div class="info-value">3 parcels</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Total Area</div>
+                            <div class="info-value">275.6 ha</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Location</div>
+                            <div class="info-value">Mudgee, NSW</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multi-parcel choice -->
+                <div class="parcel-choice">
+                    <h2>Report Configuration</h2>
+                    <div class="choice-options">
+                        <div class="choice-card selected" onclick="selectChoice('combined')">
+                            <div class="choice-radio"></div>
+                            <h3>Combined Report</h3>
+                            <p>All parcels analysed together in one comprehensive report</p>
+                            <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">✓ Best for adjacent properties or single farm operations</p>
+                            <div class="price-preview">1 report</div>
+                            <div class="savings-badge" id="combinedSavings">Save $170</div>
+                        </div>
+                        <div class="choice-card" onclick="selectChoice('separate')">
+                            <div class="choice-radio"></div>
+                            <h3>Separate Reports</h3>
+                            <p>Individual report for each parcel</p>
+                            <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">✓ Best for properties in different locations</p>
+                            <div class="price-preview">3 reports</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Selection -->
+                <div class="package-selection">
+                    <h2>Select Package</h2>
+                    <div class="packages-grid">
+                        <div class="package-card" onclick="selectPackage('essentials')">
+                            <h3>Essentials</h3>
+                            <div class="package-price">$50</div>
+                            <div class="package-price-note">101-500 hectares</div>
+                            <ul class="package-features">
+                                <li>Standard land use report</li>
+                                <li>Terrain & elevation analysis</li>
+                                <li>Climate data & rainfall</li>
+                                <li>Soil types & suitability</li>
+                                <li>Basic vegetation mapping</li>
+                                <li>Interactive dashboard</li>
+                                <li>PDF download</li>
+                            </ul>
+                        </div>
+
+                        <div class="package-card selected" onclick="selectPackage('duediligence')">
+                            <div class="package-badge">MOST POPULAR</div>
+                            <h3>Due Diligence</h3>
+                            <div class="package-price">$85</div>
+                            <div class="package-price-note">101-500 hectares</div>
+                            <ul class="package-features">
+                                <li>Everything in Essentials</li>
+                                <li>Water resources analysis</li>
+                                <li>Flood & fire risk assessment</li>
+                                <li>Detailed vegetation history</li>
+                                <li>Natural hazards report</li>
+                                <li>Runoff & drainage patterns</li>
+                                <li>Priority support</li>
+                            </ul>
+                        </div>
+
+                        <div class="package-card" onclick="selectPackage('professional')">
+                            <h3>Professional</h3>
+                            <div class="package-price">$140</div>
+                            <div class="package-price-note">101-500 hectares</div>
+                            <ul class="package-features">
+                                <li>Everything in Due Diligence</li>
+                                <li>Primary production analysis</li>
+                                <li>Pasture quality assessment</li>
+                                <li>Biodiversity assessment</li>
+                                <li>Threatened species records</li>
+                                <li>Carbon sequestration potential</li>
+                                <li>Solar energy assessment</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="info-box" style="margin-top: 2rem; margin-bottom: 2rem;">
+                        <p><strong>What you get with every package:</strong></p>
+                        <p style="margin-top: 0.5rem;">📊 <strong>Interactive Dashboard</strong> - Explore data online, download individual graphs, zoom into specific time periods</p>
+                        <p style="margin-top: 0.25rem;">📄 <strong>PDF Report</strong> - Professional document perfect for sharing with advisors, lenders, or your records</p>
+                        <p style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #ddd;"><strong>Need all the raw data?</strong> Add data exports below for comprehensive analysis in your own tools.</p>
+                    </div>
+
+                    <!-- Add-ons -->
+                    <div class="addons-section">
+                        <h3>Data Export Add-ons</h3>
+                        <p class="addons-subtitle">Optional: Download all raw data for use in GIS software, Excel, R, or Python</p>
+                        
+                        <div class="addon-item" onclick="toggleAddon('gis')">
+                            <div class="addon-checkbox"></div>
+                            <div class="addon-info">
+                                <h4>GIS Data Package</h4>
+                                <p>All spatial data as gridded rasters (GeoTIFF) - terrain, soil, climate, vegetation, fire/flood risk. Compatible with QGIS, ArcGIS, R, Python.</p>
+                            </div>
+                            <div class="addon-price">+$10</div>
+                        </div>
+
+                        <div class="addon-item" onclick="toggleAddon('excel')">
+                            <div class="addon-checkbox"></div>
+                            <div class="addon-info">
+                                <h4>Excel Data Package</h4>
+                                <p>All tabular and time series data as Excel spreadsheet - climate records, soil analysis, vegetation indices, water balance, production estimates.</p>
+                            </div>
+                            <div class="addon-price">+$8</div>
+                        </div>
+
+                        <div class="bundle-highlight">
+                            💡 <strong>Save $3:</strong> Select both data packages for $15 (normally $18)
+                        </div>
+                    </div>
+
+                    <!-- Description field -->
+                    <div class="description-field">
+                        <label for="reportDescription">Report Description (Optional)</label>
+                        <textarea 
+                            id="reportDescription" 
+                            rows="3" 
+                            placeholder="e.g., 'Smith Farm - Due diligence for purchase' or 'Loan assessment for Client XYZ'"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <aside class="order-summary">
+                <h2>Order Summary</h2>
+
+                <div class="summary-section">
+                    <h3>Property</h3>
+                    <div class="summary-item">
+                        <span class="summary-item-name">3 parcels, 275.6 ha</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-item-name">Mudgee, NSW</span>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>Report Type</h3>
+                    <div class="summary-item">
+                        <span class="summary-item-name" id="reportType">Combined report (1)</span>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>Package</h3>
+                    <div class="summary-item">
+                        <span class="summary-item-name" id="packageName">Due Diligence</span>
+                        <span class="summary-item-price" id="packagePrice">$85.00</span>
+                    </div>
+                </div>
+
+                <div class="summary-section" id="addonsSection" style="display: none;">
+                    <h3>Data Exports</h3>
+                    <div id="addonsList"></div>
+                </div>
+
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$85.00</span>
+                    </div>
+                    <div class="price-row">
+                        <span>GST (10%):</span>
+                        <span id="gst">$8.50</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total:</span>
+                        <span id="total">$93.50</span>
+                    </div>
+                </div>
+
+                <div class="delivery-note">
+                    ⚡ Report typically ready in under 2 minutes
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <nav class="navigation">
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="goBack()">← Previous</button>
+            <button class="btn btn-primary" onclick="goNext()">Continue to Payment →</button>
+        </div>
+    </nav>
+
+    <script>
+        let selectedChoice = 'combined';
+        let selectedPackage = 'duediligence';
+        let selectedAddons = new Set();
+
+        const packages = {
+            essentials: { name: 'Essentials', price: 50 },
+            duediligence: { name: 'Due Diligence', price: 85 },
+            professional: { name: 'Professional', price: 140 }
+        };
+
+        const addons = {
+            gis: { name: 'GIS Data Package', price: 10 },
+            excel: { name: 'Excel Data Package', price: 8 }
+        };
+
+        function updateSavingsBadge() {
+            const packagePrice = packages[selectedPackage].price;
+            const savings = packagePrice * 2;
+            document.getElementById('combinedSavings').textContent = `Save $${savings}`;
+        }
+
+        function selectChoice(choice) {
+            selectedChoice = choice;
+            document.querySelectorAll('.choice-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            updateSummary();
+        }
+
+        function selectPackage(pkg) {
+            selectedPackage = pkg;
+            document.querySelectorAll('.package-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            updateSavingsBadge();
+            updateSummary();
+        }
+
+        function toggleAddon(addon) {
+            if (selectedAddons.has(addon)) {
+                selectedAddons.delete(addon);
+            } else {
+                selectedAddons.add(addon);
+            }
+            event.currentTarget.classList.toggle('selected');
+            updateSummary();
+        }
+
+        function updateSummary() {
+            // Update report type
+            document.getElementById('reportType').textContent = 
+                selectedChoice === 'combined' ? 'Combined report (1)' : 'Separate reports (3)';
+
+            // Update package
+            const pkg = packages[selectedPackage];
+            document.getElementById('packageName').textContent = pkg.name;
+            document.getElementById('packagePrice').textContent = `$${pkg.price.toFixed(2)}`;
+
+            // Update add-ons
+            const addonsSection = document.getElementById('addonsSection');
+            const addonsList = document.getElementById('addonsList');
+            
+            if (selectedAddons.size > 0) {
+                addonsSection.style.display = 'block';
+                addonsList.innerHTML = Array.from(selectedAddons).map(addonId => {
+                    const addon = addons[addonId];
+                    return `
+                        <div class="summary-item">
+                            <span class="summary-item-name">${addon.name}</span>
+                            <span class="summary-item-price">$${addon.price.toFixed(2)}</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                addonsSection.style.display = 'none';
+            }
+
+            // Calculate totals
+            let subtotal = pkg.price;
+            
+            // Add-ons pricing with bundle discount
+            if (selectedAddons.has('gis') && selectedAddons.has('excel')) {
+                subtotal += 15; // Bundle price
+            } else {
+                Array.from(selectedAddons).forEach(addonId => {
+                    subtotal += addons[addonId].price;
+                });
+            }
+
+            // Multiply by 3 if separate reports
+            if (selectedChoice === 'separate') {
+                subtotal *= 3;
+            }
+
+            const gstAmount = subtotal * 0.1;
+            const total = subtotal + gstAmount;
+
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('gst').textContent = `$${gstAmount.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function goBack() {
+            alert('Going back to Step 2: Property Selection');
+        }
+
+        function goNext() {
+            const description = document.getElementById('reportDescription').value;
+            const total = document.getElementById('total').textContent;
+            window.location.href = "step4_payment.html";
+        }
+
+        // Initialize
+        updateSavingsBadge();
+        updateSummary();
+    </script>
+</body>
+</html>

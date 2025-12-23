@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Report Dashboard - Natural Hazards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7f9;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .property-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .property-title h1 {
+            font-size: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .property-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-header {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-header:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary:hover {
+            background: #3d7a52;
+        }
+        
+        /* Main layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+        
+        /* Sidebar navigation */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            padding: 1rem 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c5f3f;
+        }
+        
+        .nav-item.active {
+            background: #f0f7f0;
+            color: #2c5f3f;
+            font-weight: 600;
+            border-left: 3px solid #2c5f3f;
+            padding-left: calc(1.5rem - 3px);
+        }
+        
+        .nav-item.locked {
+            opacity: 0.5;
+            position: relative;
+        }
+        
+        .nav-item.locked::after {
+            content: '🔒';
+            margin-left: auto;
+            font-size: 0.8rem;
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .section-header {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: #666;
+            font-size: 1.05rem;
+        }
+        
+        /* Grid layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Card container */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-card {
+            padding: 0.25rem 0.6rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-card:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        /* Map container */
+        .map-container {
+            width: 100%;
+            height: 350px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 0.85rem;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c5f3f;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        /* Chart container */
+        .chart-container {
+            width: 100%;
+            height: 280px;
+            position: relative;
+        }
+        
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2c5f3f;
+        }
+        
+        .stat-context {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+        
+        /* Risk rating badge */
+        .risk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .risk-badge.low {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .risk-badge.moderate {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .risk-badge.high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .risk-badge.extreme {
+            background: #dc3545;
+            color: white;
+        }
+        
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        .data-table thead {
+            background: #f8f9fa;
+        }
+        
+        .data-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Summary box */
+        .summary-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .summary-box strong {
+            color: #2c5f3f;
+        }
+        
+        /* Alert boxes */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+            color: #155724;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-left: 3px solid #dc3545;
+            color: #721c24;
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.375rem;
+            top: 0.25rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #dc3545;
+            border: 2px solid white;
+        }
+        
+        .timeline-date {
+            font-weight: 600;
+            color: #2c5f3f;
+            margin-bottom: 0.25rem;
+        }
+        
+        .timeline-content {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="property-title">
+            <h1>Smith Farm Property Report</h1>
+            <div class="property-meta">
+                <div>📍 Mudgee, NSW</div>
+                <div>📏 275.6 hectares</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header">🔗 Share</button>
+            <button class="btn-header">📊 Export Data</button>
+            <button class="btn-header primary">📄 Download PDF</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Report Sections</div>
+                <a class="nav-item" href="dashboard_overview.html" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    Overview
+                </a>
+                <a class="nav-item" href="dashboard_terrain_soil.html" class="nav-link">
+                    <span class="nav-icon">⛰️</span>
+                    Terrain & Soil
+                </a>
+                <a class="nav-item" href="dashboard_climate.html" class="nav-link">
+                    <span class="nav-icon">🌦️</span>
+                    Climate
+                </a>
+                <a class="nav-item" href="dashboard_water.html" class="nav-link">
+                    <span class="nav-icon">💧</span>
+                    Water
+                </a>
+                <a class="nav-item" href="dashboard_vegetation.html" class="nav-link">
+                    <span class="nav-icon">🌿</span>
+                    Vegetation
+                </a>
+                <a class="nav-item active">
+                    <span class="nav-icon">⚠️</span>
+                    Natural Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Premium Sections</div>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌾</span>
+                    Primary Production
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">☀️</span>
+                    Solar Energy
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌱</span>
+                    Carbon Potential
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🦘</span>
+                    Nature & Biodiversity
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="section-header">
+                <h2>Natural Hazards</h2>
+                <p>Bushfire, flood, extreme weather and risk assessment</p>
+            </div>
+
+            <!-- Bushfire Risk & History -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Bushfire Risk Assessment</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('fire')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div class="risk-badge moderate">🔥 Moderate Fire Risk</div>
+                </div>
+                
+                <div class="map-container">
+                    <canvas id="fireRiskMap"></canvas>
+                    <div class="map-legend">
+                        <div class="legend-title">Fire Risk by Vegetation</div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #dc3545;"></div>
+                            <span>Extreme (Dense forest)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ffc107;"></div>
+                            <span>High (Woodland)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #28a745;"></div>
+                            <span>Moderate (Pasture)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #6c757d;"></div>
+                            <span>Low (Cleared/sparse)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ff6b6b; opacity: 0.6;"></div>
+                            <span>Burnt 2019</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Extreme Risk</div>
+                        <div class="stat-value">8%</div>
+                        <div class="stat-context">Dense forest areas</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">High Risk</div>
+                        <div class="stat-value">34%</div>
+                        <div class="stat-context">Woodland</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Moderate Risk</div>
+                        <div class="stat-value">52%</div>
+                        <div class="stat-context">Improved pasture</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Low Risk</div>
+                        <div class="stat-value">6%</div>
+                        <div class="stat-context">Cleared areas</div>
+                    </div>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Risk assessment:</strong> Overall moderate fire risk. 42% of property (forested areas) rated high to extreme risk. 
+                    Risk highest in north-western woodland section. Improved pasture areas (52%) provide natural fire breaks. 
+                    Asset protection zones recommended around structures in or near extreme risk areas. 
+                    Property experienced one significant fire event in past 25 years (2019, 15% of property burnt).
+                </div>
+            </div>
+
+            <!-- Fire History -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Fire History (2000-2024)</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('fire-history')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="fireHistoryChart"></canvas>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">December 2019</div>
+                        <div class="timeline-content">
+                            Major fire event during extreme fire season. 41.2 ha burnt (15% of property). 
+                            Primarily woodland areas in north-west section. Est. biomass loss: 185 tonnes. 
+                            No structures affected. Regrowth evident in subsequent years.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">January 2013</div>
+                        <div class="timeline-content">
+                            Minor fire in south-eastern boundary (3.8 ha, 1.4% of property). 
+                            Controlled burn that escaped containment. Low intensity, minimal damage.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2003, 2006, 2009, 2017</div>
+                        <div class="timeline-content">
+                            Fires occurred within 5km of property boundary but did not reach property. 
+                            Regional fire seasons with elevated risk but no direct impact.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>Regional fire context:</strong> Mudgee LGA experiences bushfire activity approximately every 3-4 years. 
+                    Property has been directly affected twice in 25 years (2013, 2019). Most recent significant event was 2019 Black Summer fires. 
+                    Fire season typically November-March, peak risk in December-January during hot, dry, windy conditions.
+                </div>
+            </div>
+
+            <!-- Fuel Moisture & Flammability -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Fuel Moisture & Flammability Patterns</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('flammability')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="flammabilityChart"></canvas>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Flammability trends:</strong> Fuel moisture content (FMC) averages 92% in wet season (Jun-Sep), drops to 45% in fire season (Dec-Feb). 
+                    Critically low FMC (<50%) occurs average 42 days per year, predominantly December-February. 
+                    2019 event occurred after 18 consecutive days of FMC <40% combined with extreme temperatures and high winds. 
+                    Current year FMC within normal range for season.
+                </div>
+            </div>
+
+            <!-- Flood & Extreme Weather -->
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Flood Risk Summary</h3>
+                    </div>
+                    
+                    <div style="padding: 1rem 0;">
+                        <div class="risk-badge low">💧 Low Flood Risk</div>
+                    </div>
+                    
+                    <div class="stats-grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="stat-box">
+                            <div class="stat-label">Never Flooded</div>
+                            <div class="stat-value">88%</div>
+                            <div class="stat-context">242.4 ha</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">High Frequency</div>
+                            <div class="stat-value">2%</div>
+                            <div class="stat-context">5.5 ha creek flats</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Assessment:</strong> Low overall flood risk. 88% of property never inundated in 25-year satellite record. 
+                        High-frequency flood areas limited to 2% (creek flats). Most recent significant inundation: March 2021.
+                        <div style="margin-top: 0.75rem; font-style: italic;">
+                            See <strong>Water</strong> section for detailed inundation mapping and frequency analysis.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Extreme Heat</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('heat')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="heatChart"></canvas>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Hot days (>35°C):</strong> Increased from average 72 days/year (2000-2010) to 89 days/year (2015-2024). 
+                        Maximum recorded: 47.2°C (January 2019). 
+                        <strong>Heatwaves (3+ consecutive days >35°C):</strong> Average 4.2 events per year, increasing trend. 
+                        Implications: heat stress for livestock, elevated fire risk, increased water demand.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wind & Extreme Rainfall -->
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Extreme Wind Events</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('wind')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="windChart"></canvas>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Maximum gust speeds:</strong> Annual maximum gusts typically 85-110 km/h. 
+                        Extreme event: 142 km/h (February 2020, severe thunderstorm). 
+                        Days with gusts >90 km/h: Average 3.2 per year. 
+                        Wind-related damage risk moderate - tree fall hazard in forested areas, potential for shed/infrastructure damage in extreme events.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Extreme Rainfall</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('rainfall')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="stat-box">
+                            <div class="stat-label">Max 24hr</div>
+                            <div class="stat-value">185mm</div>
+                            <div class="stat-context">March 2021</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">1:100yr Event</div>
+                            <div class="stat-value">~220mm</div>
+                            <div class="stat-context">24hr rainfall</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Extreme rainfall statistics:</strong> 
+                        Maximum 24-hour rainfall recorded: 185mm (March 2021, triggered regional flooding). 
+                        Events >100mm in 24hrs occurred 4 times in 25 years (2003, 2010, 2020, 2021). 
+                        Design rainfall (1:100 year): ~220mm/24hr, ~68mm/1hr. 
+                        Risk: erosion on bare slopes, localized flooding in drainage lines, dam overflow.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comprehensive Hazard Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Historical Extreme Events Summary</h3>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Event Type</th>
+                            <th>Severity</th>
+                            <th>Impact / Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Dec 2019</td>
+                            <td>Bushfire</td>
+                            <td>Extreme</td>
+                            <td>15% of property burnt (41 ha), part of Black Summer fires</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 2021</td>
+                            <td>Flood + Extreme Rain</td>
+                            <td>Extreme</td>
+                            <td>185mm/24hr rainfall, 8% property inundated, regional flooding</td>
+                        </tr>
+                        <tr>
+                            <td>Feb 2020</td>
+                            <td>Severe Storm</td>
+                            <td>High</td>
+                            <td>142 km/h wind gusts, tree damage, infrastructure at risk</td>
+                        </tr>
+                        <tr>
+                            <td>Jan 2019</td>
+                            <td>Extreme Heat</td>
+                            <td>Extreme</td>
+                            <td>47.2°C maximum, 8-day heatwave, fire danger extreme</td>
+                        </tr>
+                        <tr>
+                            <td>Jan 2013</td>
+                            <td>Bushfire</td>
+                            <td>Low</td>
+                            <td>Minor fire on boundary (3.8 ha), escaped controlled burn</td>
+                        </tr>
+                        <tr>
+                            <td>Feb 2010</td>
+                            <td>Flood</td>
+                            <td>Moderate</td>
+                            <td>Creek flooding, 4% property affected, 122mm rainfall</td>
+                        </tr>
+                        <tr>
+                            <td>2006-2007</td>
+                            <td>Drought</td>
+                            <td>Extreme</td>
+                            <td>Millennium Drought, severe soil moisture deficit, low runoff</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Overall Risk Summary -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Overall Hazard Profile & Recommendations</h3>
+                </div>
+                
+                <div style="display: grid; gap: 1rem;">
+                    <div class="alert alert-warning">
+                        <strong>🔥 Bushfire - Moderate Risk:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>42% of property high to extreme risk (forested areas)</li>
+                            <li>One major fire event in 25 years (2019)</li>
+                            <li>Fire season December-February, peak risk during heatwaves</li>
+                            <li><strong>Recommendations:</strong> Maintain asset protection zones around buildings, fuel reduction in high-risk areas, ember-resistant construction materials, bushfire survival plan</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <strong>💧 Flood - Low Risk:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>88% of property never flooded in 25-year record</li>
+                            <li>High-frequency areas limited to 2% (creek flats)</li>
+                            <li><strong>Recommendations:</strong> Avoid development in identified flood-prone areas, maintain drainage, consider dam spillway adequacy for extreme rainfall events</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>🌡️ Extreme Heat - Increasing Trend:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>Hot days increased from 72 to 89 per year over 25 years</li>
+                            <li>Heatwaves becoming more frequent (4+ per year)</li>
+                            <li><strong>Implications:</strong> Livestock heat stress, increased water demand, elevated fire risk, infrastructure heat loading</li>
+                            <li><strong>Recommendations:</strong> Provide shade for stock, ensure adequate water supply, heat-resilient pasture species</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>💨 Wind & Storm - Moderate Risk:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>Extreme gusts (>120 km/h) occur occasionally (~1 per 5-10 years)</li>
+                            <li>Tree fall hazard in forested areas during storms</li>
+                            <li><strong>Recommendations:</strong> Remove dead/hazardous trees near structures, secure loose materials, design buildings for N2 wind region (AS/NZS 1170.2)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>💡 Insurance & Planning Considerations:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                            <li>Property in bushfire-prone area - may affect insurance premiums and availability</li>
+                            <li>Building in extreme fire risk zones may require BAL-40 or BAL-FZ construction standards</li>
+                            <li>Low flood risk favorable for insurance and development approvals</li>
+                            <li>Consider multi-peril insurance covering fire, storm, and flood events</li>
+                            <li>Climate change implications: increasing heat and fire risk trends evident in 25-year record</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data sources footer -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666;">
+                <strong>Data Sources:</strong> Geoscience Australia Sentinel Hotspots (fire detection 2000-2024), 
+                TERN AusEnv fuel moisture content, Bureau of Meteorology climate extremes, 
+                Landsat/Sentinel-2 burn mapping (250m resolution), NSW Rural Fire Service fire history, 
+                CSIRO extreme rainfall statistics. Wind data from BoM observations and reanalysis. 
+                Building standards reference AS 3959 (bushfire) and AS/NZS 1170.2 (wind loading).
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize charts
+        function initChart(id) {
+            const canvas = document.getElementById(id);
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            return canvas.getContext('2d');
+        }
+
+        // Fire Risk Map
+        const fireRiskCtx = initChart('fireRiskMap');
+        function drawFireRiskMap() {
+            const width = fireRiskCtx.canvas.width;
+            const height = fireRiskCtx.canvas.height;
+            
+            fireRiskCtx.clearRect(0, 0, width, height);
+            
+            const gridSize = 15;
+            for (let y = 0; y < height; y += gridSize) {
+                for (let x = 0; x < width; x += gridSize) {
+                    // Forest areas (left side) = extreme/high risk
+                    // Pasture (right side) = moderate/low risk
+                    const forestProb = 1 - (x / width) * 0.9;
+                    let color = '#6c757d'; // Low (default)
+                    
+                    if (Math.random() < forestProb * 0.8) {
+                        if (Math.random() < 0.2) {
+                            color = '#dc3545'; // Extreme (dense forest)
+                        } else {
+                            color = '#ffc107'; // High (woodland)
+                        }
+                    } else if (Math.random() < 0.85) {
+                        color = '#28a745'; // Moderate (pasture)
+                    }
+                    
+                    fireRiskCtx.fillStyle = color;
+                    fireRiskCtx.fillRect(x, y, gridSize, gridSize);
+                    
+                    // 2019 burn scar (northwest section)
+                    if (x < width * 0.35 && y < height * 0.4 && Math.random() < 0.4) {
+                        fireRiskCtx.fillStyle = 'rgba(255, 107, 107, 0.6)';
+                        fireRiskCtx.fillRect(x, y, gridSize, gridSize);
+                    }
+                }
+            }
+            
+            // Property boundary
+            fireRiskCtx.strokeStyle = '#333';
+            fireRiskCtx.lineWidth = 3;
+            fireRiskCtx.strokeRect(20, 20, width - 40, height - 40);
+        }
+
+        // Fire History Chart (regional + property)
+        const fireHistoryCtx = initChart('fireHistoryChart');
+        function drawFireHistory() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const regionalFires = [8, 2, 1, 12, 3, 5, 18, 4, 2, 15, 6, 3, 2, 25, 8, 4, 3, 22, 6, 48, 3, 2, 5, 1, 3];
+            const propertyFires = years.map(y => (y === 2013 || y === 2019) ? 1 : 0);
+            
+            const width = fireHistoryCtx.canvas.width;
+            const height = fireHistoryCtx.canvas.height;
+            const padding = 60;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            fireHistoryCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            fireHistoryCtx.fillStyle = '#fafafa';
+            fireHistoryCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            fireHistoryCtx.strokeStyle = '#e0e0e0';
+            fireHistoryCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                fireHistoryCtx.beginPath();
+                fireHistoryCtx.moveTo(padding, y);
+                fireHistoryCtx.lineTo(width - padding, y);
+                fireHistoryCtx.stroke();
+                
+                const value = 50 - (i * 10);
+                fireHistoryCtx.fillStyle = '#666';
+                fireHistoryCtx.font = '10px sans-serif';
+                fireHistoryCtx.textAlign = 'right';
+                fireHistoryCtx.fillText(value, padding - 5, y + 3);
+            }
+            
+            // Regional fires (area)
+            fireHistoryCtx.fillStyle = 'rgba(255, 193, 7, 0.3)';
+            fireHistoryCtx.beginPath();
+            fireHistoryCtx.moveTo(padding, padding + chartHeight);
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (regionalFires[i] / 50) * chartHeight;
+                fireHistoryCtx.lineTo(x, y);
+            }
+            fireHistoryCtx.lineTo(width - padding, padding + chartHeight);
+            fireHistoryCtx.closePath();
+            fireHistoryCtx.fill();
+            
+            // Property fires (markers)
+            for (let i = 0; i < years.length; i++) {
+                if (propertyFires[i] === 1) {
+                    const x = padding + (i / (years.length - 1)) * chartWidth;
+                    const y = padding + 30;
+                    
+                    fireHistoryCtx.fillStyle = '#dc3545';
+                    fireHistoryCtx.beginPath();
+                    fireHistoryCtx.arc(x, y, 8, 0, Math.PI * 2);
+                    fireHistoryCtx.fill();
+                    
+                    fireHistoryCtx.strokeStyle = 'white';
+                    fireHistoryCtx.lineWidth = 2;
+                    fireHistoryCtx.stroke();
+                }
+            }
+            
+            // X-axis labels
+            fireHistoryCtx.fillStyle = '#666';
+            fireHistoryCtx.textAlign = 'center';
+            for (let i = 0; i < years.length; i += 5) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                fireHistoryCtx.fillText(years[i], x, height - padding + 20);
+            }
+            
+            // Y-axis label
+            fireHistoryCtx.save();
+            fireHistoryCtx.translate(15, height / 2);
+            fireHistoryCtx.rotate(-Math.PI / 2);
+            fireHistoryCtx.textAlign = 'center';
+            fireHistoryCtx.font = '11px sans-serif';
+            fireHistoryCtx.fillText('Regional Fires (5km radius)', 0, 0);
+            fireHistoryCtx.restore();
+            
+            // Legend
+            fireHistoryCtx.fillStyle = 'rgba(255, 193, 7, 0.5)';
+            fireHistoryCtx.fillRect(width - 180, padding + 10, 20, 15);
+            fireHistoryCtx.fillStyle = '#666';
+            fireHistoryCtx.font = '10px sans-serif';
+            fireHistoryCtx.textAlign = 'left';
+            fireHistoryCtx.fillText('Regional fire count', width - 155, padding + 22);
+            
+            fireHistoryCtx.fillStyle = '#dc3545';
+            fireHistoryCtx.beginPath();
+            fireHistoryCtx.arc(width - 170, padding + 40, 6, 0, Math.PI * 2);
+            fireHistoryCtx.fill();
+            fireHistoryCtx.fillStyle = '#666';
+            fireHistoryCtx.fillText('Property fire', width - 155, padding + 44);
+        }
+
+        // Flammability Chart
+        const flamCtx = initChart('flammabilityChart');
+        function drawFlammability() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const fmc = [48, 45, 52, 68, 82, 95, 98, 96, 88, 72, 58, 50];
+            
+            const width = flamCtx.canvas.width;
+            const height = flamCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            flamCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            flamCtx.fillStyle = '#fafafa';
+            flamCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Critical FMC zone
+            const criticalY = padding + chartHeight - (50 / 100) * chartHeight;
+            flamCtx.fillStyle = 'rgba(220, 53, 69, 0.1)';
+            flamCtx.fillRect(padding, criticalY, chartWidth, padding + chartHeight - criticalY);
+            
+            // Grid
+            flamCtx.strokeStyle = '#e0e0e0';
+            flamCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                flamCtx.beginPath();
+                flamCtx.moveTo(padding, y);
+                flamCtx.lineTo(width - padding, y);
+                flamCtx.stroke();
+                
+                flamCtx.fillStyle = '#666';
+                flamCtx.font = '10px sans-serif';
+                flamCtx.textAlign = 'right';
+                flamCtx.fillText((100 - i * 20) + '%', padding - 5, y + 3);
+            }
+            
+            // Critical line
+            flamCtx.strokeStyle = '#dc3545';
+            flamCtx.lineWidth = 2;
+            flamCtx.setLineDash([5, 5]);
+            flamCtx.beginPath();
+            flamCtx.moveTo(padding, criticalY);
+            flamCtx.lineTo(width - padding, criticalY);
+            flamCtx.stroke();
+            flamCtx.setLineDash([]);
+            
+            // FMC line
+            flamCtx.strokeStyle = '#2c5f3f';
+            flamCtx.lineWidth = 3;
+            flamCtx.beginPath();
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (fmc[i] / 100) * chartHeight;
+                if (i === 0) flamCtx.moveTo(x, y);
+                else flamCtx.lineTo(x, y);
+            }
+            flamCtx.stroke();
+            
+            // Area fill
+            flamCtx.fillStyle = 'rgba(44, 95, 63, 0.2)';
+            flamCtx.beginPath();
+            flamCtx.moveTo(padding, padding + chartHeight);
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (fmc[i] / 100) * chartHeight;
+                flamCtx.lineTo(x, y);
+            }
+            flamCtx.lineTo(width - padding, padding + chartHeight);
+            flamCtx.closePath();
+            flamCtx.fill();
+            
+            // X-axis
+            flamCtx.fillStyle = '#666';
+            flamCtx.textAlign = 'center';
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                flamCtx.fillText(months[i], x, height - padding + 18);
+            }
+            
+            // Labels
+            flamCtx.fillStyle = '#dc3545';
+            flamCtx.font = '10px sans-serif';
+            flamCtx.textAlign = 'left';
+            flamCtx.fillText('Critical FMC <50%', padding + 10, criticalY - 5);
+            
+            flamCtx.save();
+            flamCtx.translate(15, height / 2);
+            flamCtx.rotate(-Math.PI / 2);
+            flamCtx.fillStyle = '#666';
+            flamCtx.textAlign = 'center';
+            flamCtx.font = '11px sans-serif';
+            flamCtx.fillText('Fuel Moisture Content (%)', 0, 0);
+            flamCtx.restore();
+        }
+
+        // Heat Chart
+        const heatCtx = initChart('heatChart');
+        function drawHeatChart() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const hotDays = [68, 72, 75, 79, 71, 68, 82, 76, 74, 78, 85, 79, 82, 88, 92, 86, 84, 91, 85, 98, 87, 89, 93, 88, 89];
+            
+            const width = heatCtx.canvas.width;
+            const height = heatCtx.canvas.height;
+            const padding = 45;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barWidth = chartWidth / years.length * 0.7;
+            
+            heatCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            heatCtx.fillStyle = '#fafafa';
+            heatCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            heatCtx.strokeStyle = '#e0e0e0';
+            heatCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                heatCtx.beginPath();
+                heatCtx.moveTo(padding, y);
+                heatCtx.lineTo(width - padding, y);
+                heatCtx.stroke();
+            }
+            
+            // Bars
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / years.length) * chartWidth + (chartWidth / years.length - barWidth) / 2;
+                const barHeight = ((hotDays[i] - 60) / 40) * chartHeight;
+                
+                heatCtx.fillStyle = hotDays[i] > 90 ? '#dc3545' : '#ffc107';
+                heatCtx.fillRect(x, padding + chartHeight - barHeight, barWidth, barHeight);
+                
+                if (i % 5 === 0) {
+                    heatCtx.fillStyle = '#666';
+                    heatCtx.font = '9px sans-serif';
+                    heatCtx.textAlign = 'center';
+                    heatCtx.fillText(years[i], x + barWidth / 2, height - padding + 15);
+                }
+            }
+            
+            heatCtx.save();
+            heatCtx.translate(15, height / 2);
+            heatCtx.rotate(-Math.PI / 2);
+            heatCtx.fillStyle = '#666';
+            heatCtx.textAlign = 'center';
+            heatCtx.font = '10px sans-serif';
+            heatCtx.fillText('Days >35°C', 0, 0);
+            heatCtx.restore();
+        }
+
+        // Wind Chart
+        const windCtx = initChart('windChart');
+        function drawWindChart() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const maxGust = [95, 88, 102, 97, 108, 92, 98, 105, 94, 112, 98, 102, 88, 96, 105, 98, 94, 118, 102, 142, 95, 92, 108, 96, 98];
+            
+            const width = windCtx.canvas.width;
+            const height = windCtx.canvas.height;
+            const padding = 45;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            windCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            windCtx.fillStyle = '#fafafa';
+            windCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            windCtx.strokeStyle = '#e0e0e0';
+            windCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                windCtx.beginPath();
+                windCtx.moveTo(padding, y);
+                windCtx.lineTo(width - padding, y);
+                windCtx.stroke();
+            }
+            
+            // Line
+            windCtx.strokeStyle = '#17a2b8';
+            windCtx.lineWidth = 2;
+            windCtx.beginPath();
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - ((maxGust[i] - 80) / 70) * chartHeight;
+                if (i === 0) windCtx.moveTo(x, y);
+                else windCtx.lineTo(x, y);
+            }
+            windCtx.stroke();
+            
+            // Points
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - ((maxGust[i] - 80) / 70) * chartHeight;
+                windCtx.fillStyle = maxGust[i] > 120 ? '#dc3545' : '#17a2b8';
+                windCtx.beginPath();
+                windCtx.arc(x, y, 3, 0, Math.PI * 2);
+                windCtx.fill();
+            }
+            
+            // Labels
+            windCtx.fillStyle = '#666';
+            windCtx.textAlign = 'center';
+            for (let i = 0; i < years.length; i += 8) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                windCtx.fillText(years[i], x, height - padding + 15);
+            }
+            
+            windCtx.save();
+            windCtx.translate(15, height / 2);
+            windCtx.rotate(-Math.PI / 2);
+            windCtx.textAlign = 'center';
+            windCtx.font = '10px sans-serif';
+            windCtx.fillText('Max Gust (km/h)', 0, 0);
+            windCtx.restore();
+        }
+
+        // Draw all
+        drawFireRiskMap();
+        drawFireHistory();
+        drawFlammability();
+        drawHeatChart();
+        drawWindChart();
+
+        // Utilities
+        function downloadData(type) {
+            alert(`Downloading ${type} data...\n\nWould include spatial data, time series, and event records.`);
+        }
+
+
+        function showUpgrade() {
+            alert('Upgrade to Professional package.');
+        }
+
+        window.addEventListener('resize', () => {
+            drawFireRiskMap();
+            drawFireHistory();
+            drawFlammability();
+            drawHeatChart();
+            drawWindChart();
+        });
+    </script>
+</body>
+</html>

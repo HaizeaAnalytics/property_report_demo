@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Report Dashboard - Terrain & Soil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7f9;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .property-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .property-title h1 {
+            font-size: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .property-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-header {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-header:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary:hover {
+            background: #3d7a52;
+        }
+        
+        /* Main layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+        
+        /* Sidebar navigation */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            padding: 1rem 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c5f3f;
+        }
+        
+        .nav-item.active {
+            background: #f0f7f0;
+            color: #2c5f3f;
+            font-weight: 600;
+            border-left: 3px solid #2c5f3f;
+            padding-left: calc(1.5rem - 3px);
+        }
+        
+        .nav-item.locked {
+            opacity: 0.5;
+            position: relative;
+        }
+        
+        .nav-item.locked::after {
+            content: '🔒';
+            margin-left: auto;
+            font-size: 0.8rem;
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .section-header {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: #666;
+            font-size: 1.05rem;
+        }
+        
+        /* Grid layout for maps/charts */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .content-grid.single {
+            grid-template-columns: 1fr;
+        }
+        
+        /* Card container */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-card {
+            padding: 0.25rem 0.6rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-card:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        /* Map/Chart containers */
+        .map-container {
+            width: 100%;
+            height: 350px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 0.85rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-gradient {
+            width: 100px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        
+        /* Summary stats */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .stat-item-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-item-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c5f3f;
+        }
+        
+        /* Chart container */
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+        
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .data-table thead {
+            background: #f8f9fa;
+        }
+        
+        .data-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Collapsible section */
+        .collapsible {
+            margin-top: 1rem;
+        }
+        
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .collapsible-header:hover {
+            background: #e8f0e8;
+        }
+        
+        .collapsible-icon {
+            transition: transform 0.2s;
+        }
+        
+        .collapsible-icon.open {
+            transform: rotate(90deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .collapsible-content.open {
+            max-height: 1000px;
+            padding-top: 1rem;
+        }
+        
+        /* Info note */
+        .info-note {
+            padding: 1rem;
+            background: #f0f7ff;
+            border-left: 3px solid #2c5f3f;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="property-title">
+            <h1>Smith Farm Property Report</h1>
+            <div class="property-meta">
+                <div>📍 Mudgee, NSW</div>
+                <div>📏 275.6 hectares</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header">🔗 Share</button>
+            <button class="btn-header">📊 Export Data</button>
+            <button class="btn-header primary">📄 Download PDF</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Report Sections</div>
+                <a class="nav-item" href="dashboard_overview.html" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    Overview
+                </a>
+                <a class="nav-item active">
+                    <span class="nav-icon">⛰️</span>
+                    Terrain & Soil
+                </a>
+                <a class="nav-item" href="dashboard_climate.html" class="nav-link">
+                    <span class="nav-icon">🌦️</span>
+                    Climate
+                </a>
+                <a class="nav-item" href="dashboard_water.html" class="nav-link">
+                    <span class="nav-icon">💧</span>
+                    Water
+                </a>
+                <a class="nav-item" href="dashboard_vegetation.html" class="nav-link">
+                    <span class="nav-icon">🌿</span>
+                    Vegetation
+                </a>
+                <a class="nav-item" href="dashboard_hazards.html" class="nav-link">
+                    <span class="nav-icon">⚠️</span>
+                    Natural Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Premium Sections</div>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌾</span>
+                    Primary Production
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">☀️</span>
+                    Solar Energy
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌱</span>
+                    Carbon Potential
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🦘</span>
+                    Nature & Biodiversity
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="section-header">
+                <h2>Terrain & Soil</h2>
+                <p>Topography, landscape features and soil properties</p>
+            </div>
+
+            <!-- Elevation Map -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Elevation Profile</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('elevation')">📥 Download</button>
+                        <button class="btn-card" onclick="alert('Interactive query: Click anywhere on the map to see elevation at that point')">ℹ️ Query</button>
+                    </div>
+                </div>
+                <div class="map-container">
+                    <canvas id="elevationMap"></canvas>
+                    <div class="map-legend">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Elevation (m AHD)</div>
+                        <div class="legend-gradient" style="background: linear-gradient(to right, #1a5f3f, #52a37a, #89c9a5, #c5e8d0);"></div>
+                        <div class="legend-labels">
+                            <span>420m</span>
+                            <span>500m</span>
+                            <span>580m</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-item-label">Minimum</div>
+                        <div class="stat-item-value">420m</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-item-label">Mean</div>
+                        <div class="stat-item-value">485m</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-item-label">Maximum</div>
+                        <div class="stat-item-value">580m</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slope & Aspect -->
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Slope Analysis</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('slope')">📥 Download</button>
+                        </div>
+                    </div>
+                    <div class="map-container" style="height: 250px;">
+                        <canvas id="slopeMap"></canvas>
+                        <div class="map-legend">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem;">Slope (degrees)</div>
+                            <div class="legend-item">
+                                <div style="width: 20px; height: 15px; background: #2d5f2e;"></div>
+                                <span>Flat (0-3°)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div style="width: 20px; height: 15px; background: #52a37a;"></div>
+                                <span>Gentle (3-10°)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div style="width: 20px; height: 15px; background: #89c9a5;"></div>
+                                <span>Moderate (10-20°)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div style="width: 20px; height: 15px; background: #c5783f;"></div>
+                                <span>Steep (>20°)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-note">
+                        <strong>Distribution:</strong> Flat: 35% • Gentle: 45% • Moderate: 18% • Steep: 2%
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Aspect Distribution</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('aspect')">📥 Download</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="aspectChart"></canvas>
+                    </div>
+                    <div class="info-note">
+                        <strong>Predominant aspects:</strong> 42% north-facing (favorable for pasture growth in southern hemisphere)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soil Properties -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Soil Properties</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('soil')">📥 Download</button>
+                    </div>
+                </div>
+                <div class="map-container">
+                    <canvas id="soilMap"></canvas>
+                    <div class="map-legend">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Soil Types</div>
+                        <div class="legend-item">
+                            <div style="width: 20px; height: 15px; background: #a0522d;"></div>
+                            <span>Red Clay Loam</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 20px; height: 15px; background: #8b7355;"></div>
+                            <span>Brown Clay</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 20px; height: 15px; background: #d2691e;"></div>
+                            <span>Sandy Loam</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 20px; height: 15px; background: #696969;"></div>
+                            <span>Rocky/Shallow</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collapsible detailed table -->
+                <div class="collapsible">
+                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                        <span class="collapsible-icon">▶</span>
+                        <span>Show detailed soil properties by type</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Soil Type</th>
+                                    <th>Area (ha)</th>
+                                    <th>pH Range</th>
+                                    <th>Texture</th>
+                                    <th>Depth</th>
+                                    <th>Drainage</th>
+                                    <th>Agricultural Suitability</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Red Clay Loam</td>
+                                    <td>156.4 (57%)</td>
+                                    <td>5.8-6.5</td>
+                                    <td>Medium-heavy</td>
+                                    <td>1.0-1.5m</td>
+                                    <td>Moderate-well</td>
+                                    <td>Good</td>
+                                </tr>
+                                <tr>
+                                    <td>Brown Clay</td>
+                                    <td>82.7 (30%)</td>
+                                    <td>6.0-7.0</td>
+                                    <td>Heavy</td>
+                                    <td>0.8-1.2m</td>
+                                    <td>Moderate</td>
+                                    <td>Moderate-good</td>
+                                </tr>
+                                <tr>
+                                    <td>Sandy Loam</td>
+                                    <td>24.8 (9%)</td>
+                                    <td>5.5-6.2</td>
+                                    <td>Light-medium</td>
+                                    <td>1.2-2.0m</td>
+                                    <td>Well-rapid</td>
+                                    <td>Moderate</td>
+                                </tr>
+                                <tr>
+                                    <td>Rocky/Shallow</td>
+                                    <td>11.7 (4%)</td>
+                                    <td>6.0-6.8</td>
+                                    <td>Variable</td>
+                                    <td><0.5m</td>
+                                    <td>Excessive</td>
+                                    <td>Poor</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soil Depth -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Soil Depth Distribution</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('depth')">📥 Download</button>
+                    </div>
+                </div>
+                <div class="chart-container" style="height: 280px;">
+                    <canvas id="depthChart"></canvas>
+                </div>
+                <div class="info-note">
+                    <strong>Mean soil depth:</strong> 1.2m. Deep soils (>1m) cover 78% of property, suitable for most agricultural uses. Rocky/shallow areas (<0.5m) limited to 8% of property, primarily in eastern section.
+                </div>
+            </div>
+
+            <!-- Data sources footer -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666;">
+                <strong>Data Sources:</strong> Digital Elevation Model (1m resolution, Geoscience Australia), Soil and Landscape Grid of Australia (SLGA, CSIRO), 
+                NSW Soil Data (Department of Planning). All spatial data referenced to GDA2020 / MGA Zone 55.
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize all canvases
+        function initializeCanvas(id) {
+            const canvas = document.getElementById(id);
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            return canvas.getContext('2d');
+        }
+
+        // Draw elevation map
+        const elevationCtx = initializeCanvas('elevationMap');
+        function drawElevationMap() {
+            // Create gradient elevation map
+            for (let y = 0; y < elevationCtx.canvas.height; y += 10) {
+                for (let x = 0; x < elevationCtx.canvas.width; x += 10) {
+                    const elevation = (x / elevationCtx.canvas.width) * 0.6 + (y / elevationCtx.canvas.height) * 0.4;
+                    const color = interpolateColor(elevation);
+                    elevationCtx.fillStyle = color;
+                    elevationCtx.fillRect(x, y, 10, 10);
+                }
+            }
+            
+            // Property boundary
+            elevationCtx.strokeStyle = '#333';
+            elevationCtx.lineWidth = 2;
+            elevationCtx.strokeRect(20, 20, elevationCtx.canvas.width - 40, elevationCtx.canvas.height - 40);
+        }
+
+        function interpolateColor(value) {
+            // Interpolate between green shades for elevation
+            const colors = [
+                { r: 26, g: 95, b: 63 },    // 420m - dark green
+                { r: 82, g: 163, b: 122 },  // 500m - medium green
+                { r: 197, g: 232, b: 208 }  // 580m - light green
+            ];
+            
+            let idx = value * (colors.length - 1);
+            let lower = Math.floor(idx);
+            let upper = Math.ceil(idx);
+            let ratio = idx - lower;
+            
+            if (upper >= colors.length) upper = colors.length - 1;
+            
+            const r = Math.round(colors[lower].r + (colors[upper].r - colors[lower].r) * ratio);
+            const g = Math.round(colors[lower].g + (colors[upper].g - colors[lower].g) * ratio);
+            const b = Math.round(colors[lower].b + (colors[upper].b - colors[lower].b) * ratio);
+            
+            return `rgb(${r},${g},${b})`;
+        }
+
+        // Draw slope map
+        const slopeCtx = initializeCanvas('slopeMap');
+        function drawSlopeMap() {
+            const slopeColors = [
+                { color: '#2d5f2e', threshold: 0.35 },  // Flat
+                { color: '#52a37a', threshold: 0.80 },  // Gentle
+                { color: '#89c9a5', threshold: 0.98 },  // Moderate
+                { color: '#c5783f', threshold: 1.0 }    // Steep
+            ];
+            
+            for (let y = 0; y < slopeCtx.canvas.height; y += 10) {
+                for (let x = 0; x < slopeCtx.canvas.width; x += 10) {
+                    const slope = Math.random();
+                    let color = slopeColors[0].color;
+                    for (let i = 0; i < slopeColors.length; i++) {
+                        if (slope <= slopeColors[i].threshold) {
+                            color = slopeColors[i].color;
+                            break;
+                        }
+                    }
+                    slopeCtx.fillStyle = color;
+                    slopeCtx.fillRect(x, y, 10, 10);
+                }
+            }
+            
+            slopeCtx.strokeStyle = '#333';
+            slopeCtx.lineWidth = 2;
+            slopeCtx.strokeRect(20, 20, slopeCtx.canvas.width - 40, slopeCtx.canvas.height - 40);
+        }
+
+        // Draw aspect chart (rose diagram)
+        const aspectCtx = initializeCanvas('aspectChart');
+        function drawAspectChart() {
+            const centerX = aspectCtx.canvas.width / 2;
+            const centerY = aspectCtx.canvas.height / 2;
+            const maxRadius = Math.min(centerX, centerY) - 30;
+            
+            const aspects = [
+                { label: 'N', value: 42, angle: 0, color: '#2c5f3f' },
+                { label: 'E', value: 28, angle: 90, color: '#52a37a' },
+                { label: 'S', value: 20, angle: 180, color: '#89c9a5' },
+                { label: 'W', value: 10, angle: 270, color: '#b8d8c8' }
+            ];
+            
+            // Draw background circle
+            aspectCtx.strokeStyle = '#e0e0e0';
+            aspectCtx.lineWidth = 1;
+            aspectCtx.beginPath();
+            aspectCtx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
+            aspectCtx.stroke();
+            
+            // Draw reference circles
+            for (let i = 1; i <= 3; i++) {
+                aspectCtx.beginPath();
+                aspectCtx.arc(centerX, centerY, (maxRadius / 3) * i, 0, Math.PI * 2);
+                aspectCtx.stroke();
+            }
+            
+            // Draw cardinal directions
+            aspects.forEach(aspect => {
+                const angleRad = (aspect.angle - 90) * Math.PI / 180;
+                const radius = (aspect.value / 50) * maxRadius;
+                const endX = centerX + Math.cos(angleRad) * radius;
+                const endY = centerY + Math.sin(angleRad) * radius;
+                
+                aspectCtx.fillStyle = aspect.color;
+                aspectCtx.beginPath();
+                aspectCtx.moveTo(centerX, centerY);
+                aspectCtx.lineTo(endX, endY);
+                aspectCtx.arc(centerX, centerY, radius, angleRad - 0.3, angleRad + 0.3);
+                aspectCtx.closePath();
+                aspectCtx.fill();
+                
+                // Labels
+                const labelX = centerX + Math.cos(angleRad) * (maxRadius + 20);
+                const labelY = centerY + Math.sin(angleRad) * (maxRadius + 20);
+                aspectCtx.fillStyle = '#333';
+                aspectCtx.font = 'bold 14px sans-serif';
+                aspectCtx.textAlign = 'center';
+                aspectCtx.textBaseline = 'middle';
+                aspectCtx.fillText(aspect.label, labelX, labelY);
+                aspectCtx.font = '12px sans-serif';
+                aspectCtx.fillText(`${aspect.value}%`, labelX, labelY + 15);
+            });
+        }
+
+        // Draw soil map
+        const soilCtx = initializeCanvas('soilMap');
+        function drawSoilMap() {
+            const soilTypes = [
+                { color: '#a0522d', probability: 0.57 },  // Red clay loam
+                { color: '#8b7355', probability: 0.87 },  // Brown clay
+                { color: '#d2691e', probability: 0.96 },  // Sandy loam
+                { color: '#696969', probability: 1.0 }    // Rocky
+            ];
+            
+            for (let y = 0; y < soilCtx.canvas.height; y += 10) {
+                for (let x = 0; x < soilCtx.canvas.width; x += 10) {
+                    const rand = Math.random();
+                    let color = soilTypes[0].color;
+                    for (let i = 0; i < soilTypes.length; i++) {
+                        if (rand <= soilTypes[i].probability) {
+                            color = soilTypes[i].color;
+                            break;
+                        }
+                    }
+                    soilCtx.fillStyle = color;
+                    soilCtx.fillRect(x, y, 10, 10);
+                }
+            }
+            
+            soilCtx.strokeStyle = '#333';
+            soilCtx.lineWidth = 2;
+            soilCtx.strokeRect(20, 20, soilCtx.canvas.width - 40, soilCtx.canvas.height - 40);
+        }
+
+        // Draw soil depth chart (histogram)
+        const depthCtx = initializeCanvas('depthChart');
+        function drawDepthChart() {
+            const data = [
+                { label: '<0.5m\n(Rocky)', value: 8, color: '#dc3545' },
+                { label: '0.5-1.0m\n(Shallow)', value: 14, color: '#ffc107' },
+                { label: '1.0-1.5m\n(Moderate)', value: 52, color: '#52a37a' },
+                { label: '1.5-2.0m\n(Deep)', value: 26, color: '#2c5f3f' }
+            ];
+            
+            const barWidth = depthCtx.canvas.width / (data.length * 2);
+            const maxHeight = depthCtx.canvas.height - 60;
+            
+            data.forEach((item, index) => {
+                const x = (index * 2 + 1) * barWidth;
+                const height = (item.value / 60) * maxHeight;
+                const y = depthCtx.canvas.height - 40 - height;
+                
+                // Bar
+                depthCtx.fillStyle = item.color;
+                depthCtx.fillRect(x, y, barWidth * 0.8, height);
+                
+                // Value label
+                depthCtx.fillStyle = '#333';
+                depthCtx.font = 'bold 14px sans-serif';
+                depthCtx.textAlign = 'center';
+                depthCtx.fillText(`${item.value}%`, x + barWidth * 0.4, y - 10);
+                
+                // X-axis label
+                depthCtx.font = '11px sans-serif';
+                const lines = item.label.split('\n');
+                lines.forEach((line, i) => {
+                    depthCtx.fillText(line, x + barWidth * 0.4, depthCtx.canvas.height - 25 + (i * 12));
+                });
+            });
+            
+            // Y-axis
+            depthCtx.strokeStyle = '#333';
+            depthCtx.lineWidth = 2;
+            depthCtx.beginPath();
+            depthCtx.moveTo(40, 20);
+            depthCtx.lineTo(40, depthCtx.canvas.height - 40);
+            depthCtx.lineTo(depthCtx.canvas.width - 20, depthCtx.canvas.height - 40);
+            depthCtx.stroke();
+            
+            // Y-axis label
+            depthCtx.save();
+            depthCtx.translate(15, depthCtx.canvas.height / 2);
+            depthCtx.rotate(-Math.PI / 2);
+            depthCtx.textAlign = 'center';
+            depthCtx.font = '12px sans-serif';
+            depthCtx.fillText('Percentage of Property (%)', 0, 0);
+            depthCtx.restore();
+        }
+
+        // Draw all visualizations
+        drawElevationMap();
+        drawSlopeMap();
+        drawAspectChart();
+        drawSoilMap();
+        drawDepthChart();
+
+        // Utility functions
+        function toggleCollapsible(element) {
+            const icon = element.querySelector('.collapsible-icon');
+            const content = element.nextElementSibling;
+            
+            icon.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+
+        function downloadData(type) {
+            alert(`Downloading ${type} data as GeoTIFF and CSV...\n\nThis would provide:\n• Gridded spatial data (GeoTIFF)\n• Tabular summary (CSV)\n• Metadata file`);
+        }
+
+
+        function showUpgrade() {
+            alert('This section is available in the Professional package.');
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            drawElevationMap();
+            drawSlopeMap();
+            drawAspectChart();
+            drawSoilMap();
+            drawDepthChart();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Report Dashboard - Climate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7f9;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .property-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .property-title h1 {
+            font-size: 1.5rem;
+            color: #2c5f3f;
+        }
+        
+        .property-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-header {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-header:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary {
+            background: #2c5f3f;
+            color: white;
+            border-color: #2c5f3f;
+        }
+        
+        .btn-header.primary:hover {
+            background: #3d7a52;
+        }
+        
+        /* Main layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+        
+        /* Sidebar navigation */
+        .sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            padding: 1rem 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c5f3f;
+        }
+        
+        .nav-item.active {
+            background: #f0f7f0;
+            color: #2c5f3f;
+            font-weight: 600;
+            border-left: 3px solid #2c5f3f;
+            padding-left: calc(1.5rem - 3px);
+        }
+        
+        .nav-item.locked {
+            opacity: 0.5;
+            position: relative;
+        }
+        
+        .nav-item.locked::after {
+            content: '🔒';
+            margin-left: auto;
+            font-size: 0.8rem;
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .section-header {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #2c5f3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: #666;
+            font-size: 1.05rem;
+        }
+        
+        /* Grid layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .content-grid.single {
+            grid-template-columns: 1fr;
+        }
+        
+        /* Card container */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c5f3f;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-card {
+            padding: 0.25rem 0.6rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-card:hover {
+            background: #f8f9fa;
+            border-color: #2c5f3f;
+        }
+        
+        /* Chart containers */
+        .chart-container {
+            width: 100%;
+            height: 280px;
+            position: relative;
+        }
+        
+        .chart-container.tall {
+            height: 350px;
+        }
+        
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Summary box */
+        .summary-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .summary-box strong {
+            color: #2c5f3f;
+        }
+        
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        .data-table thead {
+            background: #f8f9fa;
+        }
+        
+        .data-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Chart controls */
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .control-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .control-select {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .control-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .control-checkbox input {
+            cursor: pointer;
+        }
+        
+        /* Info callout */
+        .info-callout {
+            background: #e8f4f8;
+            border-left: 3px solid #2196f3;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .info-callout strong {
+            color: #1976d2;
+        }
+        
+        /* Stats grid inside card */
+        .stats-inline {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-inline {
+            text-align: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .stat-inline-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-inline-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c5f3f;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="property-title">
+            <h1>Smith Farm Property Report</h1>
+            <div class="property-meta">
+                <div>📍 Mudgee, NSW</div>
+                <div>📏 275.6 hectares</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header">🔗 Share</button>
+            <button class="btn-header">📊 Export Data</button>
+            <button class="btn-header primary">📄 Download PDF</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Report Sections</div>
+                <a class="nav-item" href="dashboard_overview.html" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    Overview
+                </a>
+                <a class="nav-item" href="dashboard_terrain_soil.html" class="nav-link">
+                    <span class="nav-icon">⛰️</span>
+                    Terrain & Soil
+                </a>
+                <a class="nav-item active">
+                    <span class="nav-icon">🌦️</span>
+                    Climate
+                </a>
+                <a class="nav-item" href="dashboard_water.html" class="nav-link">
+                    <span class="nav-icon">💧</span>
+                    Water
+                </a>
+                <a class="nav-item" href="dashboard_vegetation.html" class="nav-link">
+                    <span class="nav-icon">🌿</span>
+                    Vegetation
+                </a>
+                <a class="nav-item" href="dashboard_hazards.html" class="nav-link">
+                    <span class="nav-icon">⚠️</span>
+                    Natural Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Premium Sections</div>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌾</span>
+                    Primary Production
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">☀️</span>
+                    Solar Energy
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🌱</span>
+                    Carbon Potential
+                </a>
+                <a class="nav-item locked" onclick="showUpgrade()">
+                    <span class="nav-icon">🦘</span>
+                    Nature & Biodiversity
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="section-header">
+                <h2>Climate</h2>
+                <p>Weather records, rainfall, temperature and growing conditions</p>
+            </div>
+
+            <!-- Temperature Trends -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Temperature Trends (2000-2024)</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('temperature')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="chart-controls">
+                    <div class="control-group">
+                        <span class="control-label">View:</span>
+                        <select class="control-select" onchange="updateTempChart(this.value)">
+                            <option value="annual">Annual Average</option>
+                            <option value="monthly">Monthly Detail</option>
+                            <option value="extremes">Extremes Only</option>
+                        </select>
+                    </div>
+                    <div class="control-checkbox">
+                        <input type="checkbox" id="showTrend" checked onchange="toggleTrendLine()">
+                        <label for="showTrend">Show trend line</label>
+                    </div>
+                </div>
+                
+                <div class="chart-container tall">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Key findings:</strong> Mean annual temperature has increased by 1.2°C since 2000, consistent with regional warming trends. 
+                    Average daily maximum is 24.3°C, minimum 8.7°C. Number of hot days (>35°C) has increased from 72 to 89 per year on average.
+                </div>
+            </div>
+
+            <!-- Rainfall Patterns -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Rainfall Patterns</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('rainfall')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="chart-controls">
+                    <div class="control-group">
+                        <span class="control-label">Compare year:</span>
+                        <select class="control-select" onchange="updateRainfallChart(this.value)">
+                            <option value="2024">2024 (current)</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="average">25-year average</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="rainfallChart"></canvas>
+                </div>
+                
+                <div class="stats-inline">
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Annual Total</div>
+                        <div class="stat-inline-value">650mm</div>
+                    </div>
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Wettest Month</div>
+                        <div class="stat-inline-value">Nov (95mm)</div>
+                    </div>
+                    <div class="stat-inline">
+                        <div class="stat-inline-label">Driest Month</div>
+                        <div class="stat-inline-value">Jun (28mm)</div>
+                    </div>
+                </div>
+                
+                <div class="summary-box">
+                    <strong>Rainfall reliability:</strong> Annual rainfall 8% above regional average. Reliable spring rainfall supports pasture establishment. 
+                    Winter months (Jun-Aug) consistently dry. Summer rainfall variable - 30% year-to-year variation.
+                </div>
+            </div>
+
+            <!-- Frost Risk & Growing Season -->
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Frost Risk</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('frost')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="frostChart"></canvas>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <strong>Frost frequency:</strong> Average 45 frost days per year (days with min temp ≤2°C). 
+                        Peak risk: June-August. Last frost typically late September, first frost late April. 
+                        Frost-free period: ~220 days (Oct-Apr).
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Growing Degree Days</h3>
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="downloadData('gdd')">📥 Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="gddChart"></canvas>
+                    </div>
+                    
+                    <div class="info-callout">
+                        <strong>Growing conditions:</strong> Annual GDD (base 10°C): 3,420. Suitable for cool-season pastures (ryegrass, clover), 
+                        canola, wheat, barley. Marginal for warm-season crops (maize, sorghum).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Balance -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Water Balance (Rainfall vs Evapotranspiration)</h3>
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="downloadData('water-balance')">📥 Download</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="waterBalanceChart"></canvas>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Season</th>
+                            <th>Rainfall (mm)</th>
+                            <th>ET₀ (mm)</th>
+                            <th>Balance (mm)</th>
+                            <th>Water Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Summer (Dec-Feb)</td>
+                            <td>185</td>
+                            <td>420</td>
+                            <td>-235</td>
+                            <td>Deficit</td>
+                        </tr>
+                        <tr>
+                            <td>Autumn (Mar-May)</td>
+                            <td>145</td>
+                            <td>240</td>
+                            <td>-95</td>
+                            <td>Deficit</td>
+                        </tr>
+                        <tr>
+                            <td>Winter (Jun-Aug)</td>
+                            <td>125</td>
+                            <td>110</td>
+                            <td>+15</td>
+                            <td>Surplus</td>
+                        </tr>
+                        <tr>
+                            <td>Spring (Sep-Nov)</td>
+                            <td>195</td>
+                            <td>280</td>
+                            <td>-85</td>
+                            <td>Deficit</td>
+                        </tr>
+                        <tr style="font-weight: 600; background: #f8f9fa;">
+                            <td>Annual</td>
+                            <td>650</td>
+                            <td>1,050</td>
+                            <td>-400</td>
+                            <td>Deficit</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="summary-box">
+                    <strong>Water requirements:</strong> Annual water deficit of 400mm indicates irrigation would benefit most crops during growing season. 
+                    Natural rainfall sufficient only for hardy dryland pastures. Winter surplus period allows soil moisture recharge.
+                </div>
+            </div>
+
+            <!-- Climate Classification -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Climate Classification & Summary</h3>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h4 style="color: #2c5f3f; margin-bottom: 0.5rem;">Köppen Climate Classification</h4>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: #2c5f3f; margin-bottom: 0.5rem;">Cfb</p>
+                        <p style="font-size: 0.9rem; color: #666;">Temperate oceanic climate - warm summers, mild winters, no dry season</p>
+                        
+                        <h4 style="color: #2c5f3f; margin: 1.5rem 0 0.5rem;">Key Climate Metrics</h4>
+                        <table style="width: 100%; font-size: 0.9rem;">
+                            <tr>
+                                <td style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">Mean annual temp</td>
+                                <td style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; text-align: right; font-weight: 600;">16.5°C</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">Annual rainfall</td>
+                                <td style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; text-align: right; font-weight: 600;">650mm</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">Frost days/year</td>
+                                <td style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; text-align: right; font-weight: 600;">45</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">Hot days (>35°C)</td>
+                                <td style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; text-align: right; font-weight: 600;">89/year</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0;">Growing season</td>
+                                <td style="padding: 0.5rem 0; text-align: right; font-weight: 600;">Sep-Apr (~220 days)</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: #2c5f3f; margin-bottom: 0.5rem;">Agricultural Suitability</h4>
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.9rem;">Cool-season pastures</span>
+                                <span style="font-weight: 600; color: #2c5f3f;">Excellent</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;">
+                                <div style="width: 90%; height: 100%; background: #2c5f3f; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.9rem;">Winter cereals (wheat, barley)</span>
+                                <span style="font-weight: 600; color: #52a37a;">Good</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;">
+                                <div style="width: 75%; height: 100%; background: #52a37a; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.9rem;">Canola</span>
+                                <span style="font-weight: 600; color: #52a37a;">Good</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;">
+                                <div style="width: 70%; height: 100%; background: #52a37a; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.9rem;">Summer crops (maize, sorghum)</span>
+                                <span style="font-weight: 600; color: #ffc107;">Marginal</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;">
+                                <div style="width: 45%; height: 100%; background: #ffc107; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 4px; font-size: 0.9rem;">
+                            <strong>Limitations:</strong> Water deficit in growing season requires irrigation for most crops. 
+                            Frost risk limits early spring planting. Summer heat stress possible in extreme years.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data sources footer -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666;">
+                <strong>Data Sources:</strong> Bureau of Meteorology (weather station data 2000-2024), SILO climate database, 
+                Australian Water Availability Project. Reference evapotranspiration calculated using FAO Penman-Monteith method.
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize all charts
+        function initChart(id) {
+            const canvas = document.getElementById(id);
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            return canvas.getContext('2d');
+        }
+
+        // Temperature Chart
+        const tempCtx = initChart('temperatureChart');
+        function drawTempChart() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const maxTemp = years.map((y, i) => 23.5 + Math.sin(i/3) * 1.5 + i * 0.04 + (Math.random() - 0.5) * 0.8);
+            const minTemp = years.map((y, i) => 8.0 + Math.sin(i/3) * 1.2 + i * 0.035 + (Math.random() - 0.5) * 0.6);
+            const meanTemp = maxTemp.map((max, i) => (max + minTemp[i]) / 2);
+            
+            const width = tempCtx.canvas.width;
+            const height = tempCtx.canvas.height;
+            const padding = 60;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            tempCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            tempCtx.fillStyle = '#fafafa';
+            tempCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid lines
+            tempCtx.strokeStyle = '#e0e0e0';
+            tempCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                tempCtx.beginPath();
+                tempCtx.moveTo(padding, y);
+                tempCtx.lineTo(width - padding, y);
+                tempCtx.stroke();
+                
+                // Y-axis labels
+                const temp = 30 - (i * 5);
+                tempCtx.fillStyle = '#666';
+                tempCtx.font = '11px sans-serif';
+                tempCtx.textAlign = 'right';
+                tempCtx.fillText(temp + '°C', padding - 10, y + 4);
+            }
+            
+            // Draw temperature ranges (shaded area)
+            tempCtx.fillStyle = 'rgba(44, 95, 63, 0.1)';
+            tempCtx.beginPath();
+            tempCtx.moveTo(padding, padding + chartHeight - (maxTemp[0] - 5) * (chartHeight / 25));
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (maxTemp[i] - 5) * (chartHeight / 25);
+                tempCtx.lineTo(x, y);
+            }
+            for (let i = years.length - 1; i >= 0; i--) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (minTemp[i] - 5) * (chartHeight / 25);
+                tempCtx.lineTo(x, y);
+            }
+            tempCtx.closePath();
+            tempCtx.fill();
+            
+            // Draw lines
+            function drawLine(data, color, width) {
+                tempCtx.strokeStyle = color;
+                tempCtx.lineWidth = width;
+                tempCtx.beginPath();
+                for (let i = 0; i < years.length; i++) {
+                    const x = padding + (i / (years.length - 1)) * chartWidth;
+                    const y = padding + chartHeight - (data[i] - 5) * (chartHeight / 25);
+                    if (i === 0) tempCtx.moveTo(x, y);
+                    else tempCtx.lineTo(x, y);
+                }
+                tempCtx.stroke();
+            }
+            
+            drawLine(maxTemp, '#dc3545', 2);
+            drawLine(meanTemp, '#2c5f3f', 3);
+            drawLine(minTemp, '#2196f3', 2);
+            
+            // X-axis labels (every 5 years)
+            tempCtx.fillStyle = '#666';
+            tempCtx.font = '11px sans-serif';
+            tempCtx.textAlign = 'center';
+            for (let i = 0; i < years.length; i += 5) {
+                const x = padding + (i / (years.length - 1)) * chartWidth;
+                tempCtx.fillText(years[i], x, height - padding + 20);
+            }
+            
+            // Legend
+            const legendX = width - padding - 150;
+            const legendY = padding + 20;
+            tempCtx.textAlign = 'left';
+            
+            tempCtx.strokeStyle = '#dc3545';
+            tempCtx.lineWidth = 2;
+            tempCtx.beginPath();
+            tempCtx.moveTo(legendX, legendY);
+            tempCtx.lineTo(legendX + 30, legendY);
+            tempCtx.stroke();
+            tempCtx.fillText('Max temp', legendX + 35, legendY + 4);
+            
+            tempCtx.strokeStyle = '#2c5f3f';
+            tempCtx.lineWidth = 3;
+            tempCtx.beginPath();
+            tempCtx.moveTo(legendX, legendY + 20);
+            tempCtx.lineTo(legendX + 30, legendY + 20);
+            tempCtx.stroke();
+            tempCtx.fillText('Mean temp', legendX + 35, legendY + 24);
+            
+            tempCtx.strokeStyle = '#2196f3';
+            tempCtx.lineWidth = 2;
+            tempCtx.beginPath();
+            tempCtx.moveTo(legendX, legendY + 40);
+            tempCtx.lineTo(legendX + 30, legendY + 40);
+            tempCtx.stroke();
+            tempCtx.fillText('Min temp', legendX + 35, legendY + 44);
+        }
+
+        // Rainfall Chart
+        const rainCtx = initChart('rainfallChart');
+        function drawRainfallChart() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const rainfall2024 = [65, 52, 48, 38, 42, 28, 35, 40, 58, 72, 95, 77];
+            const rainfallAvg = [58, 48, 45, 42, 45, 35, 38, 42, 52, 65, 85, 70];
+            
+            const width = rainCtx.canvas.width;
+            const height = rainCtx.canvas.height;
+            const padding = 60;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barWidth = chartWidth / (months.length * 2.5);
+            
+            rainCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            rainCtx.fillStyle = '#fafafa';
+            rainCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid lines
+            rainCtx.strokeStyle = '#e0e0e0';
+            rainCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                rainCtx.beginPath();
+                rainCtx.moveTo(padding, y);
+                rainCtx.lineTo(width - padding, y);
+                rainCtx.stroke();
+                
+                const value = 100 - (i * 20);
+                rainCtx.fillStyle = '#666';
+                rainCtx.font = '11px sans-serif';
+                rainCtx.textAlign = 'right';
+                rainCtx.fillText(value + 'mm', padding - 10, y + 4);
+            }
+            
+            // Draw bars
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / months.length) * chartWidth + barWidth * 0.5;
+                
+                // Average (lighter)
+                const avgHeight = (rainfallAvg[i] / 100) * chartHeight;
+                rainCtx.fillStyle = '#b8d8c8';
+                rainCtx.fillRect(x, padding + chartHeight - avgHeight, barWidth * 0.8, avgHeight);
+                
+                // 2024 (darker)
+                const currHeight = (rainfall2024[i] / 100) * chartHeight;
+                rainCtx.fillStyle = '#2c5f3f';
+                rainCtx.fillRect(x + barWidth, padding + chartHeight - currHeight, barWidth * 0.8, currHeight);
+                
+                // X-axis labels
+                rainCtx.fillStyle = '#666';
+                rainCtx.textAlign = 'center';
+                rainCtx.fillText(months[i], x + barWidth, height - padding + 20);
+            }
+            
+            // Legend
+            rainCtx.fillStyle = '#2c5f3f';
+            rainCtx.fillRect(width - 180, padding + 10, 20, 15);
+            rainCtx.fillStyle = '#666';
+            rainCtx.textAlign = 'left';
+            rainCtx.fillText('2024', width - 155, padding + 22);
+            
+            rainCtx.fillStyle = '#b8d8c8';
+            rainCtx.fillRect(width - 180, padding + 35, 20, 15);
+            rainCtx.fillText('25-yr avg', width - 155, padding + 47);
+        }
+
+        // Frost Chart
+        const frostCtx = initChart('frostChart');
+        function drawFrostChart() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const frostDays = [0, 0, 0, 3, 8, 12, 15, 10, 5, 1, 0, 0];
+            
+            const width = frostCtx.canvas.width;
+            const height = frostCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            frostCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            frostCtx.fillStyle = '#fafafa';
+            frostCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            frostCtx.strokeStyle = '#e0e0e0';
+            frostCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                frostCtx.beginPath();
+                frostCtx.moveTo(padding, y);
+                frostCtx.lineTo(width - padding, y);
+                frostCtx.stroke();
+                
+                frostCtx.fillStyle = '#666';
+                frostCtx.font = '11px sans-serif';
+                frostCtx.textAlign = 'right';
+                frostCtx.fillText((15 - i * 3) + ' days', padding - 5, y + 4);
+            }
+            
+            // Draw area chart
+            frostCtx.fillStyle = 'rgba(33, 150, 243, 0.3)';
+            frostCtx.strokeStyle = '#2196f3';
+            frostCtx.lineWidth = 2;
+            
+            frostCtx.beginPath();
+            frostCtx.moveTo(padding, padding + chartHeight);
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (frostDays[i] / 15) * chartHeight;
+                frostCtx.lineTo(x, y);
+            }
+            frostCtx.lineTo(width - padding, padding + chartHeight);
+            frostCtx.closePath();
+            frostCtx.fill();
+            frostCtx.stroke();
+            
+            // X-axis labels
+            frostCtx.fillStyle = '#666';
+            frostCtx.textAlign = 'center';
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / (months.length - 1)) * chartWidth;
+                frostCtx.fillText(months[i], x, height - padding + 20);
+            }
+        }
+
+        // GDD Chart
+        const gddCtx = initChart('gddChart');
+        function drawGDDChart() {
+            const years = Array.from({length: 25}, (_, i) => 2000 + i);
+            const gdd = years.map((y, i) => 3200 + Math.sin(i/4) * 300 + i * 8 + (Math.random() - 0.5) * 150);
+            
+            const width = gddCtx.canvas.width;
+            const height = gddCtx.canvas.height;
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barWidth = chartWidth / years.length * 0.7;
+            
+            gddCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            gddCtx.fillStyle = '#fafafa';
+            gddCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Grid
+            gddCtx.strokeStyle = '#e0e0e0';
+            gddCtx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                gddCtx.beginPath();
+                gddCtx.moveTo(padding, y);
+                gddCtx.lineTo(width - padding, y);
+                gddCtx.stroke();
+                
+                gddCtx.fillStyle = '#666';
+                gddCtx.font = '11px sans-serif';
+                gddCtx.textAlign = 'right';
+                gddCtx.fillText((4000 - i * 500).toLocaleString(), padding - 5, y + 4);
+            }
+            
+            // Draw bars
+            for (let i = 0; i < years.length; i++) {
+                const x = padding + (i / years.length) * chartWidth + (chartWidth / years.length - barWidth) / 2;
+                const barHeight = ((gdd[i] - 2000) / 2000) * chartHeight;
+                
+                gddCtx.fillStyle = gdd[i] > 3400 ? '#2c5f3f' : '#52a37a';
+                gddCtx.fillRect(x, padding + chartHeight - barHeight, barWidth, barHeight);
+                
+                // Labels every 5 years
+                if (i % 5 === 0) {
+                    gddCtx.fillStyle = '#666';
+                    gddCtx.textAlign = 'center';
+                    gddCtx.fillText(years[i], x + barWidth / 2, height - padding + 20);
+                }
+            }
+        }
+
+        // Water Balance Chart
+        const wbCtx = initChart('waterBalanceChart');
+        function drawWaterBalanceChart() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const rainfall = [65, 52, 48, 38, 42, 28, 35, 40, 58, 72, 95, 77];
+            const et0 = [145, 125, 95, 75, 55, 35, 38, 48, 72, 95, 115, 135];
+            
+            const width = wbCtx.canvas.width;
+            const height = wbCtx.canvas.height;
+            const padding = 60;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            const barWidth = chartWidth / (months.length * 2.5);
+            
+            wbCtx.clearRect(0, 0, width, height);
+            
+            // Background
+            wbCtx.fillStyle = '#fafafa';
+            wbCtx.fillRect(padding, padding, chartWidth, chartHeight);
+            
+            // Zero line
+            const zeroY = padding + chartHeight / 2;
+            wbCtx.strokeStyle = '#333';
+            wbCtx.lineWidth = 2;
+            wbCtx.beginPath();
+            wbCtx.moveTo(padding, zeroY);
+            wbCtx.lineTo(width - padding, zeroY);
+            wbCtx.stroke();
+            
+            // Grid
+            wbCtx.strokeStyle = '#e0e0e0';
+            wbCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                if (i === 2) continue; // Skip zero line
+                const y = padding + (chartHeight / 4) * i;
+                wbCtx.beginPath();
+                wbCtx.moveTo(padding, y);
+                wbCtx.lineTo(width - padding, y);
+                wbCtx.stroke();
+                
+                const value = 150 - (i * 75);
+                wbCtx.fillStyle = '#666';
+                wbCtx.font = '11px sans-serif';
+                wbCtx.textAlign = 'right';
+                wbCtx.fillText(value + 'mm', padding - 10, y + 4);
+            }
+            
+            // Draw bars
+            for (let i = 0; i < months.length; i++) {
+                const x = padding + (i / months.length) * chartWidth + barWidth * 0.5;
+                
+                // Rainfall (blue, upward)
+                const rainHeight = (rainfall[i] / 150) * (chartHeight / 2);
+                wbCtx.fillStyle = '#2196f3';
+                wbCtx.fillRect(x, zeroY - rainHeight, barWidth * 0.8, rainHeight);
+                
+                // ET0 (red, downward)
+                const etHeight = (et0[i] / 150) * (chartHeight / 2);
+                wbCtx.fillStyle = '#dc3545';
+                wbCtx.fillRect(x + barWidth, zeroY, barWidth * 0.8, etHeight);
+                
+                // X-axis labels
+                wbCtx.fillStyle = '#666';
+                wbCtx.textAlign = 'center';
+                wbCtx.fillText(months[i], x + barWidth, height - padding + 20);
+            }
+            
+            // Legend
+            wbCtx.fillStyle = '#2196f3';
+            wbCtx.fillRect(width - 180, padding + 10, 20, 15);
+            wbCtx.fillStyle = '#666';
+            wbCtx.textAlign = 'left';
+            wbCtx.fillText('Rainfall', width - 155, padding + 22);
+            
+            wbCtx.fillStyle = '#dc3545';
+            wbCtx.fillRect(width - 180, padding + 35, 20, 15);
+            wbCtx.fillText('ET₀', width - 155, padding + 47);
+        }
+
+        // Draw all charts
+        drawTempChart();
+        drawRainfallChart();
+        drawFrostChart();
+        drawGDDChart();
+        drawWaterBalanceChart();
+
+        // Utility functions
+        function updateTempChart(view) {
+            console.log('Switching to view:', view);
+            // In production, would redraw chart with different data
+        }
+
+        function updateRainfallChart(year) {
+            console.log('Switching to year:', year);
+            // In production, would update with historical data
+        }
+
+        function toggleTrendLine() {
+            console.log('Toggle trend line');
+            // In production, would show/hide trend line
+        }
+
+        function downloadData(type) {
+            alert(`Downloading ${type} data as CSV...\n\nWould include time series data and summary statistics.`);
+        }
+
+
+        function showUpgrade() {
+            alert('This section is available in the Professional package.');
+        }
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            drawTempChart();
+            drawRainfallChart();
+            drawFrostChart();
+            drawGDDChart();
+            drawWaterBalanceChart();
+        });
+    </script>
+</body>
+</html>
