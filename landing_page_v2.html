@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rural Property Report | Haizea Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================
+           HAIZEA ANALYTICS BRAND SYSTEM
+           Rural Property Report Landing Page
+           ======================================== */
+        
+        :root {
+            /* Primary Colors */
+            --deep-space: #0e182a;
+            --space: #0f2949;
+            --wind: #52b773;
+            --water: #44b0db;
+            
+            /* Secondary Colors */
+            --mineral: #5e6a7c;
+            --moon: #f7f7f7;
+            
+            /* Accent */
+            --earth: #f79c6b;
+            
+            /* Functional */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --glass-bg: rgba(15, 41, 73, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-hover: rgba(15, 41, 73, 0.6);
+            
+            /* Typography */
+            --font-heading: 'Dosis', sans-serif;
+            --font-body: 'Open Sans', sans-serif;
+            
+            /* Spacing */
+            --section-padding: 6rem 2rem;
+            --container-max: 1200px;
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--deep-space);
+            overflow-x: hidden;
+        }
+        
+        /* ========================================
+           BACKGROUND PATTERNS
+           ======================================== */
+        
+        .bg-gradient {
+            background: linear-gradient(135deg, var(--deep-space) 0%, var(--space) 50%, #1a4a5e 100%);
+        }
+        
+        .bg-gradient-green {
+            background: linear-gradient(135deg, var(--space) 0%, #1a4a3e 50%, var(--space) 100%);
+        }
+        
+        .halftone-overlay {
+            position: relative;
+        }
+        
+        .halftone-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle, rgba(68, 176, 219, 0.15) 1px, transparent 1px);
+            background-size: 24px 24px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .halftone-overlay > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ========================================
+           TYPOGRAPHY
+           ======================================== */
+        
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            line-height: 1.15;
+        }
+        
+        h2 {
+            font-size: clamp(1.75rem, 3vw, 2.25rem);
+            line-height: 1.2;
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            line-height: 1.3;
+        }
+        
+        .section-label {
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--water);
+            margin-bottom: 0.75rem;
+        }
+        
+        /* ========================================
+           LAYOUT
+           ======================================== */
+        
+        .container {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        section {
+            padding: var(--section-padding);
+        }
+        
+        /* ========================================
+           HEADER & NAVIGATION
+           ======================================== */
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .header.scrolled {
+            background: rgba(14, 24, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .header-content {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo img {
+            height: 36px;
+            width: auto;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+        
+        .nav-cta {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary) !important;
+            padding: 0.6rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .nav-cta:hover {
+            background: var(--wind);
+            border-color: var(--wind);
+        }
+        
+        /* ========================================
+           HERO SECTION
+           ======================================== */
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% 0%, rgba(68, 176, 219, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(82, 183, 115, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-text p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin: 1.5rem 0 2.5rem;
+            max-width: 520px;
+            font-weight: 300;
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat {
+            text-align: left;
+        }
+        
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--wind);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--wind);
+            color: var(--deep-space);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary:hover {
+            background: #5fcf84;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(82, 183, 115, 0.3);
+        }
+        
+        .btn-primary svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-primary:hover svg {
+            transform: translateX(4px);
+        }
+        
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+            border-color: var(--water);
+        }
+        
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+        }
+        
+        .hero-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        
+        .hero-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .hero-card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .hero-card-badge {
+            background: var(--wind);
+            color: var(--deep-space);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+        }
+        
+        .hero-map {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: linear-gradient(180deg, #0a1628 0%, #152238 100%);
+            aspect-ratio: 16/10;
+            position: relative;
+        }
+        
+        .hero-map img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Floating elements */
+        .floating-badge {
+            position: absolute;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-badge.top-right {
+            top: -20px;
+            right: -20px;
+            animation-delay: 0s;
+        }
+        
+        .floating-badge.bottom-left {
+            bottom: 40px;
+            left: -30px;
+            animation-delay: 2s;
+        }
+        
+        .badge-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .badge-icon.green { background: rgba(82, 183, 115, 0.2); }
+        .badge-icon.blue { background: rgba(68, 176, 219, 0.2); }
+        .badge-icon.orange { background: rgba(247, 156, 107, 0.2); }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* ========================================
+           FEATURES SECTION
+           ======================================== */
+        
+        .features {
+            background: var(--deep-space);
+            position: relative;
+        }
+        
+        .features-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+        
+        .features-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            font-weight: 300;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .feature-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--water), var(--wind));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            background: var(--glass-hover);
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            font-size: 1.5rem;
+        }
+        
+        .feature-icon.terrain { background: linear-gradient(135deg, rgba(82, 183, 115, 0.2), rgba(68, 176, 219, 0.2)); }
+        .feature-icon.climate { background: linear-gradient(135deg, rgba(68, 176, 219, 0.2), rgba(82, 183, 115, 0.2)); }
+        .feature-icon.water { background: linear-gradient(135deg, rgba(68, 176, 219, 0.3), rgba(68, 176, 219, 0.1)); }
+        .feature-icon.production { background: linear-gradient(135deg, rgba(82, 183, 115, 0.3), rgba(82, 183, 115, 0.1)); }
+        .feature-icon.hazards { background: linear-gradient(135deg, rgba(247, 156, 107, 0.3), rgba(247, 156, 107, 0.1)); }
+        .feature-icon.vegetation { background: linear-gradient(135deg, rgba(82, 183, 115, 0.2), rgba(247, 156, 107, 0.1)); }
+        
+        .feature-card h3 {
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+        
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        /* ========================================
+           SAMPLE REPORT SECTION
+           ======================================== */
+        
+        .sample-section {
+            position: relative;
+        }
+        
+        .sample-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+        
+        .sample-header h2 {
+            margin-bottom: 1rem;
+        }
+        
+        .sample-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        
+        .sample-showcase {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .sample-item {
+            text-align: center;
+        }
+        
+        .sample-image-wrapper {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .sample-image-wrapper img {
+            max-width: 100%;
+            height: auto;
+            max-height: 320px;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+            transition: transform 0.3s ease;
+        }
+        
+        .sample-item:hover .sample-image-wrapper img {
+            transform: translateY(-8px);
+        }
+        
+        .sample-item-content h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sample-item-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .sample-item-content .btn-primary,
+        .sample-item-content .btn-secondary {
+            width: 100%;
+            max-width: 260px;
+            justify-content: center;
+        }
+        
+        /* ========================================
+           PRICING SECTION
+           ======================================== */
+        
+        .pricing {
+            background: var(--deep-space);
+        }
+        
+        .pricing-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+        
+        .pricing-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            font-weight: 300;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .pricing-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-8px);
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--wind);
+            background: linear-gradient(180deg, rgba(82, 183, 115, 0.1) 0%, var(--glass-bg) 100%);
+        }
+        
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--wind);
+            color: var(--deep-space);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            letter-spacing: 0.05em;
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .pricing-card .tier-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .price {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        
+        .price-currency {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+        }
+        
+        .price-note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+        
+        .pricing-features li::before {
+            content: '●';
+            color: var(--water);
+            font-size: 0.5rem;
+            margin-top: 0.4rem;
+            flex-shrink: 0;
+        }
+        
+        .pricing-features li.included {
+            color: var(--wind);
+        }
+        
+        .pricing-features li.included::before {
+            content: '✓';
+            color: var(--wind);
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+        
+        .pricing-features li.addon {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+        
+        .pricing-features li.addon::before {
+            content: '';
+        }
+        
+        .pricing-card .btn-primary,
+        .pricing-card .btn-outline {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 0.875rem 2rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--water);
+            background: rgba(68, 176, 219, 0.1);
+        }
+        
+        .pricing-footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--glass-border);
+        }
+        
+        .pricing-footer p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .pricing-footer a {
+            color: var(--water);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        
+        .pricing-footer a:hover {
+            color: var(--wind);
+        }
+        
+        /* ========================================
+           PRICING FOOTNOTES & INLINE CALCULATOR
+           ======================================== */
+        
+        .pricing-footnotes {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .pricing-footnotes p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        
+        .pricing-footnotes p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .pricing-footnotes sup {
+            color: var(--water);
+            font-weight: 600;
+        }
+        
+        .pricing-footnotes a {
+            color: var(--water);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .pricing-footnotes a:hover {
+            color: var(--wind);
+        }
+        
+        .expand-calculator-link {
+            border-bottom: 1px dashed var(--water);
+        }
+        
+        /* Inline Calculator - Hidden by default */
+        .inline-calculator {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, margin 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+            margin-top: 0;
+        }
+        
+        .inline-calculator.expanded {
+            max-height: 120px;
+            opacity: 1;
+            margin-top: 1.5rem;
+        }
+        
+        .inline-calc-inner {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            position: relative;
+        }
+        
+        .inline-calc-input {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .inline-calc-input label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        
+        .inline-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+        
+        .inline-input-wrapper:focus-within {
+            border-color: var(--water);
+        }
+        
+        .inline-input-wrapper input {
+            width: 80px;
+            background: transparent;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            outline: none;
+            text-align: right;
+        }
+        
+        .inline-input-wrapper input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .inline-input-wrapper span {
+            padding: 0.5rem 0.75rem 0.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .inline-calc-results {
+            display: flex;
+            gap: 1.5rem;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .inline-result {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.15);
+            min-width: 100px;
+        }
+        
+        .inline-result.featured {
+            background: rgba(82, 183, 115, 0.15);
+            border: 1px solid rgba(82, 183, 115, 0.3);
+        }
+        
+        .inline-tier {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.125rem;
+        }
+        
+        .inline-price {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+        
+        .inline-result.featured .inline-price {
+            color: var(--wind);
+        }
+        
+        .inline-calc-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+        
+        .inline-calc-close:hover {
+            color: var(--text-primary);
+        }
+        
+        @media (max-width: 768px) {
+            .inline-calc-inner {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1.25rem;
+            }
+            
+            .inline-calc-results {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .inline-result {
+                min-width: 0;
+                flex: 1;
+                padding: 0.5rem;
+            }
+            
+            .inline-calculator.expanded {
+                max-height: 180px;
+            }
+        }
+        
+        /* ========================================
+           DISCLAIMER SECTION
+           ======================================== */
+        
+        .disclaimer-section {
+            padding: 4rem 2rem;
+        }
+        
+        .disclaimer-box {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(247, 156, 107, 0.08);
+            border: 1px solid rgba(247, 156, 107, 0.2);
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem;
+            text-align: center;
+        }
+        
+        .disclaimer-box h3 {
+            color: var(--earth);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .disclaimer-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+        
+        .acknowledge-btn {
+            background: var(--wind);
+            color: var(--deep-space);
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .acknowledge-btn:hover {
+            background: #5fcf84;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(82, 183, 115, 0.3);
+        }
+        
+        /* ========================================
+           FOOTER
+           ======================================== */
+        
+        .footer {
+            background: var(--deep-space);
+            border-top: 1px solid var(--glass-border);
+            padding: 4rem 2rem 2rem;
+        }
+        
+        .footer-content {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 4rem;
+        }
+        
+        .footer-brand .logo {
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-brand p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            max-width: 280px;
+            line-height: 1.6;
+        }
+        
+        .footer-tagline {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .footer-tagline span {
+            color: var(--water);
+        }
+        
+        .footer-section h4 {
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-section a:hover {
+            color: var(--water);
+        }
+        
+        .footer-bottom {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding-top: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .footer-bottom a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+        }
+        
+        .footer-bottom a:hover {
+            color: var(--water);
+        }
+        
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .hero-visual {
+                order: -1;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            
+            .floating-badge {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .sample-showcase {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --section-padding: 4rem 1.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .hero-cta {
+                flex-direction: column;
+            }
+            
+            .hero-cta .btn-primary,
+            .hero-cta .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .footer-bottom a {
+                margin-left: 0;
+                margin: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <img src="https://haizea.com.au/images/logo-dark.png" alt="Haizea Analytics">
+            </a>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#sample">Sample Report</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#enterprise">Enterprise</a>
+                <a href="#get-started" class="nav-cta">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero bg-gradient halftone-overlay">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <span class="section-label">Rural Property Intelligence</span>
+                    <h1>Comprehensive Property Analysis in Minutes</h1>
+                    <p>Make confident investment decisions with detailed reports on terrain, soil, climate, water resources, and natural hazards for any rural property in Australia.</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <div class="stat-number">15M+</div>
+                            <div class="stat-label">Hectares analysed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">50+</div>
+                            <div class="stat-label">Data sources</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">&lt;2 min</div>
+                            <div class="stat-label">Report delivery</div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-cta">
+                        <button class="btn-primary" onclick="scrollToDisclaimer()">
+                            Generate Report
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                        <a href="#sample" class="btn-secondary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                            View Sample Report
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="hero-visual">
+                    <div class="hero-card">
+                        <div class="hero-card-header">
+                            <span class="hero-card-title">Property Analysis Preview</span>
+                            <span class="hero-card-badge">LIVE DATA</span>
+                        </div>
+                        <div class="hero-map">
+                            <img src="https://www.getonside.com/au/platform-overview/farm-mapping" 
+                                 alt="Farm property analysis with paddock mapping and data overlays"
+                                 onerror="this.src='https://content.api.news/v3/images/bin/5cb1aac21bc639c2c1c6a890234ff443'; this.onerror=null;">
+                        </div>
+                    </div>
+                    
+                    <!-- Floating badges -->
+                    <div class="floating-badge top-right">
+                        <span class="badge-icon green">📊</span>
+                        <span>Real-time Analysis</span>
+                    </div>
+                    <div class="floating-badge bottom-left">
+                        <span class="badge-icon blue">🛰️</span>
+                        <span>Satellite Verified</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="features-header">
+                <span class="section-label">What's Included</span>
+                <h2>Comprehensive Property Intelligence</h2>
+                <p>Every report delivers authoritative data across six critical assessment categories, sourced from government and scientific databases.</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon terrain">🗺️</div>
+                    <h3>Terrain & Soil</h3>
+                    <p>Detailed elevation profiles, slope analysis, soil types, depth, texture, pH levels, and agricultural suitability ratings from CSIRO databases.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon climate">🌦️</div>
+                    <h3>Climate Data</h3>
+                    <p>Historical weather patterns, rainfall records, temperature trends, frost risk, and crop water requirements from Bureau of Meteorology.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon water">💧</div>
+                    <h3>Water Resources</h3>
+                    <p>Soil moisture analysis, surface water features, runoff patterns, and drainage characteristics derived from satellite observations.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon production">🌾</div>
+                    <h3>Primary Production</h3>
+                    <p>Vegetation growth patterns, pasture quality assessments, and seasonal productivity analysis using NDVI time series.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon hazards">⚠️</div>
+                    <h3>Natural Hazards</h3>
+                    <p>Flood history and risk zones, fire history, bushfire risk ratings, and extreme weather event records for informed risk assessment.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon vegetation">🌳</div>
+                    <h3>Vegetation & Nature</h3>
+                    <p>Native vegetation mapping, biodiversity indicators, threatened species records, and vegetation change analysis over time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sample Report Section -->
+    <section id="sample" class="sample-section bg-gradient-green halftone-overlay">
+        <div class="container">
+            <div class="sample-header">
+                <span class="section-label">Sample Output</span>
+                <h2>See What You'll Get</h2>
+                <p>Explore our sample outputs to understand the depth and quality of analysis available for your property.</p>
+            </div>
+            
+            <div class="sample-showcase">
+                <div class="sample-item">
+                    <div class="sample-image-wrapper">
+                        <img src="https://i0.wp.com/www.wenfo.org/aer/wp-content/uploads/2025/07/Report-mockup-internal.png" 
+                             alt="Sample PDF report showing detailed property analysis with charts and maps">
+                    </div>
+                    <div class="sample-item-content">
+                        <h3>Comprehensive PDF Report</h3>
+                        <p>24+ pages of detailed analysis including maps, charts, and data tables</p>
+                        <button class="btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download Sample PDF
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="sample-item">
+                    <div class="sample-image-wrapper">
+                        <img src="https://i0.wp.com/www.wenfo.org/aer/wp-content/uploads/2025/07/aus-env-data-visualiser-on-laptop-.png" 
+                             alt="Interactive dashboard on laptop showing environmental data visualization">
+                    </div>
+                    <div class="sample-item-content">
+                        <h3>Interactive Dashboard</h3>
+                        <p>Web-based explorer with pan, zoom, and data layer controls</p>
+                        <button class="btn-secondary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polygon points="10 8 16 12 10 16 10 8"/>
+                            </svg>
+                            View Live Demo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="pricing-header">
+                <span class="section-label">Transparent Pricing</span>
+                <h2>Choose Your Report</h2>
+                <p>All reports delivered in under 2 minutes. Select the depth of analysis that suits your needs.</p>
+            </div>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Essentials</h3>
+                    <p class="tier-desc">Quick overview for preliminary assessment</p>
+                    <div class="price-row">
+                        <span class="price-currency">$</span>
+                        <span class="price">25</span>
+                    </div>
+                    <p class="price-note">up to 50 ha <sup>†</sup></p>
+                    <ul class="pricing-features">
+                        <li>Land use & terrain analysis</li>
+                        <li>Climate data & rainfall records</li>
+                        <li>Soil types & suitability</li>
+                        <li>Basic vegetation mapping</li>
+                        <li>PDF report download</li>
+                        <li class="addon">+ Interactive dashboard available</li>
+                        <li class="addon">+ GIS data package available</li>
+                    </ul>
+                    <button class="btn-outline">Select Essentials</button>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <span class="pricing-badge">RECOMMENDED</span>
+                    <h3>Due Diligence</h3>
+                    <p class="tier-desc">Complete analysis for investment decisions</p>
+                    <div class="price-row">
+                        <span class="price-currency">$</span>
+                        <span class="price">45</span>
+                    </div>
+                    <p class="price-note">up to 50 ha <sup>†</sup></p>
+                    <ul class="pricing-features">
+                        <li>Everything in Essentials</li>
+                        <li>Water resources analysis</li>
+                        <li>Flood & fire risk assessment</li>
+                        <li>Detailed vegetation history</li>
+                        <li>Natural hazards report</li>
+                        <li class="included">Free interactive dashboard</li>
+                        <li class="addon">+ GIS data package available</li>
+                    </ul>
+                    <button class="btn-primary">Select Due Diligence</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Professional</h3>
+                    <p class="tier-desc">Comprehensive reporting for advisors <sup>‡</sup></p>
+                    <div class="price-row">
+                        <span class="price-currency">$</span>
+                        <span class="price">75</span>
+                    </div>
+                    <p class="price-note">up to 50 ha <sup>†</sup></p>
+                    <ul class="pricing-features">
+                        <li>Everything in Due Diligence</li>
+                        <li>Primary production analysis</li>
+                        <li>Biodiversity assessment</li>
+                        <li>Carbon sequestration potential</li>
+                        <li class="included">Free interactive dashboard</li>
+                        <li class="included">Free GIS data package</li>
+                    </ul>
+                    <button class="btn-outline">Select Professional</button>
+                </div>
+            </div>
+            
+            <!-- Combined Pricing Footnotes -->
+            <div class="pricing-footnotes">
+                <p><sup>†</sup> For larger properties, <a href="#" class="expand-calculator-link" id="toggle-calculator">get a quick estimate</a> or <a href="#get-started">select your property</a> for exact pricing.</p>
+                <p><sup>‡</sup> Need multiple reports or custom integrations? <a href="mailto:contact@haizea.com.au">Contact us for enterprise pricing</a>.</p>
+            </div>
+            
+            <!-- Collapsible Inline Calculator -->
+            <div class="inline-calculator" id="inline-calculator">
+                <div class="inline-calc-inner">
+                    <div class="inline-calc-input">
+                        <label for="hectares-input">Property size:</label>
+                        <div class="inline-input-wrapper">
+                            <input type="number" id="hectares-input" min="1" max="100000" value="50" placeholder="50">
+                            <span>ha</span>
+                        </div>
+                    </div>
+                    <div class="inline-calc-results">
+                        <div class="inline-result">
+                            <span class="inline-tier">Essentials</span>
+                            <span class="inline-price" id="calc-essential">$25</span>
+                        </div>
+                        <div class="inline-result featured">
+                            <span class="inline-tier">Due Diligence</span>
+                            <span class="inline-price" id="calc-duediligence">$45</span>
+                        </div>
+                        <div class="inline-result">
+                            <span class="inline-tier">Professional</span>
+                            <span class="inline-price" id="calc-professional">$75</span>
+                        </div>
+                    </div>
+                    <button class="inline-calc-close" id="close-calculator" aria-label="Close calculator">×</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Disclaimer Section -->
+    <section id="get-started" class="disclaimer-section bg-gradient">
+        <div class="disclaimer-box">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Important Information
+            </h3>
+            <p>Reports are provided for informational purposes only and should not be relied upon as the sole basis for property purchase or land use decisions. Data is sourced from publicly available government and scientific databases including CSIRO, Bureau of Meteorology, and Geoscience Australia. While we strive for accuracy, users should verify critical information independently. This service does not constitute professional advice.</p>
+            <button class="acknowledge-btn" onclick="proceedToApp()">
+                I Understand, Continue to Report Builder
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <img src="https://haizea.com.au/images/logo-dark.png" alt="Haizea Analytics">
+                </a>
+                <p>Comprehensive rural property intelligence powered by satellite data, AI, and authoritative government sources.</p>
+                <p class="footer-tagline">> Earth Data, Lightning Fast<span>_</span></p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#sample">Sample Reports</a></li>
+                    <li><a href="#">Data Sources</a></li>
+                    <li><a href="#">API Access</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Enterprise</h4>
+                <ul>
+                    <li><a href="#">Volume Pricing</a></li>
+                    <li><a href="#">White Label Options</a></li>
+                    <li><a href="#">Custom Integrations</a></li>
+                    <li><a href="mailto:contact@haizea.com.au">Contact Sales</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Centre</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="mailto:contact@haizea.com.au">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 Haizea Analytics Pty Ltd. ABN: 27 648 451 969. Data sourced from CSIRO, Bureau of Meteorology, Geoscience Australia.</p>
+            <div>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Price Calculator
+        const MIN_HECTARES = 50;
+        const TIERS = {
+            essential: { base_price: 25, coefficient: 1 },
+            duediligence: { base_price: 45, coefficient: 2 },
+            professional: { base_price: 75, coefficient: 3 }
+        };
+        
+        function calculatePrice(hectares, tier) {
+            const { base_price, coefficient } = TIERS[tier];
+            const extraHa = Math.max(0, hectares - MIN_HECTARES);
+            return Math.round(base_price + coefficient * Math.sqrt(extraHa));
+        }
+        
+        function updatePrices() {
+            const hectaresInput = document.getElementById('hectares-input');
+            if (!hectaresInput) return;
+            const hectares = Math.max(1, parseInt(hectaresInput.value) || 50);
+            
+            // Update calculator results
+            const essentialEl = document.getElementById('calc-essential');
+            const duediligenceEl = document.getElementById('calc-duediligence');
+            const professionalEl = document.getElementById('calc-professional');
+            
+            if (essentialEl) essentialEl.textContent = '$' + calculatePrice(hectares, 'essential');
+            if (duediligenceEl) duediligenceEl.textContent = '$' + calculatePrice(hectares, 'duediligence');
+            if (professionalEl) professionalEl.textContent = '$' + calculatePrice(hectares, 'professional');
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleLink = document.getElementById('toggle-calculator');
+            const calculator = document.getElementById('inline-calculator');
+            const closeBtn = document.getElementById('close-calculator');
+            const hectaresInput = document.getElementById('hectares-input');
+            
+            // Toggle calculator visibility
+            if (toggleLink && calculator) {
+                toggleLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    calculator.classList.add('expanded');
+                    updatePrices();
+                    // Focus the input after animation
+                    setTimeout(() => {
+                        if (hectaresInput) {
+                            hectaresInput.focus();
+                            hectaresInput.select();
+                        }
+                    }, 300);
+                });
+            }
+            
+            if (closeBtn && calculator) {
+                closeBtn.addEventListener('click', function() {
+                    calculator.classList.remove('expanded');
+                });
+            }
+            
+            // Update prices on input
+            if (hectaresInput) {
+                hectaresInput.addEventListener('input', updatePrices);
+                hectaresInput.addEventListener('change', updatePrices);
+            }
+        });
+        
+        // Header scroll effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Scroll to disclaimer
+        function scrollToDisclaimer() {
+            document.getElementById('get-started').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+        
+        // Proceed to app
+        function proceedToApp() {
+            alert('Proceeding to Step 2: Property Selection\n(Next mockup will show the map interface)');
+            window.location.href = 'step2_property_selection.html';
+        }
+        
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Animate elements on scroll
+        document.querySelectorAll('.feature-card, .pricing-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
