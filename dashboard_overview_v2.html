@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rural Property Report | Smith Farm, Mudgee NSW</title>
+    
+    <!-- Fonts: Dosis for headings, Open Sans for body (per Haizea brand guide) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           HAIZEA ANALYTICS DESIGN SYSTEM
+           Rural Property Intelligence Report v3
+           ============================================ */
+        
+        :root {
+            /* Primary Colours (from brand guide) */
+            --deep-space: #0e182a;
+            --space: #0f2949;
+            --wind: #52b773;
+            --water: #44b0db;
+            --earth: #f79c6b;
+            --mineral: #5e6a7c;
+            --moon: #f7f7f7;
+            
+            /* Benchmark bar colours */
+            --bar-above: #52b773;    /* 7-10: above average */
+            --bar-average: #44b0db;  /* 5-6: average */
+            --bar-below: #e8985e;    /* 1-4: below average */
+            --bar-track: #e5e7eb;
+            
+            /* Sidebar light theme */
+            --sidebar-bg: #f0f2f4;
+            --sidebar-text: #0f2949;
+            --sidebar-muted: #5e6a7c;
+            --sidebar-border: #dfe2e6;
+            --sidebar-hover: #e4e7eb;
+            --sidebar-active-bg: rgba(82, 183, 115, 0.12);
+            
+            /* Typography */
+            --font-heading: 'Dosis', sans-serif;
+            --font-body: 'Open Sans', sans-serif;
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            
+            /* Border radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(14, 24, 42, 0.06);
+            --shadow-md: 0 4px 12px rgba(14, 24, 42, 0.08);
+        }
+        
+        /* Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--deep-space);
+            background: var(--moon);
+        }
+        
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        
+        .report-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* ============================================
+           SIDEBAR (Light theme)
+           ============================================ */
+        
+        .sidebar {
+            width: 220px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: var(--spacing-md) var(--spacing-md) var(--spacing-md);
+            border-bottom: 1px solid var(--sidebar-border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .logo svg {
+            width: 26px;
+            height: 26px;
+        }
+        
+        .logo-text {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--sidebar-text);
+        }
+        
+        .logo-text span {
+            color: var(--water);
+        }
+        
+        .report-meta {
+            font-size: 0.68rem;
+            color: var(--sidebar-muted);
+            line-height: 1.4;
+        }
+        
+        /* Navigation */
+        .nav-section {
+            padding: var(--spacing-sm) 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+            color: var(--sidebar-muted);
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-top: var(--spacing-xs);
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: 6px var(--spacing-md);
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.15s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+        }
+        
+        .nav-item.active {
+            background: var(--sidebar-active-bg);
+            color: var(--wind);
+            border-left-color: var(--wind);
+            font-weight: 600;
+        }
+        
+        .nav-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sidebar-muted);
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--wind);
+        }
+        
+        .nav-icon svg {
+            width: 15px;
+            height: 15px;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--earth);
+            color: var(--deep-space);
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--sidebar-border);
+            font-size: 0.65rem;
+            color: var(--sidebar-muted);
+        }
+        
+        /* ============================================
+           MAIN CONTENT
+           ============================================ */
+        
+        .main-content {
+            flex: 1;
+            margin-left: 220px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Report Header */
+        .report-header {
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            padding: var(--spacing-md) var(--spacing-xl);
+        }
+        
+        .report-title {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--deep-space);
+            letter-spacing: 0.5px;
+        }
+        
+        .report-subtitle {
+            font-size: 0.9rem;
+            color: var(--mineral);
+            margin-top: 2px;
+        }
+        
+        /* Content Area */
+        .content-area {
+            padding: var(--spacing-md) var(--spacing-xl) var(--spacing-lg);
+            flex: 1;
+        }
+        
+        /* Section Header */
+        .section-header {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--deep-space);
+            letter-spacing: 0.5px;
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 2px solid var(--wind);
+            display: inline-block;
+        }
+        
+        .section-description {
+            font-size: 0.8rem;
+            color: var(--mineral);
+            margin-top: var(--spacing-sm);
+        }
+        
+        /* ============================================
+           OVERVIEW GRID
+           ============================================ */
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+        }
+        
+        /* ============================================
+           DOMAIN CARDS
+           ============================================ */
+        
+        .domain-card {
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .domain-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .domain-header {
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .domain-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mineral);
+        }
+        
+        .domain-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .domain-name {
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--deep-space);
+        }
+        
+        .domain-body {
+            padding: var(--spacing-sm) var(--spacing-md) var(--spacing-md);
+        }
+        
+        .domain-context {
+            font-size: 0.72rem;
+            color: var(--mineral);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.4;
+        }
+        
+        /* ============================================
+           BENCHMARK BARS
+           ============================================ */
+        
+        .metric-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .metric-row {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .metric-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.72rem;
+            color: var(--deep-space);
+        }
+        
+        .metric-name {
+            color: var(--mineral);
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: var(--deep-space);
+        }
+        
+        .metric-bar {
+            height: 6px;
+            background: var(--bar-track);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .metric-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+        
+        .metric-bar-fill.above {
+            background: var(--bar-above);
+        }
+        
+        .metric-bar-fill.average {
+            background: var(--bar-average);
+        }
+        
+        .metric-bar-fill.below {
+            background: var(--bar-below);
+        }
+        
+        /* ============================================
+           FOOTER
+           ============================================ */
+        
+        .content-footer {
+            padding: var(--spacing-sm) var(--spacing-xl);
+            font-size: 0.72rem;
+            color: var(--mineral);
+            border-top: 1px solid rgba(0,0,0,0.06);
+            background: white;
+        }
+        
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        
+        @media (max-width: 1400px) {
+            .overview-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 1100px) {
+            .overview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ============================================
+           PRINT
+           ============================================ */
+        
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+            
+            body {
+                font-size: 8pt;
+                background: white;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .report-header {
+                border-bottom: 2px solid var(--space);
+                padding-bottom: 5mm;
+                margin-bottom: 5mm;
+            }
+            
+            .content-area {
+                padding: 0;
+            }
+            
+            .overview-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            
+            .domain-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="https://haizea.com.au/" class="logo" target="_blank">
+                    <svg viewBox="0 0 32 32" fill="none">
+                        <path d="M8 16C8 11.6 11.6 8 16 8C20.4 8 24 11.6 24 16" stroke="#f79c6b" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M6 20C6 14.5 10.5 10 16 10C21.5 10 26 14.5 26 20" stroke="#52b773" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M4 24C4 17.4 9.4 12 16 12C22.6 12 28 17.4 28 24" stroke="#44b0db" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                    <span class="logo-text">ha<span>i</span>zea</span>
+                </a>
+                <div class="report-meta">
+                    Report ID: HA-2024-MUD-00847<br>
+                    Generated 22 December 2024
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <a class="nav-item active">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                        </svg>
+                    </span>
+                    Overview
+                </a>
+                <a class="nav-item" href="property-details.html">
+                    <span class="nav-icon">
+                        <!-- Document/property icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </span>
+                    Property Details
+                </a>
+                <a class="nav-item" href="terrain.html">
+                    <span class="nav-icon">
+                        <!-- Mountain/terrain icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 15l5-5 4 4 8-8"/>
+                        </svg>
+                    </span>
+                    Terrain
+                </a>
+                <a class="nav-item" href="soil.html">
+                    <span class="nav-icon">
+                        <!-- Spade in ground icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c-2.5 2-4 4.5-4 7a4 4 0 108 0c0-2.5-1.5-5-4-7zM12 14v7M9 21h6"/>
+                        </svg>
+                    </span>
+                    Soil
+                </a>
+                <a class="nav-item" href="climate.html">
+                    <span class="nav-icon">
+                        <!-- Cloud with sun icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 15a4 4 0 004 4h5a4 4 0 10-1-7.9 5.5 5.5 0 10-8 3.9z"/>
+                        </svg>
+                    </span>
+                    Climate
+                </a>
+                <a class="nav-item" href="water.html">
+                    <span class="nav-icon">
+                        <!-- Water droplet icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4 0-7-3-7-7 0-3 4.5-9.5 6.3-11.7a1 1 0 011.4 0C14.5 4.5 19 11 19 14c0 4-3 7-7 7z"/>
+                        </svg>
+                    </span>
+                    Water
+                </a>
+                <a class="nav-item" href="vegetation.html">
+                    <span class="nav-icon">
+                        <!-- Plant/grass icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21V11M12 11C12 8 9 5 5 5c0 4 2 6 7 6zM12 11c0-3 3-6 7-6 0 4-2 6-7 6z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8"/>
+                        </svg>
+                    </span>
+                    Vegetation
+                </a>
+                <a class="nav-item" href="nature.html">
+                    <span class="nav-icon">
+                        <!-- Bird icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12c0 0 2-4 7-4 2 0 3.5.5 5 2l6-3-3 5c1 1 2 3 2 5H10c-4 0-7-2-7-5z"/>
+                            <circle cx="8" cy="11" r="1" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    Nature
+                </a>
+                <a class="nav-item" href="hazards.html">
+                    <span class="nav-icon">
+                        <!-- Warning triangle icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </span>
+                    Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Advanced</div>
+                <a class="nav-item" href="production.html">
+                    <span class="nav-icon">
+                        <!-- Sheep icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="11" rx="7" ry="5"/>
+                            <circle cx="8" cy="10" r="1.5" fill="currentColor"/>
+                            <circle cx="11" cy="9" r="1.5" fill="currentColor"/>
+                            <circle cx="14" cy="9" r="1.5" fill="currentColor"/>
+                            <circle cx="16" cy="11" r="1.5" fill="currentColor"/>
+                            <circle cx="14" cy="13" r="1.5" fill="currentColor"/>
+                            <circle cx="10" cy="13" r="1.5" fill="currentColor"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 11c-1.5 0-2.5-1-2.5-2s1-1.5 2-1.5M8 16v4M16 16v4"/>
+                        </svg>
+                    </span>
+                    Primary Production
+                    <span class="nav-badge">Add</span>
+                </a>
+                <a class="nav-item" href="carbon.html">
+                    <span class="nav-icon">
+                        <!-- Tree icon -->
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-6M12 15l-4-5h2l-3-4h3l-3-4h10l-3 4h3l-3 4h2l-4 5z"/>
+                        </svg>
+                    </span>
+                    Carbon
+                    <span class="nav-badge">Add</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Downloads</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </span>
+                    Printable Report (PDF)
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </span>
+                    Data Tables (Excel)
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                        </svg>
+                    </span>
+                    GIS Package
+                    <span class="nav-badge">Add</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-footer">
+                © 2024 Haizea Analytics
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Report Header -->
+            <header class="report-header">
+                <h1 class="report-title">Rural Property Report</h1>
+                <p class="report-subtitle">Smith Farm, 275.6 ha · Mudgee, NSW</p>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="section-header">
+                    <h2 class="section-title">Overview</h2>
+                    <p class="section-description">Each metric is benchmarked against similar rural properties in the region.</p>
+                </div>
+                
+                <div class="overview-grid">
+                    
+                    <!-- Terrain -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 15l5-5 4 4 8-8"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Terrain</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="domain-context">Elevation 420–580m</div>
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">North-facing land</span>
+                                        <span class="metric-value">42%</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Gentle slopes (machinery suitable)</span>
+                                        <span class="metric-value">68%</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Erosion risk</span>
+                                        <span class="metric-value">Low</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill average" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Soil -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <!-- Spade in ground -->
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c-2.5 2-4 4.5-4 7a4 4 0 108 0c0-2.5-1.5-5-4-7zM12 14v7M9 21h6"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Soil</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="domain-context">Red clay loams · 1.2m average depth</div>
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Fertility</span>
+                                        <span class="metric-value">High</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Water-holding capacity</span>
+                                        <span class="metric-value">High</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Drainage</span>
+                                        <span class="metric-value">Good</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Climate -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <!-- Cloud with sun -->
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 15a4 4 0 004 4h5a4 4 0 10-1-7.9 5.5 5.5 0 10-8 3.9z"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Climate</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="domain-context">Cool temperate · Growing season Sep–Apr</div>
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Rainfall</span>
+                                        <span class="metric-value">650mm/yr</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Drought resilience</span>
+                                        <span class="metric-value">Average</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill average" style="width: 50%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Frost days</span>
+                                        <span class="metric-value">45/yr</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill below" style="width: 40%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Water -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <!-- Water droplet -->
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4 0-7-3-7-7 0-3 4.5-9.5 6.3-11.7a1 1 0 011.4 0C14.5 4.5 19 11 19 14c0 4-3 7-7 7z"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Water</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="domain-context">2 farm dams · ~4.2 ML combined storage</div>
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Permanent streams or rivers</span>
+                                        <span class="metric-value">None</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill below" style="width: 20%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Licensed water allocation</span>
+                                        <span class="metric-value">None</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill below" style="width: 20%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Vegetation -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <!-- Plant/grass -->
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21V11M12 11C12 8 9 5 5 5c0 4 2 6 7 6zM12 11c0-3 3-6 7-6 0 4-2 6-7 6z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Vegetation</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="domain-context">52% pasture · 30% woodland · 18% mixed</div>
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Vegetation health</span>
+                                        <span class="metric-value">Average</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill average" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Groundcover</span>
+                                        <span class="metric-value">Average</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill average" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nature -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <!-- Bird -->
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12c0 0 2-4 7-4 2 0 3.5.5 5 2l6-3-3 5c1 1 2 3 2 5H10c-4 0-7-2-7-5z"/>
+                                    <circle cx="8" cy="11" r="1" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Nature</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="domain-context">18% native vegetation retained</div>
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Habitat connectivity potential</span>
+                                        <span class="metric-value">Good</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Biodiversity value</span>
+                                        <span class="metric-value">Average</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill average" style="width: 50%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Threatened species presence</span>
+                                        <span class="metric-value">None known</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill average" style="width: 50%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hazards -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Hazards</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Flood exposure</span>
+                                        <span class="metric-value">Minimal (2%)</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 90%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Erosion susceptibility</span>
+                                        <span class="metric-value">Low</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Bushfire intensity zone</span>
+                                        <span class="metric-value">Moderate-high</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill below" style="width: 40%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Bushfire prone area</span>
+                                        <span class="metric-value">68%</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill below" style="width: 30%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Primary Production -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <!-- Sheep -->
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <ellipse cx="12" cy="11" rx="7" ry="5"/>
+                                    <circle cx="8" cy="10" r="1.5" fill="currentColor"/>
+                                    <circle cx="11" cy="9" r="1.5" fill="currentColor"/>
+                                    <circle cx="14" cy="9" r="1.5" fill="currentColor"/>
+                                    <circle cx="16" cy="11" r="1.5" fill="currentColor"/>
+                                    <circle cx="14" cy="13" r="1.5" fill="currentColor"/>
+                                    <circle cx="10" cy="13" r="1.5" fill="currentColor"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 11c-1.5 0-2.5-1-2.5-2s1-1.5 2-1.5M8 16v4M16 16v4"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Primary Production</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="domain-context">Currently used for cattle grazing</div>
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Livestock carrying capacity</span>
+                                        <span class="metric-value">420 DSE</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Land suitable for cropping</span>
+                                        <span class="metric-value">35%</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Diversification options</span>
+                                        <span class="metric-value">Moderate</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill average" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carbon -->
+                    <div class="domain-card">
+                        <div class="domain-header">
+                            <div class="domain-icon">
+                                <!-- Tree -->
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-6M12 15l-4-5h2l-3-4h3l-3-4h10l-3 4h3l-3 4h2l-4 5z"/>
+                                </svg>
+                            </div>
+                            <span class="domain-name">Carbon</span>
+                        </div>
+                        <div class="domain-body">
+                            <div class="domain-context">Est. 2,840 tonnes CO₂ stored in vegetation and soil</div>
+                            <div class="metric-list">
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Annual sequestration potential</span>
+                                        <span class="metric-value">+850 t CO₂</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Area suitable for tree planting</span>
+                                        <span class="metric-value">48 ha</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div class="metric-row">
+                                    <div class="metric-label">
+                                        <span class="metric-name">Carbon credit eligibility</span>
+                                        <span class="metric-value">Likely</span>
+                                    </div>
+                                    <div class="metric-bar">
+                                        <div class="metric-bar-fill above" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="content-footer">
+                Data sources and methodology are detailed in each section. All spatial data referenced to GDA2020 / MGA Zone 55.
+            </footer>
+        </main>
+    </div>
+</body>
+</html>

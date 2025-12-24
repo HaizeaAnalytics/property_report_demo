@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vegetation | Rural Property Report | Smith Farm</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-space: #0e182a;
+            --space: #0f2949;
+            --wind: #52b773;
+            --water: #44b0db;
+            --earth: #f79c6b;
+            --mineral: #5e6a7c;
+            --moon: #f7f7f7;
+            
+            --bar-above: #52b773;
+            --bar-average: #44b0db;
+            --bar-below: #e8985e;
+            --bar-track: #e5e7eb;
+            
+            --sidebar-bg: #f0f2f4;
+            --sidebar-text: #0f2949;
+            --sidebar-muted: #5e6a7c;
+            --sidebar-border: #dfe2e6;
+            --sidebar-hover: #e4e7eb;
+            --sidebar-active-bg: rgba(82, 183, 115, 0.12);
+            
+            --font-heading: 'Dosis', sans-serif;
+            --font-body: 'Open Sans', sans-serif;
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            
+            --shadow-sm: 0 1px 3px rgba(14, 24, 42, 0.06);
+            --shadow-md: 0 4px 12px rgba(14, 24, 42, 0.08);
+        }
+        
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--deep-space);
+            background: var(--moon);
+        }
+        
+        /* Layout */
+        .report-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--sidebar-border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .logo svg {
+            width: 26px;
+            height: 26px;
+        }
+        
+        .logo-text {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--sidebar-text);
+        }
+        
+        .logo-text span {
+            color: var(--water);
+        }
+        
+        .report-meta {
+            font-size: 0.68rem;
+            color: var(--sidebar-muted);
+            line-height: 1.4;
+        }
+        
+        .nav-section {
+            padding: var(--spacing-sm) 0;
+        }
+        
+        .nav-section-title {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+            color: var(--sidebar-muted);
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-top: var(--spacing-xs);
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: 6px var(--spacing-md);
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.15s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+        }
+        
+        .nav-item.active {
+            background: var(--sidebar-active-bg);
+            color: var(--wind);
+            border-left-color: var(--wind);
+            font-weight: 600;
+        }
+        
+        .nav-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sidebar-muted);
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--wind);
+        }
+        
+        .nav-icon svg {
+            width: 15px;
+            height: 15px;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--earth);
+            color: var(--deep-space);
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--sidebar-border);
+            font-size: 0.65rem;
+            color: var(--sidebar-muted);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 220px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .report-header {
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            padding: var(--spacing-md) var(--spacing-xl);
+        }
+        
+        .report-title {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--deep-space);
+            letter-spacing: 0.5px;
+        }
+        
+        .report-subtitle {
+            font-size: 0.9rem;
+            color: var(--mineral);
+            margin-top: 2px;
+        }
+        
+        .content-area {
+            padding: var(--spacing-md) var(--spacing-xl) var(--spacing-lg);
+            flex: 1;
+        }
+        
+        /* Page Section Header */
+        .section-header {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--deep-space);
+            letter-spacing: 0.5px;
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 2px solid var(--wind);
+            display: inline-block;
+        }
+        
+        .section-description {
+            font-size: 0.8rem;
+            color: var(--mineral);
+            margin-top: var(--spacing-sm);
+        }
+        
+        /* Thematic Banners */
+        .theme-banner {
+            background: #6b7280;
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-heading);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .theme-banner:first-of-type {
+            margin-top: 0;
+        }
+        
+        /* Grid Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        /* Content Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-header {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        
+        .card-title {
+            font-family: var(--font-heading);
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--deep-space);
+        }
+        
+        .card-caption {
+            font-size: 0.7rem;
+            color: var(--mineral);
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+        
+        .card-body {
+            padding: var(--spacing-md);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-footer {
+            padding: var(--spacing-xs) var(--spacing-md) var(--spacing-sm);
+            font-size: 0.62rem;
+            color: var(--mineral);
+            border-top: 1px solid rgba(0,0,0,0.04);
+        }
+        
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            min-height: 220px;
+            background: linear-gradient(145deg, #7a8f5f 0%, #6a7f4f 50%, #5a6f3f 100%);
+            border-radius: var(--radius-sm);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .map-placeholder {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.75rem;
+            text-align: center;
+        }
+        
+        .map-expand-btn {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            background: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 4px 8px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--mineral);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .map-expand-btn:hover {
+            background: var(--moon);
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: var(--spacing-xs);
+            left: var(--spacing-xs);
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 0.58rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 2px;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-swatch {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+        
+        /* Tables */
+        .data-table {
+            width: 100%;
+            font-size: 0.75rem;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            text-align: left;
+            font-weight: 600;
+            color: var(--mineral);
+            padding: var(--spacing-xs) var(--spacing-xs);
+            border-bottom: 1px solid var(--bar-track);
+            font-size: 0.7rem;
+        }
+        
+        .data-table td {
+            padding: var(--spacing-xs) var(--spacing-xs);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table .total-row td {
+            font-weight: 600;
+            background: var(--moon);
+        }
+        
+        .cover-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            margin-right: 6px;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .change-positive { color: var(--wind); }
+        .change-negative { color: var(--bar-below); }
+        
+        /* Chart Container */
+        .chart-container {
+            flex: 1;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--moon);
+            border-radius: var(--radius-sm);
+            position: relative;
+        }
+        
+        .chart-placeholder {
+            color: var(--mineral);
+            font-size: 0.72rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .chart-toggle {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            display: flex;
+            gap: 2px;
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 2px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .chart-toggle button {
+            border: none;
+            background: transparent;
+            padding: 3px 8px;
+            font-size: 0.62rem;
+            cursor: pointer;
+            border-radius: 3px;
+            color: var(--mineral);
+        }
+        
+        .chart-toggle button.active {
+            background: var(--space);
+            color: white;
+        }
+        
+        .chart-toggle button:hover:not(.active) {
+            background: var(--moon);
+        }
+        
+        /* Benchmark Bars - Dual Marker Style */
+        .benchmark-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-lg) var(--spacing-xl);
+        }
+        
+        .benchmark-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .benchmark-name {
+            font-size: 0.72rem;
+            color: var(--mineral);
+        }
+        
+        .benchmark-track {
+            position: relative;
+            height: 8px;
+            background: var(--bar-track);
+            border-radius: 4px;
+        }
+        
+        .benchmark-median {
+            position: absolute;
+            top: -4px;
+            bottom: -4px;
+            width: 2px;
+            background: var(--mineral);
+            border-radius: 1px;
+            transform: translateX(-50%);
+        }
+        
+        .benchmark-property {
+            position: absolute;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            background: var(--wind);
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .benchmark-property.below-median {
+            background: var(--bar-below);
+        }
+        
+        .benchmark-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            margin-top: 2px;
+        }
+        
+        .benchmark-label-median {
+            color: var(--mineral);
+        }
+        
+        .benchmark-label-property {
+            color: var(--deep-space);
+            font-weight: 600;
+        }
+        
+        /* Method Notes */
+        .method-content {
+            font-size: 0.72rem;
+            color: var(--mineral);
+            line-height: 1.6;
+            columns: 2;
+            column-gap: var(--spacing-xl);
+        }
+        
+        .method-content p {
+            margin-bottom: var(--spacing-sm);
+            break-inside: avoid;
+        }
+        
+        .method-content em {
+            font-style: italic;
+            color: var(--deep-space);
+        }
+        
+        /* Footer */
+        .content-footer {
+            padding: var(--spacing-sm) var(--spacing-xl);
+            font-size: 0.68rem;
+            color: var(--mineral);
+            border-top: 1px solid rgba(0,0,0,0.06);
+            background: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .benchmark-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .method-content {
+                columns: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        /* Print */
+        @media print {
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .theme-banner {
+                background: var(--deep-space) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="https://haizea.com.au/" class="logo" target="_blank">
+                    <svg viewBox="0 0 32 32" fill="none">
+                        <path d="M8 16C8 11.6 11.6 8 16 8C20.4 8 24 11.6 24 16" stroke="#f79c6b" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M6 20C6 14.5 10.5 10 16 10C21.5 10 26 14.5 26 20" stroke="#52b773" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M4 24C4 17.4 9.4 12 16 12C22.6 12 28 17.4 28 24" stroke="#44b0db" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                    <span class="logo-text">ha<span>i</span>zea</span>
+                </a>
+                <div class="report-meta">
+                    Report ID: HA-2024-MUD-00847<br>
+                    Generated 22 December 2024
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <a class="nav-item" href="overview.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                        </svg>
+                    </span>
+                    Overview
+                </a>
+                <a class="nav-item" href="property-details.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </span>
+                    Property Details
+                </a>
+                <a class="nav-item" href="terrain.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 15l5-5 4 4 8-8"/>
+                        </svg>
+                    </span>
+                    Terrain
+                </a>
+                <a class="nav-item" href="soil.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c-2.5 2-4 4.5-4 7a4 4 0 108 0c0-2.5-1.5-5-4-7zM12 14v7M9 21h6"/>
+                        </svg>
+                    </span>
+                    Soil
+                </a>
+                <a class="nav-item" href="climate.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 15a4 4 0 004 4h5a4 4 0 10-1-7.9 5.5 5.5 0 10-8 3.9z"/>
+                        </svg>
+                    </span>
+                    Climate
+                </a>
+                <a class="nav-item" href="water.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4 0-7-3-7-7 0-3 4.5-9.5 6.3-11.7a1 1 0 011.4 0C14.5 4.5 19 11 19 14c0 4-3 7-7 7z"/>
+                        </svg>
+                    </span>
+                    Water
+                </a>
+                <a class="nav-item active" href="vegetation.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21V11M12 11C12 8 9 5 5 5c0 4 2 6 7 6zM12 11c0-3 3-6 7-6 0 4-2 6-7 6z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8"/>
+                        </svg>
+                    </span>
+                    Vegetation
+                </a>
+                <a class="nav-item" href="nature.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12c0 0 2-4 7-4 2 0 3.5.5 5 2l6-3-3 5c1 1 2 3 2 5H10c-4 0-7-2-7-5z"/>
+                            <circle cx="8" cy="11" r="1" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    Nature
+                </a>
+                <a class="nav-item" href="hazards.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </span>
+                    Hazards
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Advanced</div>
+                <a class="nav-item" href="production.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="11" rx="7" ry="5"/>
+                            <circle cx="8" cy="10" r="1.5" fill="currentColor"/>
+                            <circle cx="11" cy="9" r="1.5" fill="currentColor"/>
+                            <circle cx="14" cy="9" r="1.5" fill="currentColor"/>
+                            <circle cx="16" cy="11" r="1.5" fill="currentColor"/>
+                            <circle cx="14" cy="13" r="1.5" fill="currentColor"/>
+                            <circle cx="10" cy="13" r="1.5" fill="currentColor"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 11c-1.5 0-2.5-1-2.5-2s1-1.5 2-1.5M8 16v4M16 16v4"/>
+                        </svg>
+                    </span>
+                    Primary Production
+                    <span class="nav-badge">Add</span>
+                </a>
+                <a class="nav-item" href="carbon.html">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-6M12 15l-4-5h2l-3-4h3l-3-4h10l-3 4h3l-3 4h2l-4 5z"/>
+                        </svg>
+                    </span>
+                    Carbon
+                    <span class="nav-badge">Add</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Downloads</div>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </span>
+                    Printable Report (PDF)
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </span>
+                    Data Tables (Excel)
+                </a>
+                <a class="nav-item" href="#">
+                    <span class="nav-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                        </svg>
+                    </span>
+                    GIS Package
+                    <span class="nav-badge">Add</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-footer">
+                © 2024 Haizea Analytics
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="report-header">
+                <h1 class="report-title">Rural Property Report</h1>
+                <p class="report-subtitle">Smith Farm, 275.6 ha · Mudgee, NSW</p>
+            </header>
+
+            <div class="content-area">
+                <div class="section-header">
+                    <h2 class="section-title">Vegetation</h2>
+                    <p class="section-description">Vegetation types, cover characteristics, and change over time</p>
+                </div>
+                
+                <!-- LAND COVER -->
+                <div class="theme-banner">Land Cover</div>
+                
+                <div class="grid-2">
+                    <!-- Land Cover Map -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Land Cover Map</div>
+                            <div class="card-caption">Distribution of vegetation and land use types</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="map-container">
+                                <button class="map-expand-btn">
+                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                                    </svg>
+                                    Expand
+                                </button>
+                                <div class="map-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #1b5e20;"></div>
+                                        <span>Native forest</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #558b2f;"></div>
+                                        <span>Woodland</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #8bc34a;"></div>
+                                        <span>Improved pasture</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #c5e1a5;"></div>
+                                        <span>Native grassland</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #d7ccc8;"></div>
+                                        <span>Bare/built</span>
+                                    </div>
+                                </div>
+                                <div class="map-placeholder">Map renders here</div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            Source: NSW State Vegetation Type Map 2023; Sentinel-2 imagery
+                        </div>
+                    </div>
+                    
+                    <!-- Area Breakdown -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Area Breakdown</div>
+                            <div class="card-caption">Hectares and percentage by land cover class</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cover Type</th>
+                                        <th class="text-right">Hectares</th>
+                                        <th class="text-right">%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="cover-indicator" style="background: #1b5e20;"></span>Native forest</td>
+                                        <td class="text-right">82.7</td>
+                                        <td class="text-right">30%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="cover-indicator" style="background: #558b2f;"></span>Woodland</td>
+                                        <td class="text-right">33.1</td>
+                                        <td class="text-right">12%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="cover-indicator" style="background: #8bc34a;"></span>Improved pasture</td>
+                                        <td class="text-right">104.7</td>
+                                        <td class="text-right">38%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="cover-indicator" style="background: #c5e1a5;"></span>Native grassland</td>
+                                        <td class="text-right">49.6</td>
+                                        <td class="text-right">18%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="cover-indicator" style="background: #d7ccc8;"></span>Bare/built</td>
+                                        <td class="text-right">5.5</td>
+                                        <td class="text-right">2%</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <td>Total</td>
+                                        <td class="text-right">275.6</td>
+                                        <td class="text-right">100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer">
+                            Source: Derived from land cover classification
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- VEGETATION DYNAMICS -->
+                <div class="theme-banner">Vegetation Dynamics</div>
+                
+                <div class="grid-2">
+                    <!-- NDVI Map -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Vegetation Greenness (NDVI)</div>
+                            <div class="card-caption">Spatial distribution of vegetation cover</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="map-container" style="background: linear-gradient(145deg, #4a6741 0%, #6b8c5a 50%, #8aaa72 100%);">
+                                <div class="chart-toggle">
+                                    <button class="active">Mean</button>
+                                    <button>Min</button>
+                                    <button>Max</button>
+                                </div>
+                                <button class="map-expand-btn">
+                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                                    </svg>
+                                    Expand
+                                </button>
+                                <div class="map-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #1b5e20;"></div>
+                                        <span>High (>0.7)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #7cb342;"></div>
+                                        <span>Medium (0.4–0.7)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #c5e1a5;"></div>
+                                        <span>Low (<0.4)</span>
+                                    </div>
+                                </div>
+                                <div class="map-placeholder">Map renders here</div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            Source: MODIS NDVI 2000–2024; annual mean/min/max composites
+                        </div>
+                    </div>
+                    
+                    <!-- Fractional Cover Time Series -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Fractional Cover (1990–2024)</div>
+                            <div class="card-caption">Annual living vegetation, dead vegetation, and bare soil</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <div class="chart-toggle">
+                                    <button class="active">Mean</button>
+                                    <button>Min</button>
+                                    <button>Max</button>
+                                </div>
+                                <div class="chart-placeholder">
+                                    Stacked area chart<br>
+                                    Living | Dead | Bare<br>
+                                    (sums to 100%)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            Source: Geoscience Australia Fractional Cover v3.1 (Landsat)
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TREE COVER CHANGE -->
+                <div class="theme-banner">Tree Cover Change</div>
+                
+                <div class="grid-2">
+                    <!-- Change Map -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Tree Cover Change Map</div>
+                            <div class="card-caption">Gains and losses in woody vegetation since 2000</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="map-container" style="background: linear-gradient(145deg, #e8e8e8 0%, #d8d8d8 100%);">
+                                <button class="map-expand-btn">
+                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                                    </svg>
+                                    Expand
+                                </button>
+                                <div class="map-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #2e7d32;"></div>
+                                        <span>Stable forest</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #66bb6a;"></div>
+                                        <span>Forest gain</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-swatch" style="background: #ef5350;"></div>
+                                        <span>Forest loss</span>
+                                    </div>
+                                </div>
+                                <div class="map-placeholder" style="color: var(--mineral);">Map renders here</div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            Source: Global Forest Change (Hansen et al.); NSW SLATS
+                        </div>
+                    </div>
+                    
+                    <!-- Change by Period -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Change by Period</div>
+                            <div class="card-caption">Net change in woody vegetation extent</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Period</th>
+                                        <th class="text-right">Loss</th>
+                                        <th class="text-right">Gain</th>
+                                        <th class="text-right">Net</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2000–2010</td>
+                                        <td class="text-right">8.2 ha</td>
+                                        <td class="text-right">3.5 ha</td>
+                                        <td class="text-right change-negative">−4.7 ha</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2010–2017</td>
+                                        <td class="text-right">2.1 ha</td>
+                                        <td class="text-right">5.8 ha</td>
+                                        <td class="text-right change-positive">+3.7 ha</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2017–2024</td>
+                                        <td class="text-right">0.8 ha</td>
+                                        <td class="text-right">4.2 ha</td>
+                                        <td class="text-right change-positive">+3.4 ha</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <td>Total (2000–2024)</td>
+                                        <td class="text-right">11.1 ha</td>
+                                        <td class="text-right">13.5 ha</td>
+                                        <td class="text-right change-positive">+2.4 ha</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer">
+                            Source: Global Forest Change (Hansen et al.); NSW SLATS
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- REGIONAL BENCHMARKS -->
+                <div class="theme-banner">Regional Benchmarks</div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-caption">Comparison to similar land use within 50 km</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="benchmark-grid">
+                            <!-- Average vegetation cover: median 58%, property 68% -->
+                            <div class="benchmark-row">
+                                <div class="benchmark-name">Average vegetation cover</div>
+                                <div class="benchmark-track">
+                                    <div class="benchmark-median" style="left: 50%;"></div>
+                                    <div class="benchmark-property" style="left: 70%;"></div>
+                                </div>
+                                <div class="benchmark-labels">
+                                    <span class="benchmark-label-median">Region: 58%</span>
+                                    <span class="benchmark-label-property">This property: 68%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Peak vegetation cover: median 70%, property 78% -->
+                            <div class="benchmark-row">
+                                <div class="benchmark-name">Peak vegetation cover</div>
+                                <div class="benchmark-track">
+                                    <div class="benchmark-median" style="left: 50%;"></div>
+                                    <div class="benchmark-property" style="left: 66%;"></div>
+                                </div>
+                                <div class="benchmark-labels">
+                                    <span class="benchmark-label-median">Region: 70%</span>
+                                    <span class="benchmark-label-property">This property: 78%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Tree/woody cover: median 28%, property 42% -->
+                            <div class="benchmark-row">
+                                <div class="benchmark-name">Tree/woody cover</div>
+                                <div class="benchmark-track">
+                                    <div class="benchmark-median" style="left: 50%;"></div>
+                                    <div class="benchmark-property" style="left: 75%;"></div>
+                                </div>
+                                <div class="benchmark-labels">
+                                    <span class="benchmark-label-median">Region: 28%</span>
+                                    <span class="benchmark-label-property">This property: 42%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Average canopy height: median 14m, property 12.5m -->
+                            <div class="benchmark-row">
+                                <div class="benchmark-name">Average canopy height</div>
+                                <div class="benchmark-track">
+                                    <div class="benchmark-median" style="left: 50%;"></div>
+                                    <div class="benchmark-property below-median" style="left: 40%;"></div>
+                                </div>
+                                <div class="benchmark-labels">
+                                    <span class="benchmark-label-median">Region: 14 m</span>
+                                    <span class="benchmark-label-property">This property: 12.5 m</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Bare ground: median 12%, property 8% (lower is better, so property is "above" median in quality) -->
+                            <div class="benchmark-row">
+                                <div class="benchmark-name">Bare ground</div>
+                                <div class="benchmark-track">
+                                    <div class="benchmark-median" style="left: 50%;"></div>
+                                    <div class="benchmark-property" style="left: 33%;"></div>
+                                </div>
+                                <div class="benchmark-labels">
+                                    <span class="benchmark-label-median">Region: 12%</span>
+                                    <span class="benchmark-label-property">This property: 8%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- METHOD NOTES -->
+                <div class="theme-banner">Method Notes</div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="method-content">
+                            <p>
+                                <em>Land cover classification</em> derived from NSW State Vegetation Type Map (2023) 
+                                supplemented with Sentinel-2 imagery analysis for current conditions.
+                            </p>
+                            <p>
+                                <em>Fractional cover</em> from Geoscience Australia's Landsat-derived product (v3.1), 
+                                providing annual estimates of photosynthetic vegetation, non-photosynthetic vegetation, and bare soil 
+                                at 30m resolution.
+                            </p>
+                            <p>
+                                <em>Vegetation greenness (NDVI)</em> derived from MODIS 16-day composites (250m resolution), 
+                                showing annual mean, minimum, and maximum values across 2000–2024.
+                            </p>
+                            <p>
+                                <em>Regional benchmarks</em> compare this property to locations within 
+                                50 km with similar land use. The regional median is shown as a reference line; 
+                                the property value is shown as a dot.
+                            </p>
+                            <p>
+                                <em>Tree cover change</em> combines Global Forest Change dataset (Hansen/UMD) with 
+                                NSW SLATS (Statewide Landcover and Trees Study) for validation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <footer class="content-footer">
+                All spatial data referenced to GDA2020 / MGA Zone 55. Analysis period: 1990–2024 where data available.
+            </footer>
+        </main>
+    </div>
+</body>
+</html>
